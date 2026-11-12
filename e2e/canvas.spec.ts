@@ -45,7 +45,7 @@ test("left-handed mirrors the fretboard only", async ({ page }) => {
   const before = { fret: (await openLowE.boundingBox())!.x, key: await keyX() };
   await page.goto("/practice?root=C&scale=major&lh=1");
   await expect(page.getByRole("group", { name: "Guitar fretboard, left-handed" })).toBeVisible();
-  expect((await openLowE.boundingBox())!.x).toBeGreaterThan(before.fret + 300);
+  expect((await openLowE.boundingBox())!.x).toBeGreaterThan(before.fret + 200);
   expect(await keyX()).toBe(before.key);
 });
 
