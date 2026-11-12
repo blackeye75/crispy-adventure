@@ -1,7 +1,7 @@
 import { content as files } from "../../../content";
 import { validateContent, type Content, type Lesson } from "@/core/schemas/content";
 import { connectDb } from "../db/connect";
-import { LessonModel, ModuleModel, TrackModel } from "../db/models";
+import { LessonModel, LessonProgressModel, ModuleModel, TrackModel } from "../db/models";
 
 let fromFiles: Content | undefined;
 
@@ -17,22 +17,30 @@ async function load(): Promise<Content> {
 
 const byOrder = <T extends { order: number }>(items: T[]) => [...items].sort((a, b) => a.order - b.order);
 
-export type Viewer = { subscriber: boolean };
-// Until accounts exist (Phase 3) every visitor is anonymous: free lessons only.
+/** Who is asking. Signed-out visitors see the map but no progress. */
+export type Viewer = { subscriber: boolean; userId?: string };
 export const ANONYMOUS: Viewer = { subscriber: false };
 
 const canOpen = (lesson: { isFree: boolean }, viewer: Viewer) => lesson.isFree || viewer.subscriber;
 
-export type LessonSummary = Pick<Lesson, "slug" | "title" | "minutes" | "strand"> & { locked: boolean };
+export type LessonSummary = Pick<Lesson, "slug" | "title" | "minutes" | "strand"> & { locked: boolean; completed: boolean };
 export type Path = {
   slug: string;
   title: string;
   levels: { level: number; isFree: boolean; modules: { slug: string; title: string; summary: string; lessons: LessonSummary[] }[] }[];
 }[];
 
-/** The whole curriculum as a map: titles only, never lesson content. */
+/** Every lesson this viewer may open, in path order. */
+export async function accessibleLessons(viewer: Viewer): Promise<Lesson[]> {
+  const { modules, lessons } = await load();
+  const moduleOrder = new Map(modules.map((m) => [m.slug, m.order]));
+  return lessons.filter((l) => canOpen(l, viewer)).sort((a, b) => moduleOrder.get(a.moduleSlug)! - moduleOrder.get(b.moduleSlug)! || a.order - b.order);
+}
+
+/** The whole curriculum as a map, with the viewer's progress: titles only, never lesson content. */
 export async function getPath(viewer: Viewer = ANONYMOUS): Promise<Path> {
   const { tracks, modules, lessons } = await load();
+  const completed = new Set(viewer.userId ? await LessonProgressModel.distinct("lessonSlug", { userId: viewer.userId, status: "completed" }) : []);
   return byOrder(tracks).map((track) => {
     const mine = byOrder(modules.filter((m) => m.trackSlug === track.slug));
     return {
@@ -46,7 +54,7 @@ export async function getPath(viewer: Viewer = ANONYMOUS): Promise<Path> {
           title: m.title,
           summary: m.summary,
           lessons: byOrder(lessons.filter((l) => l.moduleSlug === m.slug)).map((l) => ({
-            slug: l.slug, title: l.title, minutes: l.minutes, strand: l.strand, locked: !canOpen(l, viewer),
+            slug: l.slug, title: l.title, minutes: l.minutes, strand: l.strand, locked: !canOpen(l, viewer), completed: completed.has(l.slug),
           })),
         })),
       })),

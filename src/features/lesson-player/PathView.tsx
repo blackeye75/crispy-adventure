@@ -1,29 +1,41 @@
-"use client";
-
-import { Check, Circle, Lock } from "lucide-react";
+import { Check, Circle, Flame, Lock } from "lucide-react";
 import Link from "next/link";
 import type { LessonSummary, Path } from "@/server/services/content";
 import { Button } from "@/components/ui/button";
-import { useCompleted, useInstrument } from "@/lib/local-store";
+import type { Instrument } from "@/core/schemas/api";
+import type { Me } from "@/server/services/profile";
 
 const LEVEL_NAMES = ["Foundations", "Building blocks", "Harmony basics", "Fluency on the instrument", "Colour and movement", "Advanced"];
 const STRAND_NAMES: Partial<Record<LessonSummary["strand"], string>> = { guitar: "Guitar", piano: "Piano", ear: "Ear", rhythm: "Rhythm" };
 
 /** Lessons a learner on this instrument is expected to take, in path order. */
-function useProgress(path: Path) {
-  const [completed] = useCompleted();
-  const [instrument] = useInstrument();
+function progress(path: Path, instrument: Instrument) {
   const other = instrument === "guitar" ? "piano" : "guitar";
   const mine = path.flatMap((t) => t.levels).flatMap((l) => l.modules).flatMap((m) => m.lessons.map((l) => ({ ...l, module: m.title })))
     .filter((l) => !l.locked && l.strand !== other);
-  return { completed, mine, done: mine.filter((l) => completed.has(l.slug)).length, next: mine.find((l) => !completed.has(l.slug)) };
+  return { mine, done: mine.filter((l) => l.completed).length, next: mine.find((l) => !l.completed) };
 }
 
-/** Home: the one thing to do next. */
-export function HomeView({ path }: { path: Path }) {
-  const { mine, done, next } = useProgress(path);
+/** Today's minutes against the daily goal. */
+function GoalRing({ minutes, goal }: { minutes: number; goal: number }) {
+  const r = 34;
+  const length = 2 * Math.PI * r;
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10 lg:py-16">
+    <svg viewBox="0 0 80 80" className="size-20 shrink-0" role="img" aria-label={`${minutes} of ${goal} minutes practised today`}>
+      <circle cx={40} cy={40} r={r} fill="none" strokeWidth={8} className="stroke-muted" />
+      <circle cx={40} cy={40} r={r} fill="none" strokeWidth={8} strokeLinecap="round" transform="rotate(-90 40 40)" className="stroke-primary"
+        strokeDasharray={length} strokeDashoffset={length * (1 - Math.min(1, minutes / goal))} />
+      <text x={40} y={41} textAnchor="middle" dominantBaseline="central" fontSize={20} fontWeight={600} className="fill-foreground">{minutes}</text>
+    </svg>
+  );
+}
+
+/** Home: the one thing to do next, then today's review, streak and goal. */
+export function HomeView({ path, me }: { path: Path; me: Me & { profile: NonNullable<Me["profile"]>; today: NonNullable<Me["today"]> } }) {
+  const { mine, done, next } = progress(path, me.profile.instrument);
+  const { today, reviewDue } = me;
+  return (
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-10 lg:py-16">
       <section className="flex flex-col gap-5 rounded-2xl border bg-card p-6 sm:p-8">
         {next ? (
           <>
@@ -41,6 +53,26 @@ export function HomeView({ path }: { path: Path }) {
           </>
         )}
       </section>
+
+      <div className="grid gap-6 sm:grid-cols-3">
+        <section className="flex flex-col gap-2 rounded-2xl border bg-card p-6" aria-label="Review">
+          <p className="text-4xl font-semibold tabular-nums">{reviewDue}</p>
+          <p className="text-sm text-muted-foreground">{reviewDue === 1 ? "concept" : "concepts"} to review today</p>
+          {reviewDue > 0 && <Link href="/review" className="mt-auto pt-2 font-medium text-primary underline-offset-4 hover:underline">Start review</Link>}
+        </section>
+        <section className="flex flex-col gap-2 rounded-2xl border bg-card p-6" aria-label="Streak">
+          <p className="flex items-center gap-2 text-4xl font-semibold tabular-nums"><Flame className={today.streak ? "size-8 text-primary" : "size-8 text-muted-foreground"} aria-hidden />{today.streak}</p>
+          <p className="text-sm text-muted-foreground">day streak · best {me.profile.streak.longest}</p>
+        </section>
+        <section className="flex items-center gap-4 rounded-2xl border bg-card p-6" aria-label="Daily goal">
+          <GoalRing minutes={today.minutes} goal={today.goalMinutes} />
+          <div className="flex flex-col gap-1 text-sm text-muted-foreground">
+            <span>of {today.goalMinutes} minutes today</span>
+            <Link href="/onboarding" className="underline underline-offset-4 hover:text-foreground">Change goal</Link>
+          </div>
+        </section>
+      </div>
+
       <section className="flex flex-col gap-3" aria-label="Progress">
         <div className="flex justify-between text-sm text-muted-foreground"><span>Lessons completed</span><span className="tabular-nums">{done} of {mine.length}</span></div>
         <div className="h-2 overflow-hidden rounded-full bg-muted" role="progressbar" aria-valuemin={0} aria-valuemax={mine.length} aria-valuenow={done}>
@@ -57,7 +89,6 @@ export function HomeView({ path }: { path: Path }) {
 
 /** The whole curriculum as a map: done, available, locked, and still to come. */
 export function PathView({ path }: { path: Path }) {
-  const { completed } = useProgress(path);
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-12 px-4 py-10 lg:py-16">
       <h1 className="text-4xl">Your path</h1>
@@ -76,7 +107,7 @@ export function PathView({ path }: { path: Path }) {
               ) : (
                 <ol className="flex flex-col pt-3">
                   {m.lessons.map((lesson) => {
-                    const state = lesson.locked ? "Locked" : completed.has(lesson.slug) ? "Completed" : "Not started";
+                    const state = lesson.locked ? "Locked" : lesson.completed ? "Completed" : "Not started";
                     return (
                       <li key={lesson.slug}>
                         <Link href={`/learn/${lesson.slug}`} className="-mx-2 flex min-h-12 items-center gap-3 rounded-md px-2 outline-none transition-colors duration-150 hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50">

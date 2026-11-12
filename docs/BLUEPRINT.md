@@ -209,10 +209,10 @@ Tick tasks as they complete. Each phase ends in something you can use.
 - [x] Path page and Home page
 
 ### Phase 3 — Accounts and progress (about 1 week)
-- [ ] Better Auth: email and Google sign-in
-- [ ] Onboarding and placement quiz
-- [ ] Progress saving, streaks, daily goal
-- [ ] Spaced-repetition engine in `src/core/review` and the Review screen
+- [x] Better Auth: email and Google sign-in
+- [x] Onboarding and placement quiz
+- [x] Progress saving, streaks, daily goal
+- [x] Spaced-repetition engine in `src/core/review` and the Review screen
 
 ### Phase 4 — Subscription (about 1 week)
 - [ ] Razorpay plans (monthly, yearly), checkout, webhook with signature check

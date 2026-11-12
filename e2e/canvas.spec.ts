@@ -41,7 +41,8 @@ test("controls change the whole canvas and the URL; chips work", async ({ page }
 test("left-handed mirrors the fretboard only", async ({ page }) => {
   await page.goto("/practice");
   const openLowE = fretboard(page).getByRole("button", { name: "E2, chord tone, string 6, open" });
-  const keyX = async () => (await keyboard(page).locator('.note-marker[data-midi="60"]').boundingBox())!.x;
+  // position within the keyboard itself, so its scroll offset does not matter
+  const keyX = () => keyboard(page).locator('.note-marker[data-midi="60"]').evaluate((el) => Math.round(el.getBoundingClientRect().x - el.closest("svg")!.getBoundingClientRect().x));
   const before = { fret: (await openLowE.boundingBox())!.x, key: await keyX() };
   await page.goto("/practice?root=C&scale=major&lh=1");
   await expect(page.getByRole("group", { name: "Guitar fretboard, left-handed" })).toBeVisible();

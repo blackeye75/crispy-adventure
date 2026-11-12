@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { PathView } from "@/features/lesson-player/PathView";
-import { getPath } from "@/server/services/content";
+import { getViewer } from "@/server/auth/session";
+import { ANONYMOUS, getPath } from "@/server/services/content";
 
 export const metadata: Metadata = { title: "Your path · Fretkey" };
 
 async function PathMap() {
-  return <PathView path={await getPath()} />;
+  // The map is public; signed-in learners also see their progress.
+  const viewer = await getViewer().catch(() => null);
+  return <PathView path={await getPath(viewer ?? ANONYMOUS)} />;
 }
 
 export default function LearnPage() {

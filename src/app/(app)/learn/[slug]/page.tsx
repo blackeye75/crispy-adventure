@@ -3,12 +3,16 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { LessonPlayer } from "@/features/lesson-player/LessonPlayer";
 import { Button } from "@/components/ui/button";
+import { requireLearner } from "@/server/auth/session";
 import { getLesson } from "@/server/services/content";
+import { getProgress } from "@/server/services/progress";
 
 type Params = PageProps<"/learn/[slug]">["params"];
 
 async function Lesson({ params }: { params: Params }) {
-  const result = await getLesson((await params).slug);
+  const { slug } = await params;
+  const { viewer, profile } = await requireLearner(`/learn/${slug}`);
+  const result = await getLesson(slug, viewer);
   if (result.status === "not-found") notFound();
   if (result.status === "locked") {
     // The lesson content never reaches this page for a non-subscriber. The paywall arrives in Phase 4.
@@ -21,7 +25,8 @@ async function Lesson({ params }: { params: Params }) {
       </div>
     );
   }
-  return <LessonPlayer key={result.lesson.slug} lesson={result.lesson} next={result.next} />;
+  const progress = await getProgress(viewer.userId, slug);
+  return <LessonPlayer key={slug} lesson={result.lesson} next={result.next} instrument={profile.instrument} startIndex={progress?.status === "started" ? progress.stepIndex : 0} />;
 }
 
 export default function LessonPage({ params }: { params: Params }) {

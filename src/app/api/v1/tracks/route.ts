@@ -1,6 +1,4 @@
-import { ok } from "@/server/api";
-import { getPath } from "@/server/services/content";
+import { open } from "@/server/api";
+import { ANONYMOUS, getPath } from "@/server/services/content";
 
-export async function GET() {
-  return ok(await getPath());
-}
+export const GET = open((viewer) => getPath(viewer ?? ANONYMOUS));

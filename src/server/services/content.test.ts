@@ -34,7 +34,7 @@ describe("content service", () => {
   test("the path lists every level without lesson content", async () => {
     const [theory] = await getPath();
     expect(theory.levels.map((l) => l.level)).toEqual([1, 2, 3, 4, 5, 6]);
-    expect(theory.levels[0].modules[0].lessons[0]).toEqual({ slug: "what-is-a-note", title: "What a note is", minutes: 5, strand: "core", locked: false });
+    expect(theory.levels[0].modules[0].lessons[0]).toEqual({ slug: "what-is-a-note", title: "What a note is", minutes: 5, strand: "core", locked: false, completed: false });
     expect(JSON.stringify(theory)).not.toContain("blocks");
   });
   test("a lesson comes with the next one in path order, across modules", async () => {

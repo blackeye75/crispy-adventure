@@ -8,7 +8,7 @@ import { playNotes } from "@/features/audio/engine";
 import { InstrumentView, stringNumber, tapMarkers, type Tap } from "@/features/lesson-player/InstrumentView";
 import { PlayButton } from "@/features/lesson-player/PlayButton";
 import { Button } from "@/components/ui/button";
-import type { Instrument } from "@/lib/local-store";
+import type { Instrument } from "@/core/schemas/api";
 import { cn } from "@/lib/utils";
 
 /** Called once, when the drill is solved: was the first answer right? */

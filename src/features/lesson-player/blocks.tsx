@@ -6,7 +6,7 @@ import { playbackSteps, resolveCanvas, type Marker } from "@/core/instruments/re
 import { canvasToQuery } from "@/core/schemas/canvas";
 import { soundSteps, type BlockOf } from "@/core/schemas/content";
 import { playNotes } from "@/features/audio/engine";
-import type { Instrument } from "@/lib/local-store";
+import type { Instrument } from "@/core/schemas/api";
 import { InstrumentView, lessonState } from "./InstrumentView";
 import { PlayButton } from "./PlayButton";
 

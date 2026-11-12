@@ -1,8 +1,10 @@
 import { expect, test } from "@playwright/test";
+import { signUp } from "./helpers";
 
 const next = (page: import("@playwright/test").Page) => page.getByRole("button", { name: /^(Continue|Finish)$/ });
 
 test("a whole lesson: four steps, every drill type, completion shows on the path", async ({ page }) => {
+  await signUp(page);
   await page.goto("/learn/sharps-and-flats");
   await expect(page.getByRole("heading", { name: "Sharps and flats" })).toBeVisible();
   await expect(page.getByRole("listitem").filter({ hasText: "Understand" })).toHaveAttribute("aria-current", "step");
@@ -47,6 +49,7 @@ test("a whole lesson: four steps, every drill type, completion shows on the path
 
   await expect(page.getByText("Lesson complete")).toBeVisible();
   await expect(page.getByText("2 of 5 drills right first time.")).toBeVisible();
+  await expect(page.getByText("1-day streak. 5 of 10 minutes today.")).toBeVisible();
   await expect(page.getByRole("link", { name: "Next: One sound, two names" })).toBeVisible();
   await page.getByRole("link", { name: "Back to the path" }).click();
   await expect(page.getByRole("link", { name: /Sharps and flats\s*, Completed/ })).toBeVisible();
@@ -54,6 +57,7 @@ test("a whole lesson: four steps, every drill type, completion shows on the path
 });
 
 test("the instrument toggle switches lessons to the keyboard and is remembered", async ({ page }) => {
+  await signUp(page);
   await page.goto("/learn/natural-notes");
   await page.getByRole("group", { name: "Instrument" }).getByRole("button", { name: "Piano" }).click();
   for (let i = 0; i < 2; i++) await next(page).click();
@@ -64,12 +68,12 @@ test("the instrument toggle switches lessons to the keyboard and is remembered",
   }
   await page.getByRole("button", { name: "Key 11" }).click(); // D3
   await expect(page.locator('.note-marker[data-state="correct"]')).toHaveText("D");
-  await page.goto("/learn/the-octave");
+  await page.goto("/learn/the-octave"); // a different lesson, a fresh page load: the choice came from the profile
   await expect(page.getByRole("group", { name: "Instrument" }).getByRole("button", { name: "Piano" })).toHaveAttribute("aria-pressed", "true");
 });
 
 test("home points at the next lesson; the path shows all six levels", async ({ page }) => {
-  await page.goto("/dashboard");
+  await signUp(page);
   await page.getByRole("link", { name: "Start the first lesson" }).click();
   await expect(page).toHaveURL(/\/learn\/what-is-a-note/);
   await page.goto("/learn");
@@ -78,13 +82,24 @@ test("home points at the next lesson; the path shows all six levels", async ({ p
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
 });
 
-test("API: one response shape, lesson content by slug", async ({ request }) => {
+test("API: one response shape; lessons and profile need a session, the map does not", async ({ page, request }) => {
   const tracks = await (await request.get("/api/v1/tracks")).json();
   expect(tracks.data[0].levels).toHaveLength(6);
-  const lesson = await (await request.get("/api/v1/lessons/the-octave")).json();
+  for (const path of ["/api/v1/lessons/the-octave", "/api/v1/me", "/api/v1/review/due"]) {
+    const anonymous = await request.get(path);
+    expect(anonymous.status(), path).toBe(401);
+    expect((await anonymous.json()).error.code).toBe("unauthenticated");
+  }
+  expect((await request.post("/api/v1/progress", { data: { lessonSlug: "the-octave", stepIndex: 1 } })).status()).toBe(401);
+
+  await signUp(page);
+  const lesson = await (await page.request.get("/api/v1/lessons/the-octave")).json();
   expect(lesson.data.lesson.steps.map((s: { kind: string }) => s.kind)).toEqual(["understand", "listen", "learn", "practice"]);
   expect(lesson.data.next.slug).toBe("guitar-layout");
-  const missing = await request.get("/api/v1/lessons/nope");
+  const missing = await page.request.get("/api/v1/lessons/nope");
   expect(missing.status()).toBe(404);
   expect((await missing.json()).error.code).toBe("not_found");
+  const bad = await page.request.post("/api/v1/progress", { data: { lessonSlug: "the-octave", stepIndex: -1 } });
+  expect(bad.status()).toBe(400);
+  expect((await page.request.patch("/api/v1/me", { data: { dailyGoalMinutes: 7 } })).status()).toBe(400);
 });

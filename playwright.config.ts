@@ -7,5 +7,15 @@ export default defineConfig({
     { name: "desktop", use: devices["Desktop Chrome"] },
     { name: "phone-360", use: { ...devices["Pixel 5"], viewport: { width: 360, height: 740 } } },
   ],
-  webServer: { command: "npm run dev", url: "http://localhost:3000", reuseExistingServer: true },
+  // Needs a local MongoDB: docker run -d -p 27017:27017 mongo:7
+  webServer: {
+    command: "npm run seed && npm run dev",
+    url: "http://localhost:3000",
+    reuseExistingServer: !process.env.CI,
+    env: {
+      MONGODB_URI: process.env.MONGODB_E2E_URI ?? "mongodb://127.0.0.1:27017/fretkey_e2e",
+      BETTER_AUTH_SECRET: "e2e-only-secret-not-used-anywhere-else",
+      BETTER_AUTH_URL: "http://localhost:3000",
+    },
+  },
 });

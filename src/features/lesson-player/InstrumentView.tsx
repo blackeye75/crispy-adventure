@@ -7,7 +7,7 @@ import { midi } from "@/core/theory/notes";
 import type { NoteEvents } from "@/features/canvas/NoteMarker";
 import { Fretboard } from "@/features/fretboard/Fretboard";
 import { Keyboard } from "@/features/keyboard/Keyboard";
-import type { Instrument } from "@/lib/local-store";
+import type { Instrument } from "@/core/schemas/api";
 
 // Lessons show twelve frets: one full octave per string, and less to scroll on a phone.
 const GUITAR = { tuning: STANDARD_TUNING, frets: 12, leftHanded: false };
