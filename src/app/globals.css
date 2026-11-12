@@ -87,3 +87,66 @@
     }
   }
 }
+
+/* Instruments. The same in both themes: they are objects, not UI chrome. */
+:root {
+  --wood: oklch(0.27 0.03 60);
+  --fret: oklch(0.62 0.01 85);
+  --string: oklch(0.74 0.02 85);
+  --inlay: oklch(0.42 0.025 70);
+  --key-white: oklch(0.95 0.012 90);
+  --key-black: oklch(0.2 0.006 80);
+  --marker-tone: oklch(0.93 0.01 85); /* filled light neutral */
+  --marker-plate: oklch(0.17 0.006 80); /* dark backing so markers read on wood and ivory alike */
+}
+
+@theme inline {
+  --color-wood: var(--wood);
+  --color-fret: var(--fret);
+  --color-string: var(--string);
+  --color-inlay: var(--inlay);
+  --color-key-white: var(--key-white);
+  --color-key-black: var(--key-black);
+}
+
+/* Note markers: three roles only (docs/CANVAS.md). Animate transform and opacity, nothing else. */
+@layer components {
+  .note-marker {
+    cursor: pointer;
+    outline: none;
+    transition: opacity 200ms var(--ease-out);
+    animation: marker-in 200ms var(--ease-out);
+  }
+  .note-marker > g {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 180ms var(--ease-out);
+  }
+  .note-marker .hit { fill: transparent; }
+  .note-marker .halo { fill: var(--primary); opacity: 0; transition: opacity 180ms var(--ease-out); }
+  .note-marker .plate { fill: var(--marker-plate); }
+  .note-marker .dot { fill: var(--marker-plate); stroke: var(--marker-tone); stroke-width: 2; }
+  .note-marker text {
+    fill: var(--marker-tone);
+    font-size: 12.5px;
+    font-weight: 500;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+    user-select: none;
+  }
+  .note-marker[data-role="chord"] .dot { fill: var(--marker-tone); stroke: none; }
+  .note-marker[data-role="root"] .dot { fill: var(--primary); stroke: none; }
+  .note-marker[data-role="chord"] text,
+  .note-marker[data-role="root"] text { fill: var(--marker-plate); }
+  .note-marker[data-role="root"] text { font-weight: 700; }
+  .note-marker[data-dimmed] { opacity: 0.3; }
+  .note-marker[data-echo] .halo { opacity: 0.14; }
+  .note-marker[data-active] .halo { opacity: 0.45; }
+  .note-marker[data-active] > g { transform: scale(1.15); }
+  .note-marker:focus-visible .dot { stroke: var(--ring); stroke-width: 3; }
+}
+
+@keyframes marker-in {
+  from { opacity: 0; }
+}

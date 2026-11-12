@@ -191,12 +191,12 @@ Tick tasks as they complete. Each phase ends in something you can use.
 - [ ] Deploy an empty shell to Vercel
 
 ### Phase 1 — Core engine and instruments (about 2 weeks)
-- [ ] `src/core/theory`: notes, intervals, scales, chords, keys, with tests
-- [ ] `src/core/instruments`: fretboard mapping (any tuning, left-handed) and keyboard mapping, with tests
-- [ ] `Fretboard` SVG component: highlight, label, tap, responsive
-- [ ] `Keyboard` SVG component with the same props
+- [x] `src/core/theory`: notes, intervals, scales, chords, keys, with tests
+- [x] `src/core/instruments`: fretboard mapping (any tuning, left-handed) and keyboard mapping, with tests
+- [x] `Fretboard` SVG component: highlight, label, tap, responsive
+- [x] `Keyboard` SVG component with the same props
 - [ ] Audio engine: load samples, play note, chord, sequence, metronome
-- [ ] `resolveCanvas` in `src/core/instruments`: one `CanvasState` in, markers for both instruments out, with tests
+- [x] `resolveCanvas` in `src/core/instruments`: one `CanvasState` in, markers for both instruments out, with tests
 - [ ] Theory Canvas page per `docs/CANVAS.md`: control bar, linked fretboard and keyboard, theory panel, transport; passes its acceptance checklist
 
 *Milestone: a free tool worth sharing publicly to test interest.*

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
@@ -9,8 +10,8 @@ export default function Home() {
         Understand it, hear it, see it on the fretboard or keyboard, then play it.
       </p>
       <div>
-        <Button size="lg" disabled>
-          Coming soon
+        <Button size="lg" asChild>
+          <Link href="/practice">Open the Theory Canvas</Link>
         </Button>
       </div>
     </main>
