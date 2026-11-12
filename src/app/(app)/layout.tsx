@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { AccountLink } from "@/features/account/AccountLink";
 
-const LINKS = [["/dashboard", "Home"], ["/learn", "Path"], ["/review", "Review"], ["/practice", "Practice"]] as const;
+const LINKS = [["/dashboard", "Home"], ["/learn", "Path"], ["/review", "Review"], ["/practice", "Practice"], ["/settings", "Settings"]] as const;
 const link = "flex min-h-11 items-center rounded-md px-3 text-sm text-muted-foreground outline-none transition-colors duration-150 hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50";
 
 export default function AppLayout({ children }: LayoutProps<"/">) {

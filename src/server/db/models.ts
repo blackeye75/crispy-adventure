@@ -83,3 +83,38 @@ const practiceSessionSchema = new Schema<PracticeSession>({
 }, userDoc);
 practiceSessionSchema.index({ userId: 1, date: 1 }, { unique: true });
 export const PracticeSessionModel = appModel("PracticeSession", "practiceSessions", practiceSessionSchema);
+
+// One per user. `status` and `currentPeriodEnd` change only from verified Razorpay webhooks.
+export type SubscriptionStatus = "none" | "trialing" | "active" | "past_due" | "cancelled" | "expired";
+export type Subscription = {
+  userId: string;
+  provider: "razorpay";
+  providerSubscriptionId: string;
+  providerCustomerId?: string;
+  plan: "monthly" | "yearly";
+  status: SubscriptionStatus;
+  currentPeriodEnd?: Date;
+  cancelAtPeriodEnd: boolean;
+  lastEventAt?: Date; // provider time of the newest webhook applied, to ignore late arrivals
+};
+const subscriptionSchema = new Schema<Subscription>({
+  userId: { type: String, required: true, unique: true },
+  provider: { type: String, enum: ["razorpay"], default: "razorpay" },
+  providerSubscriptionId: { type: String, required: true, index: true },
+  providerCustomerId: String,
+  plan: { type: String, enum: ["monthly", "yearly"], required: true },
+  status: { type: String, enum: ["none", "trialing", "active", "past_due", "cancelled", "expired"], default: "none" },
+  currentPeriodEnd: Date,
+  cancelAtPeriodEnd: { type: Boolean, default: false },
+  lastEventAt: Date,
+}, userDoc);
+export const SubscriptionModel = appModel("Subscription", "subscriptions", subscriptionSchema);
+
+// Webhook log, used for idempotency. Never holds payment details: only what we act on.
+export type PaymentEvent = { providerEventId: string; type: string; payload: Record<string, unknown>; processedAt?: Date };
+export const PaymentEventModel = appModel<PaymentEvent>("PaymentEvent", "paymentEvents", new Schema<PaymentEvent>({
+  providerEventId: { type: String, required: true, unique: true },
+  type: { type: String, required: true },
+  payload: { type: Schema.Types.Mixed, default: {} },
+  processedAt: Date,
+}, userDoc));

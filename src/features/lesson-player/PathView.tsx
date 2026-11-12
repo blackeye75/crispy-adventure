@@ -58,7 +58,11 @@ export function HomeView({ path, me }: { path: Path; me: Me & { profile: NonNull
         <section className="flex flex-col gap-2 rounded-2xl border bg-card p-6" aria-label="Review">
           <p className="text-4xl font-semibold tabular-nums">{reviewDue}</p>
           <p className="text-sm text-muted-foreground">{reviewDue === 1 ? "concept" : "concepts"} to review today</p>
-          {reviewDue > 0 && <Link href="/review" className="mt-auto pt-2 font-medium text-primary underline-offset-4 hover:underline">Start review</Link>}
+          {reviewDue > 0 && (
+            <Link href={me.subscription.entitled ? "/review" : "/subscribe?next=/review"} className="mt-auto pt-2 font-medium text-primary underline-offset-4 hover:underline">
+              {me.subscription.entitled ? "Start review" : "Subscribe to review"}
+            </Link>
+          )}
         </section>
         <section className="flex flex-col gap-2 rounded-2xl border bg-card p-6" aria-label="Streak">
           <p className="flex items-center gap-2 text-4xl font-semibold tabular-nums"><Flame className={today.streak ? "size-8 text-primary" : "size-8 text-muted-foreground"} aria-hidden />{today.streak}</p>

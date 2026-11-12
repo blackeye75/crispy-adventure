@@ -215,9 +215,9 @@ Tick tasks as they complete. Each phase ends in something you can use.
 - [x] Spaced-repetition engine in `src/core/review` and the Review screen
 
 ### Phase 4 — Subscription (about 1 week)
-- [ ] Razorpay plans (monthly, yearly), checkout, webhook with signature check
-- [ ] Server-side entitlement checks on lessons and review
-- [ ] Paywall screen, billing settings, cancel flow
+- [x] Razorpay plans (monthly, yearly), checkout, webhook with signature check
+- [x] Server-side entitlement checks on lessons and review
+- [x] Paywall screen, billing settings, cancel flow
 - [ ] Test the full cycle in Razorpay test mode: subscribe, renew, fail, cancel
 
 ### Phase 5 — Polish and launch (about 1–2 weeks)

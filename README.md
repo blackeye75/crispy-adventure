@@ -43,3 +43,9 @@ MONGODB_TEST_URI=mongodb://127.0.0.1:27017/fretkey_test npm run test
 ```bash
 npm run test:e2e
 ```
+
+The Playwright suite never contacts Razorpay: it runs `e2e/fake-razorpay.mjs` in its place and signs its own webhooks.
+
+## Payments
+
+Set the `RAZORPAY_*` values in `.env.local` (see `.env.example`). In the Razorpay dashboard, create a monthly and a yearly plan, and a webhook pointing at `/api/v1/billing/webhook` with every `subscription.*` event enabled. Access is granted only when that webhook arrives.

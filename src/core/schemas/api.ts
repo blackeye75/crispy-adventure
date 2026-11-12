@@ -37,3 +37,6 @@ export const placementAnswersSchema = z.object({
   answers: z.array(z.object({ lessonSlug: slug, blockIndex: z.number().int().min(0).max(50), answer: z.number().int().min(0).max(3) })).max(60),
 });
 export type PlacementAnswers = z.infer<typeof placementAnswersSchema>;
+
+/** POST /billing/subscribe */
+export const subscribeSchema = z.object({ plan: z.enum(["monthly", "yearly"]) });

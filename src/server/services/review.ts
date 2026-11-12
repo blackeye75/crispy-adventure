@@ -10,10 +10,16 @@ import { recordActivity, requireProfile } from "./profile";
 const SESSION_SIZE = 20;
 const MINUTES_PER_ANSWER = 1 / 3; // shortcut: review time is estimated at 20 seconds a drill
 
+/** Review is part of the subscription. */
+function requireSubscriber(viewer: Viewer) {
+  if (!viewer.subscriber) throw new ServiceError(403, "subscription_required", "Review is part of the subscription.");
+}
+
 export type ReviewDrill = { conceptId: string; lessonTitle: string; block: Block };
 
 /** GET /review/due: one drill for each concept that is due, oldest first. */
 export async function getDueReview(viewer: Viewer, now = new Date()): Promise<ReviewDrill[]> {
+  requireSubscriber(viewer);
   await connectDb();
   const due = await ReviewItemModel.find({ userId: viewer.userId, dueAt: { $lte: now } }).sort({ dueAt: 1 }).limit(SESSION_SIZE).lean();
   const lessons = await accessibleLessons(viewer);
@@ -27,6 +33,7 @@ export async function getDueReview(viewer: Viewer, now = new Date()): Promise<Re
 
 /** POST /review/answer: record the result and reschedule the concept. */
 export async function answerReview(viewer: Viewer, answer: { conceptId: string; correct: boolean }, now = new Date()) {
+  requireSubscriber(viewer);
   const profile = await requireProfile(viewer.userId);
   const item = await ReviewItemModel.findOne({ userId: viewer.userId, conceptId: answer.conceptId });
   if (!item) throw new ServiceError(404, "not_found", "You are not reviewing that concept.");

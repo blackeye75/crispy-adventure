@@ -47,8 +47,8 @@ test("progress is saved to the account: resume mid-lesson, sign out, sign back i
   await page.reload();
   await expect(page.getByRole("listitem").filter({ hasText: "Learn" })).toHaveAttribute("aria-current", "step");
 
-  await page.goto("/review");
-  await expect(page.getByRole("heading", { name: "Nothing to review right now." })).toBeVisible();
+  await page.goto("/review"); // review is part of the subscription
+  await expect(page.getByRole("link", { name: "See plans" })).toBeVisible();
   await page.getByRole("link", { name: "Back to home" }).click();
 
   await page.getByRole("button", { name: "Sign out" }).click();

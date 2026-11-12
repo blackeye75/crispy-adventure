@@ -26,7 +26,7 @@ describe.skipIf(!uri)("accounts and progress (MongoDB)", async () => {
   }
   afterAll(() => mongoose.disconnect());
 
-  const user = () => ({ userId: randomUUID(), name: "Asha", subscriber: false });
+  const user = (subscriber = false) => ({ userId: randomUUID(), name: "Asha", email: "asha@example.com", subscriber });
   const setup = { instrument: "guitar", level: "beginner", dailyGoalMinutes: 10, timezone: "Asia/Kolkata" } as const;
   const day1 = new Date("2026-03-09T06:00:00Z");
   const later = (days: number) => new Date(day1.getTime() + days * 86_400_000);
@@ -50,8 +50,17 @@ describe.skipIf(!uri)("accounts and progress (MongoDB)", async () => {
     expect(await LessonProgressModel.findOne({ userId: viewer.userId }).lean()).toMatchObject({ status: "started", stepIndex: 2 });
   });
 
-  test("finishing a lesson marks the path, fills the daily goal, starts a streak and schedules review", async () => {
+  test("review is for subscribers; finishing lessons still queues it up for later", async () => {
     const viewer = user();
+    await updateProfile(viewer, setup);
+    await saveProgress(viewer, { lessonSlug: "the-octave", stepIndex: 6, completed: true }, day1);
+    await expect(getDueReview(viewer, later(1))).rejects.toMatchObject({ status: 403, code: "subscription_required" });
+    await expect(answerReview(viewer, { conceptId: "octave", correct: true }, later(1))).rejects.toMatchObject({ status: 403 });
+    expect(await getDueReview({ ...viewer, subscriber: true }, later(1))).toHaveLength(1);
+  });
+
+  test("finishing a lesson marks the path, fills the daily goal, starts a streak and schedules review", async () => {
+    const viewer = user(true);
     await updateProfile(viewer, setup);
     const done = { lessonSlug: "what-is-a-note", stepIndex: 6, completed: true, drills: { answered: 4, correct: 3 } };
     expect((await saveProgress(viewer, done, day1)).today).toEqual({ streak: 1, minutes: 5, goalMinutes: 10 });

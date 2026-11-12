@@ -3,6 +3,7 @@ import { advanceStreak, currentStreak, localDate } from "@/core/review/streak";
 import { ServiceError } from "../api";
 import type { Viewer } from "../auth/session";
 import { connectDb } from "../db/connect";
+import { getSubscription, subscriptionView } from "./billing";
 import { PracticeSessionModel, ProfileModel, ReviewItemModel, type Profile } from "../db/models";
 
 const FIELDS = { _id: 0, createdAt: 0, updatedAt: 0 };
@@ -62,7 +63,7 @@ export async function getMe(viewer: Viewer, now = new Date()) {
   return {
     user: { name: viewer.name },
     profile,
-    subscription: { status: viewer.subscriber ? "active" : "none" },
+    subscription: subscriptionView(await getSubscription(viewer.userId), now),
     today: profile && (await today(profile, now)),
     reviewDue: await ReviewItemModel.countDocuments({ userId: viewer.userId, dueAt: { $lte: now } }),
   };

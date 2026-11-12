@@ -1,17 +1,20 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { getSubscription } from "../services/billing";
 import { getProfile } from "../services/profile";
+import { isEntitled } from "./entitlement";
 import { getAuth } from "./auth";
 
-export type Viewer = { userId: string; name: string; subscriber: boolean };
+export type Viewer = { userId: string; name: string; email: string; subscriber: boolean };
 
 /** The signed-in user for this request, or null. */
 export async function getViewer(): Promise<Viewer | null> {
   // Read the request first: during `next build` this is where prerendering stops, before any database is needed.
   const requestHeaders = await headers();
   const session = await getAuth().api.getSession({ headers: requestHeaders });
-  // Everyone is a non-subscriber until billing exists (Phase 4).
-  return session && { userId: session.user.id, name: session.user.name, subscriber: false };
+  if (!session) return null;
+  const subscriber = isEntitled(await getSubscription(session.user.id), new Date());
+  return { userId: session.user.id, name: session.user.name, email: session.user.email, subscriber };
 }
 
 /** Only same-site paths may be used as a post-sign-in destination. */

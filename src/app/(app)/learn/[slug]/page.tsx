@@ -15,13 +15,16 @@ async function Lesson({ params }: { params: Params }) {
   const result = await getLesson(slug, viewer);
   if (result.status === "not-found") notFound();
   if (result.status === "locked") {
-    // The lesson content never reaches this page for a non-subscriber. The paywall arrives in Phase 4.
+    // The lesson content never reaches this page for a non-subscriber.
     return (
       <div className="mx-auto flex w-full max-w-2xl flex-col gap-5 px-4 py-16">
         <p className="text-sm font-medium tracking-widest text-primary uppercase">Subscribers only</p>
         <h1 className="text-4xl">{result.title}</h1>
-        <p className="text-lg text-muted-foreground">This lesson is part of the paid path. Level 1 is free to finish first.</p>
-        <div><Button asChild size="lg"><Link href="/learn">Back to the path</Link></Button></div>
+        <p className="text-lg text-muted-foreground">This lesson is part of the paid path. Level 1 stays free.</p>
+        <div className="flex flex-wrap gap-3">
+          <Button asChild size="lg"><Link href={`/subscribe?next=${encodeURIComponent(`/learn/${slug}`)}`}>See plans</Link></Button>
+          <Button asChild size="lg" variant="ghost"><Link href="/learn">Back to the path</Link></Button>
+        </div>
       </div>
     );
   }

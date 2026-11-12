@@ -50,3 +50,14 @@ export const open = <C>(handler: (viewer: Viewer | null, request: Request, ctx: 
     return failure(err);
   }
 };
+
+/** A route with no session at all (webhooks from a payment provider). */
+export const anonymous = (handler: (request: Request) => Promise<unknown>) => async (request: Request) => {
+  await connection();
+  try {
+    return ok(await handler(request));
+  } catch (err) {
+    if (err instanceof SyntaxError) return fail(400, "bad_request", "The request body must be JSON.");
+    return failure(err);
+  }
+};

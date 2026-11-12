@@ -1,5 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
+export const MONGODB_URI = process.env.MONGODB_E2E_URI ?? "mongodb://127.0.0.1:27017/fretkey_e2e";
+export const WEBHOOK_SECRET = "e2e-webhook-secret";
+
 export default defineConfig({
   testDir: "e2e",
   use: { baseURL: "http://localhost:3000" },
@@ -8,14 +11,23 @@ export default defineConfig({
     { name: "phone-360", use: { ...devices["Pixel 5"], viewport: { width: 360, height: 740 } } },
   ],
   // Needs a local MongoDB: docker run -d -p 27017:27017 mongo:7
-  webServer: {
-    command: "npm run seed && npm run dev",
-    url: "http://localhost:3000",
-    reuseExistingServer: !process.env.CI,
-    env: {
-      MONGODB_URI: process.env.MONGODB_E2E_URI ?? "mongodb://127.0.0.1:27017/fretkey_e2e",
-      BETTER_AUTH_SECRET: "e2e-only-secret-not-used-anywhere-else",
-      BETTER_AUTH_URL: "http://localhost:3000",
+  webServer: [
+    { command: "node e2e/fake-razorpay.mjs", url: "http://localhost:4010/health", reuseExistingServer: !process.env.CI },
+    {
+      command: "npm run seed && npm run dev",
+      url: "http://localhost:3000",
+      reuseExistingServer: !process.env.CI,
+      env: {
+        MONGODB_URI,
+        BETTER_AUTH_SECRET: "e2e-only-secret-not-used-anywhere-else",
+        BETTER_AUTH_URL: "http://localhost:3000",
+        RAZORPAY_API_URL: "http://localhost:4010", // never the real Razorpay
+        RAZORPAY_KEY_ID: "rzp_test_e2e",
+        RAZORPAY_KEY_SECRET: "e2e-key-secret",
+        RAZORPAY_WEBHOOK_SECRET: WEBHOOK_SECRET,
+        RAZORPAY_PLAN_MONTHLY: "plan_e2e_monthly",
+        RAZORPAY_PLAN_YEARLY: "plan_e2e_yearly",
+      },
     },
-  },
+  ],
 });
