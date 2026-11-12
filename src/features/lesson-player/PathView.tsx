@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import type { Instrument } from "@/core/schemas/api";
 import type { Me } from "@/server/services/profile";
 
-const LEVEL_NAMES = ["Foundations", "Building blocks", "Harmony basics", "Fluency on the instrument", "Colour and movement", "Advanced"];
+export const LEVEL_NAMES = ["Foundations", "Building blocks", "Harmony basics", "Fluency on the instrument", "Colour and movement", "Advanced"];
 const STRAND_NAMES: Partial<Record<LessonSummary["strand"], string>> = { guitar: "Guitar", piano: "Piano", ear: "Ear", rhythm: "Rhythm" };
 
 /** Lessons a learner on this instrument is expected to take, in path order. */
@@ -65,7 +65,7 @@ export function HomeView({ path, me }: { path: Path; me: Me & { profile: NonNull
           )}
         </section>
         <section className="flex flex-col gap-2 rounded-2xl border bg-card p-6" aria-label="Streak">
-          <p className="flex items-center gap-2 text-4xl font-semibold tabular-nums"><Flame className={today.streak ? "size-8 text-primary" : "size-8 text-muted-foreground"} aria-hidden />{today.streak}</p>
+          <p className="flex items-center gap-2 text-4xl font-semibold tabular-nums"><Flame className={today.streak ? "pop size-8 text-primary" : "size-8 text-muted-foreground"} aria-hidden />{today.streak}</p>
           <p className="text-sm text-muted-foreground">day streak · best {me.profile.streak.longest}</p>
         </section>
         <section className="flex items-center gap-4 rounded-2xl border bg-card p-6" aria-label="Daily goal">

@@ -9,6 +9,7 @@ import { BuildQuiz, ChoiceQuiz, FindQuiz } from "@/features/drills/drills";
 import { Button } from "@/components/ui/button";
 import { Segmented } from "@/components/ui/segmented";
 import type { Instrument } from "@/core/schemas/api";
+import { track } from "@/lib/analytics";
 import { api } from "@/lib/api";
 import type { Today } from "@/server/services/profile";
 import { cn } from "@/lib/utils";
@@ -83,6 +84,7 @@ export function LessonPlayer({ lesson, next, instrument: initialInstrument, star
         body: { lessonSlug: lesson.slug, stepIndex: index, completed: true, drills: { answered: drills, correct: firstTry } },
       });
       setToday(saved.today);
+      track("Lesson complete", { lesson: lesson.slug });
       setIndex(index + 1);
     } catch (err) {
       setError(`${(err as Error).message} Your lesson is not saved yet.`);
@@ -122,7 +124,7 @@ export function LessonPlayer({ lesson, next, instrument: initialInstrument, star
           <p className="text-lg text-muted-foreground">{firstTry} of {drills} drills right first time.</p>
           {today && (
             <p className="step-in flex items-center gap-2 text-lg">
-              <Flame className="text-primary" aria-hidden />
+              <Flame className="pop text-primary" aria-hidden />
               <span><strong>{today.streak}-day streak.</strong> {today.minutes} of {today.goalMinutes} minutes today.</span>
             </p>
           )}

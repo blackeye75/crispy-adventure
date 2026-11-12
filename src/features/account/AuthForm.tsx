@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { track } from "@/lib/analytics";
 import { hardNavigate } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
 
@@ -31,6 +32,7 @@ export function AuthForm({ mode, next, google }: Props) {
       setBusy(false);
       return;
     }
+    if (signUp) track("Sign up");
     hardNavigate(next);
   };
 

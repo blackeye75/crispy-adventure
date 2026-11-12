@@ -221,10 +221,10 @@ Tick tasks as they complete. Each phase ends in something you can use.
 - [ ] Test the full cycle in Razorpay test mode: subscribe, renew, fail, cancel
 
 ### Phase 5 — Polish and launch (about 1–2 weeks)
-- [ ] Landing page with playable demo, pricing, SEO basics
-- [ ] PWA: installable, offline shell
-- [ ] Motion pass, empty states, error states, loading skeletons
-- [ ] Sentry, analytics, privacy policy, terms, refund policy
+- [x] Landing page with playable demo, pricing, SEO basics
+- [x] PWA: installable, offline shell
+- [x] Motion pass, empty states, error states, loading skeletons
+- [x] Sentry, analytics, privacy policy, terms, refund policy
 - [ ] Beta with 20–30 players; fix what they stumble on
 
 ### Phase 6 — After launch

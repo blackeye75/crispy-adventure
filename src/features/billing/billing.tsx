@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { track } from "@/lib/analytics";
 import { api, hardNavigate } from "@/lib/api";
+import { formatPrice } from "@/lib/site";
 import type { Me } from "@/server/services/profile";
 import type { PlanPrice } from "@/server/services/razorpay";
 
@@ -24,8 +26,7 @@ declare global {
 }
 
 const PLAN_NAMES = { monthly: "Monthly", yearly: "Yearly" };
-const price = (p: PlanPrice) =>
-  new Intl.NumberFormat("en-IN", { style: "currency", currency: p.currency, maximumFractionDigits: p.amount % 100 ? 2 : 0 }).format(p.amount / 100);
+const price = (p: PlanPrice) => formatPrice(p.amount, p.currency);
 const date = (value: Date | string | null) => (value ? new Intl.DateTimeFormat("en-IN", { dateStyle: "long" }).format(new Date(value)) : "");
 
 /** Razorpay's checkout script, loaded only when someone actually pays. */
@@ -63,6 +64,7 @@ export function Paywall({ plans, next }: { plans: PlanPrice[]; next: string }) {
     try {
       const checkout = await api<Checkout>("/billing/subscribe", { method: "POST", body: { plan } });
       await loadCheckout();
+      track("Checkout started", { plan });
       new window.Razorpay!({
         key: checkout.keyId,
         subscription_id: checkout.subscriptionId,

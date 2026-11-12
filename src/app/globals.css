@@ -161,8 +161,14 @@
   .tap-key { cursor: pointer; outline: none; }
   .tap-key:hover, .tap-key:focus-visible { stroke: var(--primary); stroke-width: 3; }
   .step-in { animation: step-in 220ms var(--ease-out); }
+  .pop { animation: pop 450ms var(--ease-out); } /* small celebration: streaks */
 }
 
 @keyframes step-in {
   from { opacity: 0; transform: translateY(8px); }
+}
+
+@keyframes pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  60% { transform: scale(1.25); opacity: 1; }
 }
