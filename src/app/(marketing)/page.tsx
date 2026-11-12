@@ -9,8 +9,11 @@ export default function Home() {
       <p className="max-w-xl text-lg text-muted-foreground">
         Understand it, hear it, see it on the fretboard or keyboard, then play it.
       </p>
-      <div>
+      <div className="flex flex-wrap gap-3">
         <Button size="lg" asChild>
+          <Link href="/dashboard">Start learning</Link>
+        </Button>
+        <Button size="lg" variant="ghost" asChild>
           <Link href="/practice">Open the Theory Canvas</Link>
         </Button>
       </div>

@@ -150,3 +150,19 @@
 @keyframes marker-in {
   from { opacity: 0; }
 }
+
+/* Drills: answer feedback on markers, and tap targets on empty positions. */
+@layer components {
+  .note-marker[data-state="correct"] .dot { fill: var(--success); stroke: none; }
+  .note-marker[data-state="wrong"] .dot { fill: var(--destructive); stroke: none; }
+  .note-marker[data-state] text { fill: var(--marker-plate); font-weight: 700; }
+  .tap-cell { fill: transparent; cursor: pointer; outline: none; }
+  .tap-cell:hover, .tap-cell:focus-visible { fill: color-mix(in oklab, var(--marker-tone) 12%, transparent); }
+  .tap-key { cursor: pointer; outline: none; }
+  .tap-key:hover, .tap-key:focus-visible { stroke: var(--primary); stroke-width: 3; }
+  .step-in { animation: step-in 220ms var(--ease-out); }
+}
+
+@keyframes step-in {
+  from { opacity: 0; transform: translateY(8px); }
+}

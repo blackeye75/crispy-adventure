@@ -1,8 +1,9 @@
+import { Interval } from "tonal";
 import type { CanvasShow, CanvasState } from "../schemas/canvas";
 import { chordPitches, getChord } from "../theory/chords";
 import { INTERVALS, intervalToDegree, semitones, shortName } from "../theory/intervals";
 import { harmonise, parseNumeral, relativeMajor, relativeMinor } from "../theory/keys";
-import { chroma, glyphs, midi, spellMidi, transpose } from "../theory/notes";
+import { chroma, glyphs, midi, pitchClass, spellMidi, transpose } from "../theory/notes";
 import { getScale } from "../theory/scales";
 import { fretMidi } from "./fretboard";
 import { keyboardKeys } from "./keyboard";
@@ -22,6 +23,7 @@ export type Marker = {
   focus: boolean; // this exact pitch is hovered or tapped
   echo: boolean; // same note in another octave
   dimmed: boolean; // outside the position window
+  state?: "correct" | "wrong"; // drill feedback
 };
 
 export type Related = { label: string; root: string; show: CanvasShow };
@@ -62,7 +64,12 @@ function scaleRole(intervals: string[]) {
 
 const chordRole = (interval: string): Role => (interval === "1P" ? "root" : "chord");
 
-function describe(state: CanvasState): Omit<ResolvedCanvas, "fretboard" | "keyboard" | "announce"> {
+type Described = Omit<ResolvedCanvas, "fretboard" | "keyboard" | "announce"> & {
+  /** "notes" selections mark exact pitches instead of every octave. */
+  exact?: { midis: Set<number>; strings?: number[]; within?: [number, number] };
+};
+
+function describe(state: CanvasState): Described {
   const { root, show, labels } = state;
   const r = glyphs(root);
 
@@ -111,6 +118,21 @@ function describe(state: CanvasState): Omit<ResolvedCanvas, "fretboard" | "keybo
     };
   }
 
+  if (show.kind === "notes") {
+    const classes = [...new Set(show.pitches.map(pitchClass))];
+    return {
+      title: "Notes",
+      tones: classes.map((pc) => {
+        const interval = Interval.distance(root, pc);
+        return { pitchClass: pc, chroma: chroma(pc), interval, degree: intervalToDegree(interval), role: "chord", label: glyphs(pc) };
+      }),
+      pattern: "",
+      sentence: "",
+      related: [],
+      exact: { midis: new Set(show.pitches.map(midi)), strings: show.strings, within: show.within },
+    };
+  }
+
   // Progression: the key's major scale as outlines, the active chord filled in.
   const chords = show.numerals.map((n) => parseNumeral(root, n));
   const index = Math.min(show.activeIndex, chords.length - 1);
@@ -140,13 +162,13 @@ function describe(state: CanvasState): Omit<ResolvedCanvas, "fretboard" | "keybo
 
 /** One CanvasState in; everything the fretboard, keyboard and theory panel draw comes out. */
 export function resolveCanvas(state: CanvasState): ResolvedCanvas {
-  const described = describe(state);
+  const { exact, ...described } = describe(state);
   const byChroma = new Map(described.tones.map((t) => [t.chroma, t]));
   const focus = state.focusPitch ? midi(state.focusPitch) : undefined;
   const { tuning, frets } = state.guitar;
 
   const marker = (m: number, dimmed: boolean): Marker | undefined => {
-    const tone = byChroma.get(m % 12);
+    const tone = exact && !exact.midis.has(m) ? undefined : byChroma.get(m % 12);
     return tone && {
       midi: m,
       pitch: spellMidi(m, tone.pitchClass),
@@ -161,6 +183,8 @@ export function resolveCanvas(state: CanvasState): ResolvedCanvas {
 
   const fretboard = tuning.flatMap((_, string) =>
     Array.from({ length: frets + 1 }, (_, fret) => {
+      if (exact?.strings && !exact.strings.includes(tuning.length - string)) return [];
+      if (exact?.within && (fret < exact.within[0] || fret > exact.within[1])) return [];
       const outside = state.position ? fret < state.position.fromFret || fret > state.position.toFret : false;
       const mk = marker(fretMidi(tuning, string, fret), outside);
       return mk ? [{ ...mk, string, fret }] : [];
@@ -192,6 +216,7 @@ export function playbackSteps(state: CanvasState, mode: "up" | "down" | "chord")
   }
   if (show.kind === "chord") return run(chordPitches(root, show.chord, 3, show.inversion));
   if (show.kind === "interval") return run([...new Set([at("1P"), at(show.interval)])]);
+  if (show.kind === "notes") return run(show.pitches.map(midi));
   return show.numerals.map((numeral, index) => {
     const chord = parseNumeral(root, numeral);
     const octave = chroma(chord.root) >= chroma(root) ? 3 : 4; // keep every chord root above the key root

@@ -50,3 +50,16 @@ export function rootChoices(intervals: readonly string[]): string[] {
 export function respellRoot(root: string, intervals: readonly string[]): string {
   return rootChoices(intervals)[chroma(root)];
 }
+
+/** Pitch class of a pitch: "E#4" → "E#". */
+export function pitchClass(pitch: string): string {
+  const { pc } = Note.get(pitch);
+  if (!pc) throw new Error(`Not a note: "${pitch}"`);
+  return pc;
+}
+
+/** Name a MIDI number, using a spelling from `prefer` when one matches, otherwise the sharp name. */
+export function nameMidi(midiNumber: number, prefer: readonly string[] = []): string {
+  const pc = prefer.map(pitchClass).find((p) => chroma(p) === midiNumber % 12) ?? SHARP_ROOTS[midiNumber % 12];
+  return spellMidi(midiNumber, pc);
+}

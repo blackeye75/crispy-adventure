@@ -19,12 +19,13 @@ export function NoteMarker({ marker, cx, cy, where, sounding, onNoteHover, onNot
       className="note-marker"
       role="button"
       tabIndex={0}
-      aria-label={`${glyphs(marker.pitch)}, ${ROLE_NAME[marker.role]}${where ? `, ${where}` : ""}`}
+      aria-label={`${glyphs(marker.pitch)}, ${marker.state ?? ROLE_NAME[marker.role]}${where ? `, ${where}` : ""}`}
       data-midi={marker.midi}
       data-role={marker.role}
       data-active={active || undefined}
       data-echo={marker.echo || undefined}
       data-dimmed={marker.dimmed || undefined}
+      data-state={marker.state}
       onPointerEnter={() => onNoteHover(marker)}
       onPointerLeave={() => onNoteHover(undefined)}
       onFocus={() => onNoteHover(marker)}

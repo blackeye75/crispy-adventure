@@ -13,6 +13,7 @@ import { playNotes, playSteps, preloadAudio, setBpm as setAudioBpm, setMuted as 
 import { Fretboard } from "@/features/fretboard/Fretboard";
 import { Keyboard } from "@/features/keyboard/Keyboard";
 import { Button } from "@/components/ui/button";
+import { Segmented } from "@/components/ui/segmented";
 import { cn } from "@/lib/utils";
 import { TheoryPanel } from "./TheoryPanel";
 
@@ -25,7 +26,7 @@ const PROGRESSIONS = [
 ];
 const DROP_D = ["D2", ...STANDARD_TUNING.slice(1)];
 const KINDS = ["scale", "chord", "interval", "progression"] as const;
-const DEFAULT_SHOW: { [K in CanvasShow["kind"]]: Extract<CanvasShow, { kind: K }> } = {
+const DEFAULT_SHOW: { [K in (typeof KINDS)[number]]: Extract<CanvasShow, { kind: K }> } = {
   scale: { kind: "scale", scale: "major" },
   chord: { kind: "chord", chord: "major" },
   interval: { kind: "interval", interval: "5P" },
@@ -38,19 +39,6 @@ const spellingOf = (show: CanvasShow) =>
   show.kind === "scale" ? scaleIntervals(show.scale) : show.kind === "chord" ? chordIntervals(show.chord) : scaleIntervals("major");
 
 const field = "h-11 rounded-md border bg-card px-3 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50";
-
-function Segmented<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: readonly (readonly [T, string])[]; onChange: (value: T) => void }) {
-  return (
-    <div role="group" aria-label={label} className="flex shrink-0 rounded-md border bg-card p-0.5">
-      {options.map(([id, text]) => (
-        <button key={id} type="button" aria-pressed={id === value} onClick={() => onChange(id)}
-          className={cn("h-10 rounded-[calc(var(--radius-md)-2px)] px-3 text-sm outline-none transition-colors duration-150 focus-visible:ring-[3px] focus-visible:ring-ring/50", id === value ? "bg-secondary font-medium text-foreground" : "text-muted-foreground hover:text-foreground")}>
-          {text}
-        </button>
-      ))}
-    </div>
-  );
-}
 
 /** Owns the one CanvasState. Fretboard, keyboard and panel all render from `resolveCanvas(state)`. */
 export function TheoryCanvas({ initial }: { initial: CanvasState }) {
@@ -176,7 +164,7 @@ export function TheoryCanvas({ initial }: { initial: CanvasState }) {
             {PROGRESSIONS.map((p) => <option key={p.name} value={p.numerals.join("-")}>{p.name}</option>)}
           </select>
         )}
-        <Segmented label="Show" value={show.kind} options={KINDS.map((k) => [k, k[0].toUpperCase() + k.slice(1)] as const)} onChange={(kind) => changeShow(DEFAULT_SHOW[kind])} />
+        <Segmented label="Show" value={show.kind as (typeof KINDS)[number]} options={KINDS.map((k) => [k, k[0].toUpperCase() + k.slice(1)] as const)} onChange={(kind) => changeShow(DEFAULT_SHOW[kind])} />
         <Segmented label="Labels" value={state.labels} options={[["notes", "Notes"], ["degrees", "Degrees"], ["intervals", "Intervals"]]} onChange={(labels) => setState((s) => ({ ...s, labels }))} />
         <details className="relative shrink-0">
           <summary className={cn(field, "flex cursor-pointer list-none items-center")}>View</summary>

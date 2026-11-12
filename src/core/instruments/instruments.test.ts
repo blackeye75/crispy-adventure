@@ -112,6 +112,16 @@ describe("resolveCanvas", () => {
     expect(r.fretboard.every((m) => m.dimmed === (m.fret < 5 || m.fret > 8))).toBe(true);
     expect(r.keyboard.some((m) => m.dimmed)).toBe(false);
   });
+  test("notes: exact pitches only, with string and fret limits on the guitar", () => {
+    const open = ["E2", "A2", "D3", "G3", "B3", "E4"];
+    const r = resolveCanvas(canvas({ root: "E", show: { kind: "notes", pitches: open, within: [0, 0] } }));
+    expect(r.fretboard.map((m) => [m.string, m.fret, m.pitch])).toEqual(open.map((p, i) => [i, 0, p]));
+    expect(r.keyboard.map((m) => m.pitch)).toEqual(open);
+    expect(r.fretboard.every((m) => m.role === "chord")).toBe(true);
+    const fifth = resolveCanvas(canvas({ root: "A", show: { kind: "notes", pitches: ["A2", "C#3"], strings: [5] } }));
+    expect(fifth.fretboard.map((m) => [m.string, m.fret, m.label])).toEqual([[1, 0, "A"], [1, 4, "C♯"]]);
+    expect(playbackSteps(canvas({ show: { kind: "notes", pitches: ["C4", "E4"] } }), "up").map((s) => s.midis)).toEqual([[60], [64]]);
+  });
   test("left-handed changes no notes", () => {
     const lefty = resolveCanvas(canvas({ guitar: { ...DEFAULT_CANVAS.guitar, leftHanded: true } }));
     expect(lefty.fretboard).toEqual(resolveCanvas(DEFAULT_CANVAS).fretboard);
@@ -153,6 +163,7 @@ describe("canvas URL", () => {
       canvas({ root: "Bb", show: { kind: "chord", chord: "m7b5", inversion: 2 } }),
       canvas({ show: { kind: "interval", interval: "4A" } }),
       canvas({ show: { kind: "progression", numerals: ["ii7", "V7", "Imaj7"], activeIndex: 0 } }),
+      canvas({ show: { kind: "notes", pitches: ["A2", "C#3"], strings: [5], within: [0, 5] } }),
       canvas({ guitar: { tuning: ["D2", "A2", "D3", "G3", "B3", "E4"], frets: 24, leftHanded: true } }),
     ];
     for (const s of states) expect(canvasFromQuery(Object.fromEntries(new URLSearchParams(canvasToQuery(s))))).toEqual(s);

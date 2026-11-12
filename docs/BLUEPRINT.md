@@ -202,11 +202,11 @@ Tick tasks as they complete. Each phase ends in something you can use.
 *Milestone: a free tool worth sharing publicly to test interest.*
 
 ### Phase 2 — Lessons (about 2 weeks)
-- [ ] Zod content schemas and the `npm run seed` script
+- [x] Zod content schemas and the `npm run seed` script
 - [ ] Lesson player with the four steps and all block renderers
-- [ ] Drill types: choice, ear, find, build
+- [x] Drill types: choice, ear, find, build
 - [ ] Write Level 1 completely and the first module of Level 2
-- [ ] Path page and Home page
+- [x] Path page and Home page
 
 ### Phase 3 — Accounts and progress (about 1 week)
 - [ ] Better Auth: email and Google sign-in

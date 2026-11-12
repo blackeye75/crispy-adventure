@@ -5,24 +5,36 @@ import { INTERVAL_IDS } from "../theory/intervals";
 import { NUMERAL_PATTERN } from "../theory/keys";
 import { SCALE_IDS } from "../theory/scales";
 
-const pitch = z.string().regex(/^[A-G](#|b)?\d$/);
+export const pitchSchema = z.string().regex(/^[A-G](#|b)?\d$/);
+const pitch = pitchSchema;
+
+export const canvasShowSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("scale"), scale: z.enum(SCALE_IDS) }),
+  z.object({
+    kind: z.literal("chord"),
+    chord: z.enum(CHORD_IDS),
+    inversion: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]).optional(),
+  }),
+  z.object({ kind: z.literal("interval"), interval: z.enum(INTERVAL_IDS) }),
+  z.object({
+    kind: z.literal("progression"),
+    numerals: z.array(z.string().regex(NUMERAL_PATTERN)).min(1).max(16),
+    activeIndex: z.number().int().min(0),
+  }),
+  // Exact pitches, for lessons that show plain notes ("the open strings") rather than a scale or chord.
+  z.object({
+    kind: z.literal("notes"),
+    pitches: z.array(pitch).min(1).max(40),
+    /** Guitar only: limit to these strings, numbered the way players do (1 = thinnest). */
+    strings: z.array(z.number().int().min(1).max(8)).optional(),
+    /** Guitar only: limit to this fret range, inclusive. */
+    within: z.tuple([z.number().int().min(0), z.number().int().max(24)]).optional(),
+  }),
+]);
 
 export const canvasStateSchema = z.object({
   root: z.string().regex(/^[A-G](#|b)?$/),
-  show: z.discriminatedUnion("kind", [
-    z.object({ kind: z.literal("scale"), scale: z.enum(SCALE_IDS) }),
-    z.object({
-      kind: z.literal("chord"),
-      chord: z.enum(CHORD_IDS),
-      inversion: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]).optional(),
-    }),
-    z.object({ kind: z.literal("interval"), interval: z.enum(INTERVAL_IDS) }),
-    z.object({
-      kind: z.literal("progression"),
-      numerals: z.array(z.string().regex(NUMERAL_PATTERN)).min(1).max(16),
-      activeIndex: z.number().int().min(0),
-    }),
-  ]),
+  show: canvasShowSchema,
   labels: z.enum(["notes", "degrees", "intervals"]),
   focusPitch: pitch.optional(), // hovered or tapped
   position: z.object({ fromFret: z.number().int().min(0), toFret: z.number().int().max(24) }).optional(),
@@ -56,6 +68,11 @@ export function canvasToQuery(state: CanvasState): string {
   }
   if (show.kind === "interval") q.set("interval", show.interval);
   if (show.kind === "progression") q.set("prog", show.numerals.join("-"));
+  if (show.kind === "notes") {
+    q.set("notes", show.pitches.join("-"));
+    if (show.strings) q.set("strings", show.strings.join("-"));
+    if (show.within) q.set("within", show.within.join("-"));
+  }
   if (state.labels !== "notes") q.set("labels", state.labels);
   if (state.guitar.leftHanded) q.set("lh", "1");
   if (state.guitar.frets !== DEFAULT_CANVAS.guitar.frets) q.set("frets", String(state.guitar.frets));
@@ -68,7 +85,9 @@ type Query = Record<string, string | string[] | undefined>;
 /** Parse a URL query. Anything missing or invalid falls back to the default canvas. */
 export function canvasFromQuery(query: Query): CanvasState {
   const get = (key: string) => (typeof query[key] === "string" ? (query[key] as string) : undefined);
+  const numbers = (key: string) => get(key)?.split("-").map(Number);
   const show =
+    (get("notes") && { kind: "notes", pitches: get("notes")!.split("-"), strings: numbers("strings"), within: numbers("within") }) ||
     (get("chord") && { kind: "chord", chord: get("chord"), inversion: get("inv") ? Number(get("inv")) : undefined }) ||
     (get("interval") && { kind: "interval", interval: get("interval") }) ||
     (get("prog") && { kind: "progression", numerals: get("prog")!.split("-"), activeIndex: 0 }) ||

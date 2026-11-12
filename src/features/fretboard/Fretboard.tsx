@@ -17,10 +17,12 @@ type Props = NoteEvents & {
   frets: number;
   leftHanded: boolean;
   position?: { fromFret: number; toFret: number };
+  /** Drills: make every string/fret position tappable, not only the markers. */
+  onCellTap?: (string: number, fret: number) => void;
 };
 
 /** Dumb renderer: draws the markers it is given. Low string at the bottom, nut on the left. */
-export function Fretboard({ markers, strings, frets, leftHanded, position, ...events }: Props) {
+export function Fretboard({ markers, strings, frets, leftHanded, position, onCellTap, ...events }: Props) {
   const cols = frets + 1; // column 0 is the open strings, before the nut
   const width = cols * COL;
   const height = strings * ROW;
@@ -62,6 +64,16 @@ export function Fretboard({ markers, strings, frets, leftHanded, position, ...ev
           {[...SINGLE_INLAYS, ...DOUBLE_INLAYS].filter((f) => f <= frets).map((f) => (
             <text key={f} x={colX(f) + COL / 2} y={height + 18} textAnchor="middle" fontSize={12} className="fill-muted-foreground">{f}</text>
           ))}
+          {onCellTap && Array.from({ length: strings * cols }, (_, i) => {
+            const string = Math.floor(i / cols);
+            const fret = i % cols;
+            return (
+              <rect key={i} className="tap-cell" x={colX(fret)} y={stringY(string) - ROW / 2} width={COL} height={ROW} role="button" tabIndex={0}
+                aria-label={fret === 0 ? `String ${strings - string}, open` : `String ${strings - string}, fret ${fret}`}
+                onClick={() => onCellTap(string, fret)}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onCellTap(string, fret); } }} />
+            );
+          })}
           {markers.map((m) => (
             <NoteMarker key={`${m.string}-${m.fret}`} marker={m} cx={colX(m.fret) + COL / 2} cy={stringY(m.string)} where={m.fret === 0 ? `string ${strings - m.string}, open` : `string ${strings - m.string}, fret ${m.fret}`} {...events} />
           ))}

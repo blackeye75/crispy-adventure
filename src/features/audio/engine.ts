@@ -9,6 +9,7 @@ type Engine = { Tone: Tone; voice: Voice; click: Voice };
 let loading: Promise<Engine> | undefined;
 let engine: Engine | undefined;
 let muted = false;
+let endCurrent: (() => void) | undefined; // onEnd of whatever is playing
 let run = 0; // bumped on every play/stop so a slow load cannot start stale playback
 
 const hz = (midi: number) => 440 * 2 ** ((midi - 69) / 12); // A4 = 440 Hz
@@ -70,13 +71,15 @@ export type PlayOptions = {
   metronome?: boolean;
   /** Called in time with the audio as each step sounds. */
   onStep: (index: number) => void;
-  /** Called when a non-looping sequence finishes. */
+  /** Called once when the sequence finishes or is stopped or replaced. */
   onEnd: () => void;
 };
 
 /** Play a sequence on the transport. Replaces whatever was playing. */
 export function playSteps(steps: PlaybackStep[], { bpm, loop = false, metronome = false, onStep, onEnd }: PlayOptions) {
+  stopAudio(); // ends whatever else was playing, and tells it so
   const id = ++run;
+  endCurrent = onEnd;
   load().then(({ Tone, voice, click }) => {
     if (id !== run) return;
     const transport = Tone.getTransport();
@@ -88,7 +91,7 @@ export function playSteps(steps: PlaybackStep[], { bpm, loop = false, metronome 
     let at = 0;
     steps.forEach((step, i) => {
       transport.schedule((time) => {
-        voice.triggerAttackRelease(step.midis.map(hz), step.beats * beat * 0.95, time);
+        if (step.midis.length) voice.triggerAttackRelease(step.midis.map(hz), step.beats * beat * 0.95, time);
         draw.schedule(() => id === run && onStep(i), time);
       }, at);
       at += step.beats * beat;
@@ -98,18 +101,18 @@ export function playSteps(steps: PlaybackStep[], { bpm, loop = false, metronome 
     transport.loopStart = 0;
     transport.loopEnd = at;
     if (!loop) {
-      transport.schedule((time) => draw.schedule(() => {
-        if (id !== run) return;
-        stopAudio();
-        onEnd();
-      }, time), at);
+      transport.schedule((time) => draw.schedule(() => id === run && stopAudio(), time), at);
     }
     transport.start("+0.05");
   }, report);
 }
 
+/** Stop playback. The sequence that was playing gets its onEnd call. */
 export function stopAudio() {
   run++;
+  const end = endCurrent;
+  endCurrent = undefined;
+  end?.();
   if (!engine) return;
   const transport = engine.Tone.getTransport();
   transport.stop();
