@@ -1,6 +1,6 @@
 import { Fragment, type ReactNode } from "react";
 
-// shortcut: handles only what lesson text uses (paragraphs, "- " lists, **bold**, *italic*).
+// shortcut: handles only what lesson text uses (paragraphs, "- " lists, **bold**, *italic*, ``` blocks).
 // Swap for a markdown library if lessons ever need headings, links or tables.
 function inline(text: string): ReactNode[] {
   return text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).map((part, i) =>
@@ -14,6 +14,10 @@ export function Markdown({ children }: { children: string }) {
   return (
     <div className="flex flex-col gap-4 text-lg leading-relaxed text-foreground/85">
       {children.trim().split(/\n\s*\n/).map((para, i) => {
+        // ``` fenced text keeps its spacing: guitar tab is drawn with it
+        if (para.startsWith("```")) {
+          return <pre key={i} className="overflow-x-auto rounded-lg border bg-card p-4 font-mono text-base leading-snug">{para.replace(/^```\n?|\n?```$/g, "")}</pre>;
+        }
         const lines = para.split("\n").map((l) => l.trim());
         return lines.every((l) => l.startsWith("- "))
           ? <ul key={i} className="flex list-disc flex-col gap-2 pl-6">{lines.map((l, k) => <li key={k}>{inline(l.slice(2))}</li>)}</ul>

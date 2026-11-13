@@ -8,7 +8,7 @@ export const test = base.extend({
     const goto = page.goto.bind(page);
     page.goto = async (url, options) => {
       const response = await goto(url, options);
-      await page.locator("html[data-hydrated]").waitFor({ state: "attached" });
+      if (options?.waitUntil !== "commit") await page.locator("html[data-hydrated]").waitFor({ state: "attached" });
       return response;
     };
     await run(page);

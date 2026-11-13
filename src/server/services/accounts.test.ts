@@ -119,7 +119,9 @@ describe.skipIf(!uri)("accounts and progress (MongoDB)", async () => {
     const viewer = user();
     await updateProfile(viewer, setup);
     const asked = await getPlacement(viewer);
-    expect(asked.map((q) => q.moduleSlug)).toEqual([...Array(3).fill("sound-and-pitch"), ...Array(3).fill("musical-alphabet")]);
+    // three questions from each free module with lessons, in path order; paid modules are not asked of a free learner
+    expect([...new Set(asked.map((q) => q.moduleSlug))]).toEqual(["sound-and-pitch", "musical-alphabet", "finding-notes", "rhythm-1", "reading-music", "ear-1"]);
+    expect(asked).toHaveLength(18);
     const answers = asked.map((q) => ({ lessonSlug: q.lessonSlug, blockIndex: q.blockIndex, answer: q.block.answer }));
 
     const oneWrong = answers.map((a, i) => (i === 4 ? { ...a, answer: (a.answer + 1) % 2 } : a));
@@ -129,6 +131,6 @@ describe.skipIf(!uri)("accounts and progress (MongoDB)", async () => {
 
     const other = user();
     expect(await submitPlacement(other, { answers: answers.slice(3) }, day1)).toEqual({ skippedLessons: 0, skippedModules: 0 }); // first module unanswered
-    expect(await submitPlacement(other, { answers }, day1)).toEqual({ skippedLessons: 9, skippedModules: 2 });
+    expect(await submitPlacement(other, { answers }, day1)).toEqual({ skippedLessons: 31, skippedModules: 6 }); // all of Level 1
   });
 });

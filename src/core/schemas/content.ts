@@ -2,17 +2,28 @@ import { z } from "zod";
 import type { PlaybackStep } from "../instruments/resolveCanvas";
 import { midi } from "../theory/notes";
 import { canvasShowSchema, pitchSchema } from "./canvas";
+import { notationSteps, parseNotation } from "./notation";
 
 const slug = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/);
 const noteName = z.string().regex(/^[A-G](#|b)?$/);
 const instrument = z.enum(["guitar", "piano"]);
 const bpm = z.number().int().min(30).max(240);
+/** Written music in the text form of ./notation.ts. */
+const notation = z.string().refine((value) => {
+  try {
+    return parseNotation(value).length > 0;
+  } catch {
+    return false;
+  }
+}, "not valid notation");
 
 /** Audio is data, synthesised from samples: lessons need no recorded files. */
 export const soundSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("sequence"), notes: z.array(pitchSchema).min(1), bpm: bpm.optional() }),
   z.object({ kind: z.literal("chord"), notes: z.array(pitchSchema).min(2) }),
   z.object({ kind: z.literal("progression"), chords: z.array(z.array(pitchSchema).min(2)).min(2), bpm: bpm.optional() }),
+  // Notes with lengths and rests, over a click that marks the beat (the first beat of each bar is higher).
+  z.object({ kind: z.literal("rhythm"), notes: notation, bpm: bpm.default(80), beatsPerBar: z.number().int().min(0).max(6).default(4) }),
 ]);
 export type Sound = z.infer<typeof soundSchema>;
 
@@ -31,7 +42,18 @@ export const blockSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("text"), markdown: z.string().min(1) }),
   z.object({ type: z.literal("audio"), label: z.string().min(1), sound: soundSchema }),
   z.object({ type: z.literal("instrument"), canvas: lessonCanvas, caption: z.string().optional(), only: instrument.optional() }),
-  z.object({ type: z.literal("quiz-choice"), prompt: z.string().min(1), sound: soundSchema.optional(), ...quizOptions }).refine(answerInRange, "answer must index an option"),
+  z.object({
+    type: z.literal("notation"),
+    /** One staff, or two for the grand staff (treble above bass). */
+    staves: z.array(z.object({ clef: z.enum(["treble", "bass"]), notes: notation })).min(1).max(2),
+    /** Show the 4/4 time signature. */
+    time: z.boolean().default(false),
+    /** Print each note's letter name under it. */
+    names: z.boolean().default(false),
+    caption: z.string().optional(),
+    bpm: bpm.default(80),
+  }),
+  z.object({ type: z.literal("quiz-choice"), prompt: z.string().min(1), sound: soundSchema.optional(), /** A written note to read. */ staff: z.object({ clef: z.enum(["treble", "bass"]), notes: notation }).optional(), ...quizOptions }).refine(answerInRange, "answer must index an option"),
   z.object({ type: z.literal("quiz-ear"), prompt: z.string().min(1), sound: soundSchema, ...quizOptions }).refine(answerInRange, "answer must index an option"),
   z.object({
     type: z.literal("quiz-find"),
@@ -132,8 +154,14 @@ export function validateContent(raw: { tracks: unknown[]; modules: unknown[]; le
   return content;
 }
 
+/** Everything the player needs for a sound: steps, tempo, and the click's bar length (0 = no click). */
+export function soundPlayback(sound: Sound): { steps: PlaybackStep[]; bpm?: number; metronome: number } {
+  return { steps: soundSteps(sound), bpm: "bpm" in sound ? sound.bpm : undefined, metronome: sound.kind === "rhythm" ? sound.beatsPerBar : 0 };
+}
+
 /** Turn a sound into transport steps. Single notes last one beat, chords two. */
 export function soundSteps(sound: Sound): PlaybackStep[] {
+  if (sound.kind === "rhythm") return notationSteps(parseNotation(sound.notes));
   if (sound.kind === "sequence") return sound.notes.map((note) => ({ midis: [midi(note)], beats: 1 }));
   if (sound.kind === "chord") return [{ midis: sound.notes.map(midi), beats: 2 }];
   return sound.chords.map((chord) => ({ midis: chord.map(midi), beats: 2 }));

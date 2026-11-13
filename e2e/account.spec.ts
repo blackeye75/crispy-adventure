@@ -21,9 +21,12 @@ test("onboarding with the placement quiz skips the modules you know", async ({ p
   await page.getByRole("button", { name: "Continue" }).click();
 
   // Module 1 answered correctly, module 2 unknown
-  await expect(page.getByText("Question 1 of 6")).toBeVisible();
+  await expect(page.getByText("Question 1 of 18")).toBeVisible();
   for (const right of ["Yes, an octave apart", "The thickest, lowest string", "In twos and threes"]) await page.getByRole("button", { name: right }).click();
-  for (let i = 0; i < 3; i++) await page.getByRole("button", { name: "I do not know" }).click();
+  for (let i = 4; i <= 18; i++) {
+    await expect(page.getByText(`Question ${i} of 18`)).toBeVisible();
+    await page.getByRole("button", { name: "I do not know" }).click();
+  }
   await expect(page.getByRole("heading", { name: "You can skip 4 lessons." })).toBeVisible();
   await page.getByRole("button", { name: "Go to your home" }).click();
 
@@ -39,10 +42,13 @@ test("onboarding with the placement quiz skips the modules you know", async ({ p
 test("progress is saved to the account: resume mid-lesson, sign out, sign back in", async ({ page }) => {
   const user = await signUp(page);
   await page.goto("/learn/what-is-a-note");
-  await page.getByRole("button", { name: "Continue" }).click();
   const saved = page.waitForResponse((r) => r.url().endsWith("/api/v1/progress") && r.request().postDataJSON().stepIndex === 2);
-  await page.getByRole("button", { name: "Continue" }).click();
-  await expect(page.getByRole("listitem").filter({ hasText: "Learn" })).toHaveAttribute("aria-current", "step");
+  for (const step of ["Listen", "Learn"]) {
+    await expect(async () => { // wait for each step to really change before clicking on
+      await page.getByRole("button", { name: "Continue" }).click();
+      await expect(page.getByRole("listitem").filter({ hasText: step })).toHaveAttribute("aria-current", "step", { timeout: 2000 });
+    }).toPass();
+  }
   expect((await saved).status()).toBe(200);
   await page.reload();
   await expect(page.getByRole("listitem").filter({ hasText: "Learn" })).toHaveAttribute("aria-current", "step");
@@ -113,4 +119,12 @@ test("settings: preferences reach the lessons, the theme sticks, progress fills 
     }).toPass();
   }
   await expect(page.getByRole("group", { name: "Guitar fretboard, left-handed" })).toBeVisible();
+});
+
+test("the sign-in form can never put a password in the address bar", async ({ page }) => {
+  // Block the app's scripts: the form is on screen but never becomes interactive, the worst case of a slow connection.
+  await page.route("**/_next/static/**/*.js", (route) => route.abort());
+  await page.goto("/sign-in", { waitUntil: "commit" }).catch(() => {});
+  await expect(page.getByRole("button", { name: "Sign in" })).toBeDisabled();
+  await expect(page.locator("form")).toHaveAttribute("method", "post");
 });

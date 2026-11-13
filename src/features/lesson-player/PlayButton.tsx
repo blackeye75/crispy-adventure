@@ -11,13 +11,15 @@ type Props = {
   label: string;
   bpm?: number;
   loop?: boolean;
+  /** Beats per bar for the click; 0 or absent = no click. */
+  metronome?: number;
   variant?: "default" | "secondary";
   /** The notes sounding right now, in time with the audio; empty when playback ends. */
   onSounding?: (midis: number[]) => void;
 };
 
 /** Plays a sequence. Starting another one, or leaving the screen, stops it. */
-export function PlayButton({ steps, label, bpm = 90, loop, variant = "secondary", onSounding }: Props) {
+export function PlayButton({ steps, label, bpm = 90, loop, metronome, variant = "secondary", onSounding }: Props) {
   const [playing, setPlaying] = useState(false);
   useEffect(() => stopAudio, []);
 
@@ -27,6 +29,7 @@ export function PlayButton({ steps, label, bpm = 90, loop, variant = "secondary"
     playSteps(steps, {
       bpm,
       loop,
+      metronome,
       onStep: (i) => onSounding?.(steps[i].midis),
       onEnd: () => {
         setPlaying(false);

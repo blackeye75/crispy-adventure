@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/button";
 import { track } from "@/lib/analytics";
 import { hardNavigate } from "@/lib/api";
@@ -15,8 +15,12 @@ export function AuthForm({ mode, next, google }: Props) {
   const [error, setError] = useState<string>();
   const [busy, setBusy] = useState(false);
   const signUp = mode === "sign-up";
+  // False on the server and until this form is interactive. Submitting before then would be a plain
+  // browser submit, which must never happen with a password in the form.
+  const ready = useSyncExternalStore(() => () => {}, () => true, () => false);
 
   // onSubmit, not a form action: an action would clear the fields after a failed attempt.
+  // method="post" is a second guard: even a plain submit could not put the password in the URL.
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -40,7 +44,7 @@ export function AuthForm({ mode, next, google }: Props) {
     <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-6 px-4 py-12">
       <Link href="/" className="font-display text-xl">Fretkey</Link>
       <h1 className="text-4xl">{signUp ? "Create your account" : "Welcome back"}</h1>
-      <form onSubmit={submit} className="flex flex-col gap-4">
+      <form method="post" onSubmit={submit} className="flex flex-col gap-4">
         {signUp && (
           <label className="flex flex-col gap-1.5 text-sm">Name
             <input name="name" required maxLength={60} autoComplete="name" className={inputClass} />
@@ -54,10 +58,10 @@ export function AuthForm({ mode, next, google }: Props) {
           {signUp && <span className="text-muted-foreground">At least 8 characters.</span>}
         </label>
         <p role="alert" className="min-h-6 text-destructive">{error}</p>
-        <Button size="lg" type="submit" disabled={busy}>{signUp ? "Create account" : "Sign in"}</Button>
+        <Button size="lg" type="submit" disabled={busy || !ready}>{signUp ? "Create account" : "Sign in"}</Button>
       </form>
       {google && (
-        <Button size="lg" variant="outline" disabled={busy} onClick={() => authClient.signIn.social({ provider: "google", callbackURL: next })}>
+        <Button size="lg" variant="outline" disabled={busy || !ready} onClick={() => authClient.signIn.social({ provider: "google", callbackURL: next })}>
           Continue with Google
         </Button>
       )}

@@ -68,7 +68,8 @@ export function playNotes(midis: number[], seconds = 0.8) {
 export type PlayOptions = {
   bpm: number;
   loop?: boolean;
-  metronome?: boolean;
+  /** Click on every beat, higher on the first beat of each bar of this many beats. 0 = no click. */
+  metronome?: number;
   /** Called in time with the audio as each step sounds. */
   onStep: (index: number) => void;
   /** Called once when the sequence finishes or is stopped or replaced. */
@@ -76,7 +77,7 @@ export type PlayOptions = {
 };
 
 /** Play a sequence on the transport. Replaces whatever was playing. */
-export function playSteps(steps: PlaybackStep[], { bpm, loop = false, metronome = false, onStep, onEnd }: PlayOptions) {
+export function playSteps(steps: PlaybackStep[], { bpm, loop = false, metronome = 0, onStep, onEnd }: PlayOptions) {
   stopAudio(); // ends whatever else was playing, and tells it so
   const id = ++run;
   endCurrent = onEnd;
@@ -96,7 +97,9 @@ export function playSteps(steps: PlaybackStep[], { bpm, loop = false, metronome 
       }, at);
       at += step.beats * beat;
     });
-    if (metronome) transport.scheduleRepeat((time) => click.triggerAttackRelease([hz(84)], 0.03, time), beat, 0);
+    for (let b = 0; metronome && b * beat < at - 0.001; b++) {
+      transport.schedule((time) => click.triggerAttackRelease([hz(b % metronome === 0 ? 96 : 84)], 0.03, time), b * beat);
+    }
     transport.loop = loop;
     transport.loopStart = 0;
     transport.loopEnd = at;

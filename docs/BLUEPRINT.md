@@ -203,9 +203,9 @@ Tick tasks as they complete. Each phase ends in something you can use.
 
 ### Phase 2 — Lessons (about 2 weeks)
 - [x] Zod content schemas and the `npm run seed` script
-- [ ] Lesson player with the four steps and all block renderers
+- [x] Lesson player with the four steps and all block renderers
 - [x] Drill types: choice, ear, find, build
-- [ ] Write Level 1 completely and the first module of Level 2
+- [x] Write Level 1 completely and the first module of Level 2
 - [x] Path page and Home page
 
 ### Phase 3 — Accounts and progress (about 1 week)

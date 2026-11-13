@@ -4,14 +4,14 @@ import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import { playbackSteps, resolveCanvas, type Marker } from "@/core/instruments/resolveCanvas";
 import { canvasToQuery } from "@/core/schemas/canvas";
-import { soundSteps, type BlockOf } from "@/core/schemas/content";
+import { soundPlayback, soundSteps, type BlockOf } from "@/core/schemas/content";
 import { playNotes } from "@/features/audio/engine";
 import type { Instrument } from "@/core/schemas/api";
 import { InstrumentView, lessonState } from "./InstrumentView";
 import { PlayButton } from "./PlayButton";
 
 export function AudioBlock({ block }: { block: BlockOf<"audio"> }) {
-  return <PlayButton steps={soundSteps(block.sound)} label={block.label} bpm={"bpm" in block.sound ? block.sound.bpm : undefined} variant="default" />;
+  return <PlayButton {...soundPlayback(block.sound)} label={block.label} variant="default" />;
 }
 
 /** The lesson's selection on the learner's instrument: tap to hear, play it through, or open it in the Canvas. */
@@ -69,7 +69,7 @@ export function PlayAlongBlock({ block, instrument }: { block: BlockOf<"play-alo
       </label>
       {block.canvas
         ? <LinkedInstrument key={bpm} canvas={block.canvas} instrument={instrument} playLabel="Play along (loops)" bpm={bpm} loop steps={steps} />
-        : <PlayButton key={bpm} steps={steps} label="Play along (loops)" bpm={bpm} loop />}
+        : <PlayButton key={bpm} steps={steps} label="Play along (loops)" bpm={bpm} loop metronome={soundPlayback(block.sound).metronome} />}
     </div>
   );
 }

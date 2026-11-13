@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { STEP_KINDS, isQuiz, type Block, type Lesson } from "@/core/schemas/content";
 import { stopAudio } from "@/features/audio/engine";
 import { BuildQuiz, ChoiceQuiz, FindQuiz } from "@/features/drills/drills";
+import { NotationBlock } from "@/features/notation/Notation";
 import { Button } from "@/components/ui/button";
 import { Segmented } from "@/components/ui/segmented";
 import type { Instrument } from "@/core/schemas/api";
@@ -24,6 +25,7 @@ export function BlockView({ block, instrument, onSolved }: { block: Block; instr
   switch (block.type) {
     case "text": return <Markdown>{block.markdown}</Markdown>;
     case "audio": return <AudioBlock block={block} />;
+    case "notation": return <NotationBlock block={block} />;
     case "instrument": return <InstrumentBlock block={block} instrument={instrument} />;
     case "play-along": return <PlayAlongBlock block={block} instrument={instrument} />;
     case "quiz-choice":

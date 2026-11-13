@@ -2,11 +2,12 @@
 
 import { Check, X } from "lucide-react";
 import { useState } from "react";
-import { soundSteps, type BlockOf } from "@/core/schemas/content";
+import { soundPlayback, type BlockOf } from "@/core/schemas/content";
 import { chroma, glyphs, nameMidi, pitchClass } from "@/core/theory/notes";
 import { playNotes } from "@/features/audio/engine";
 import { InstrumentView, stringNumber, tapMarkers, type Tap } from "@/features/lesson-player/InstrumentView";
 import { PlayButton } from "@/features/lesson-player/PlayButton";
+import { NotationBlock } from "@/features/notation/Notation";
 import { Button } from "@/components/ui/button";
 import type { Instrument } from "@/core/schemas/api";
 import { cn } from "@/lib/utils";
@@ -40,7 +41,8 @@ export function ChoiceQuiz({ block, onSolved }: { block: BlockOf<"quiz-choice"> 
   return (
     <div className="flex flex-col gap-5">
       <p className="text-xl">{block.prompt}</p>
-      {block.sound && <PlayButton steps={soundSteps(block.sound)} label="Listen" bpm={"bpm" in block.sound ? block.sound.bpm : undefined} variant="default" />}
+      {"staff" in block && block.staff && <NotationBlock block={{ type: "notation", staves: [block.staff], time: false, names: false, bpm: 80 }} />}
+      {block.sound && <PlayButton {...soundPlayback(block.sound)} label="Listen" variant="default" />}
       <div className="flex flex-col gap-3">
         {block.options.map((option, i) => {
           const state = solved && i === block.answer ? "correct" : wrong.includes(i) ? "wrong" : undefined;

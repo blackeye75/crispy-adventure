@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { DAILY_GOALS, type Instrument } from "@/core/schemas/api";
-import { soundSteps, type BlockOf } from "@/core/schemas/content";
+import { soundPlayback, type BlockOf } from "@/core/schemas/content";
 import { PlayButton } from "@/features/lesson-player/PlayButton";
 import { Button } from "@/components/ui/button";
 import { api, hardNavigate } from "@/lib/api";
@@ -99,7 +99,7 @@ export function OnboardingFlow({ initial }: { initial: Prefs }) {
       <div key={asked} className={cn(shell, "step-in")}>
         <p className="text-sm text-muted-foreground" aria-live="polite">Question {asked + 1} of {questions.length}</p>
         <h1 className="font-sans text-2xl font-normal tracking-normal">{q.block.prompt}</h1>
-        {q.block.sound && <PlayButton steps={soundSteps(q.block.sound)} label="Listen" bpm={"bpm" in q.block.sound ? q.block.sound.bpm : undefined} variant="default" />}
+        {q.block.sound && <PlayButton {...soundPlayback(q.block.sound)} label="Listen" variant="default" />}
         <div className="flex flex-col gap-3">
           {q.block.options.map((option, i) => <button key={i} type="button" disabled={busy} onClick={() => answer(i)} className={cn(card, "text-lg")}>{option}</button>)}
           <Button variant="ghost" disabled={busy} onClick={() => answer()}>I do not know</Button>

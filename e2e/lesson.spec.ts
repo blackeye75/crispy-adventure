@@ -103,3 +103,41 @@ test("API: one response shape; lessons and profile need a session, the map does 
   expect(bad.status()).toBe(400);
   expect((await page.request.patch("/api/v1/me", { data: { dailyGoalMinutes: 7 } })).status()).toBe(400);
 });
+
+test("rhythm, notation and TAB lessons render and play", async ({ page }) => {
+  await signUp(page);
+  const toStep = async (step: string) => {
+    await expect(async () => {
+      await next(page).click();
+      await expect(page.getByRole("listitem").filter({ hasText: step })).toHaveAttribute("aria-current", "step", { timeout: 2000 });
+    }).toPass();
+  };
+
+  // Rhythm: sounds with a click, and written note values
+  await page.goto("/learn/note-lengths");
+  await toStep("Listen");
+  const play = page.getByRole("button", { name: "Four quarter notes: one on every beat" });
+  await play.click();
+  await expect(play).toHaveAttribute("aria-pressed", "true");
+  await expect(play).toHaveAttribute("aria-pressed", "false", { timeout: 15_000 }); // four beats at 80 BPM, then it ends by itself
+  await toStep("Learn");
+  const score = page.getByRole("img", { name: /^treble staff: B4, bar line, B4, B4/ });
+  await expect(score.locator("svg path").first()).toBeAttached(); // VexFlow drew something
+  await expect(score.locator("svg")).toHaveCount(1);
+
+  // Reading: a drill about a written note
+  await page.goto("/learn/the-staff-and-treble-clef");
+  for (const step of ["Listen", "Learn", "Practice"]) await toStep(step);
+  await page.getByRole("button", { name: "E", exact: true }).click();
+  await next(page).click();
+  await page.getByRole("button", { name: "F A C E" }).click();
+  await next(page).click();
+  await expect(page.getByText("Which note is this?")).toBeVisible();
+  await expect(page.getByRole("img", { name: "treble staff: B4" }).locator("svg path").first()).toBeAttached();
+  await page.getByRole("button", { name: "B", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("It sits on the middle line");
+
+  // Guitar TAB keeps its spacing
+  await page.goto("/learn/tab-and-chord-diagrams");
+  await expect(page.locator("pre")).toContainText("D|---0-2-3-----------------|");
+});
