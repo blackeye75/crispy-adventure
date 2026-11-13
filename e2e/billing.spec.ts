@@ -1,5 +1,6 @@
 import { createHmac } from "node:crypto";
-import { expect, test, type APIRequestContext } from "@playwright/test";
+import type { APIRequestContext } from "@playwright/test";
+import { expect, test } from "./test";
 import { MongoClient } from "mongodb";
 import { MONGODB_URI, WEBHOOK_SECRET } from "../playwright.config";
 import { signUp } from "./helpers";

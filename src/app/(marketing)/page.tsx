@@ -79,7 +79,7 @@ export default function Home() {
           <div className="flex flex-col gap-2 rounded-2xl border bg-card p-6">
             <h3 className="font-sans text-lg font-medium tracking-normal">Free</h3>
             <p className="text-4xl font-semibold">Level 1</p>
-            <p className="text-muted-foreground">All of Foundations and the practice room. No card needed.</p>
+            <p className="text-muted-foreground">Every Foundations lesson as it is released, and the practice room. No card needed.</p>
           </div>
           <Suspense><Prices /></Suspense>
         </div>

@@ -14,17 +14,23 @@ export const metadata: Metadata = {
   description: SITE.description,
   applicationName: SITE.name,
   openGraph: { type: "website", siteName: SITE.name, title: `${SITE.name}: music theory on your instrument`, description: SITE.description, url: "/" },
-  twitter: { card: "summary" },
+  twitter: { card: "summary_large_image" },
   appleWebApp: { capable: true, title: SITE.name, statusBarStyle: "black-translucent" },
 };
 
-export const viewport: Viewport = { themeColor: "#17140f", colorScheme: "dark" };
+export const viewport: Viewport = { themeColor: "#17140f" };
+
+// Runs before first paint, so a learner who chose the light theme never sees a dark flash.
+const applyTheme = `try{if(localStorage.theme==="light")document.documentElement.dataset.theme="light"}catch(e){}`;
 
 const plausibleDomain = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} ${fraunces.variable} h-full antialiased`}>
+    <html lang="en" className={`${inter.variable} ${fraunces.variable} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: applyTheme }} />
+      </head>
       <body className="flex min-h-full flex-col">
         {children}
         <ServiceWorker />

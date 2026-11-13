@@ -72,7 +72,7 @@ export function HomeView({ path, me }: { path: Path; me: Me & { profile: NonNull
           <GoalRing minutes={today.minutes} goal={today.goalMinutes} />
           <div className="flex flex-col gap-1 text-sm text-muted-foreground">
             <span>of {today.goalMinutes} minutes today</span>
-            <Link href="/onboarding" className="underline underline-offset-4 hover:text-foreground">Change goal</Link>
+            <Link href="/settings" className="underline underline-offset-4 hover:text-foreground">Change goal</Link>
           </div>
         </section>
       </div>

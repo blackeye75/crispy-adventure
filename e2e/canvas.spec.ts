@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "./test";
 
 // Acceptance checklist from docs/CANVAS.md.
 const fretboard = (page: Page) => page.getByRole("group", { name: /Guitar fretboard/ });

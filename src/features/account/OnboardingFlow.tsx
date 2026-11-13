@@ -22,7 +22,7 @@ const LEVELS: [Level, string, string][] = [
 const card = "flex min-h-14 flex-col justify-center rounded-lg border bg-card px-5 py-3 text-left outline-none transition-colors duration-150 hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50";
 const chosen = "border-primary bg-accent";
 
-function Choice<T extends string | number>({ legend, value, options, onChange }: { legend: string; value: T; options: [T, string, string?][]; onChange: (v: T) => void }) {
+export function Choice<T extends string | number>({ legend, value, options, onChange }: { legend: string; value: T; options: [T, string, string?][]; onChange: (v: T) => void }) {
   return (
     <fieldset className="flex flex-col gap-3">
       <legend className="pb-3 text-xl">{legend}</legend>

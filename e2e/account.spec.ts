@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./test";
 import { createAccount, newUser, signUp } from "./helpers";
 
 test("signed-out visitors are sent to sign in and come back where they were going", async ({ page }) => {
@@ -73,4 +73,44 @@ test("the post-sign-in destination cannot point at another site", async ({ page 
   await page.getByLabel("Password").fill(user.password);
   await page.getByRole("button", { name: "Create account" }).click();
   await expect(page).toHaveURL(/localhost:3000\/onboarding/);
+});
+
+test("settings: preferences reach the lessons, the theme sticks, progress fills in", async ({ page }) => {
+  await signUp(page);
+  await page.goto("/onboarding"); // already set up
+  await expect(page).toHaveURL(/\/settings/);
+
+  const prefs = page.getByLabel("Preferences");
+  const lefty = prefs.getByLabel("Left-handed fretboard in lessons");
+  await expect(async () => { // the first click can land before the page is interactive
+    await lefty.check();
+    await expect(lefty).toBeChecked({ timeout: 500 });
+  }).toPass();
+  await prefs.getByRole("button", { name: "20 min" }).click();
+  await prefs.getByRole("button", { name: "Save preferences" }).click();
+  await expect(prefs.getByRole("status")).toHaveText("Saved.");
+
+  await page.getByLabel("Appearance").getByRole("button", { name: "Light" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(page.getByLabel("Appearance").getByRole("button", { name: "Light" })).toHaveAttribute("aria-pressed", "true");
+
+  await page.goto("/progress");
+  await expect(page.getByText("Nothing yet.")).toBeVisible();
+  const done = await page.request.post("/api/v1/progress", { data: { lessonSlug: "what-is-a-note", stepIndex: 6, completed: true, seconds: 180, drills: { answered: 4, correct: 4 } } });
+  expect((await done.json()).data.today).toEqual({ streak: 1, minutes: 3, goalMinutes: 20 });
+  await page.reload();
+  await expect(page.getByRole("progressbar", { name: "Sound and pitch" })).toHaveAttribute("aria-valuenow", "1");
+  await expect(page.getByRole("row").nth(1)).toContainText("100%");
+  expect((await (await page.request.get("/api/v1/stats")).json()).data.totals).toMatchObject({ minutes: 3, lessonsCompleted: 1, accuracy: 1 });
+
+  await page.goto("/learn/the-octave");
+  for (const step of ["Listen", "Learn"]) {
+    await expect(async () => { // wait for each step to really change before clicking on
+      await page.getByRole("button", { name: "Continue" }).click();
+      await expect(page.getByRole("listitem").filter({ hasText: step })).toHaveAttribute("aria-current", "step", { timeout: 2000 });
+    }).toPass();
+  }
+  await expect(page.getByRole("group", { name: "Guitar fretboard, left-handed" })).toBeVisible();
 });

@@ -10,8 +10,8 @@ export const metadata: Metadata = { title: "Set up · Fretkey" };
 async function Onboarding() {
   const viewer = await getViewer();
   if (!viewer) redirect("/sign-in?next=/onboarding");
-  const profile = await getProfile(viewer.userId); // revisiting edits the same choices
-  return <OnboardingFlow initial={{ instrument: profile?.instrument ?? "guitar", level: profile?.level ?? "beginner", dailyGoalMinutes: profile?.dailyGoalMinutes ?? 10 }} />;
+  if (await getProfile(viewer.userId)) redirect("/settings"); // already set up: preferences are changed there
+  return <OnboardingFlow initial={{ instrument: "guitar", level: "beginner", dailyGoalMinutes: 10 }} />;
 }
 
 export default function OnboardingPage() {

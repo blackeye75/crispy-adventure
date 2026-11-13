@@ -16,7 +16,9 @@ export async function createAccount(page: Page, user = newUser()) {
 /** A new beginner on guitar with the default goal. Ends on Home. */
 export async function signUp(page: Page) {
   const user = await createAccount(page);
-  await page.getByRole("button", { name: "Continue" }).click();
-  await expect(page.getByRole("link", { name: "Start the first lesson" })).toBeVisible();
+  await expect(async () => { // on a slow machine the first click can land before the page is interactive
+    await page.getByRole("button", { name: "Continue" }).click({ timeout: 2000 }).catch(() => {});
+    await expect(page.getByRole("link", { name: "Start the first lesson" })).toBeVisible({ timeout: 6000 });
+  }).toPass();
   return user;
 }

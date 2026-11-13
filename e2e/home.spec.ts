@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./test";
 
 test("landing shell renders without horizontal scroll", async ({ page }) => {
   await page.goto("/");

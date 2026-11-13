@@ -23,7 +23,7 @@ async function Review() {
       </div>
     );
   }
-  return <ReviewSession drills={await getDueReview(viewer)} instrument={profile.instrument} />;
+  return <ReviewSession drills={await getDueReview(viewer)} instrument={profile.instrument} leftHanded={profile.leftHanded} />;
 }
 
 export default function ReviewPage() {

@@ -14,6 +14,7 @@ import { api } from "@/lib/api";
 import type { Today } from "@/server/services/profile";
 import { cn } from "@/lib/utils";
 import { AudioBlock, InstrumentBlock, PlayAlongBlock } from "./blocks";
+import { LeftHanded } from "./InstrumentView";
 import { Markdown } from "./Markdown";
 
 const STEP_NAMES = { understand: "Understand", listen: "Listen", learn: "Learn", practice: "Practice" };
@@ -37,12 +38,13 @@ type Props = {
   next?: { slug: string; title: string };
   /** From the learner's profile. */
   instrument: Instrument;
+  leftHanded: boolean;
   /** Screen to resume at, when the lesson was left part-way. */
   startIndex?: number;
 };
 
 /** Full-screen lesson: four steps, one action per screen, one clear next step at the end. */
-export function LessonPlayer({ lesson, next, instrument: initialInstrument, startIndex = 0 }: Props) {
+export function LessonPlayer({ lesson, next, instrument: initialInstrument, leftHanded, startIndex = 0 }: Props) {
   // Understand, Listen and Learn are one screen each; every Practice block gets its own.
   const screens = useMemo(
     () => lesson.steps.flatMap((step, s) => (step.kind === "practice" ? step.blocks.map((b) => ({ step: s, blocks: [b] })) : [{ step: s, blocks: step.blocks }])),
@@ -53,6 +55,7 @@ export function LessonPlayer({ lesson, next, instrument: initialInstrument, star
   const [instrument, setInstrumentState] = useState(initialInstrument);
   const [today, setToday] = useState<Today | null>(null);
   const [saving, setSaving] = useState(false);
+  const [startedAt] = useState(() => Date.now());
   const [error, setError] = useState<string>();
 
   const done = index >= screens.length;
@@ -81,7 +84,7 @@ export function LessonPlayer({ lesson, next, instrument: initialInstrument, star
     try {
       const saved = await api<{ today: Today }>("/progress", {
         method: "POST",
-        body: { lessonSlug: lesson.slug, stepIndex: index, completed: true, drills: { answered: drills, correct: firstTry } },
+        body: { lessonSlug: lesson.slug, stepIndex: index, completed: true, seconds: Math.round((Date.now() - startedAt) / 1000), drills: { answered: drills, correct: firstTry } },
       });
       setToday(saved.today);
       track("Lesson complete", { lesson: lesson.slug });
@@ -94,6 +97,7 @@ export function LessonPlayer({ lesson, next, instrument: initialInstrument, star
   };
 
   return (
+    <LeftHanded value={leftHanded}>
     <div className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-background">
       <header className="sticky top-0 z-10 flex flex-wrap items-center gap-x-4 gap-y-2 border-b bg-background px-4 py-3 lg:px-8">
         <Button asChild variant="ghost" size="icon" className="shrink-0">
@@ -153,5 +157,6 @@ export function LessonPlayer({ lesson, next, instrument: initialInstrument, star
         </>
       )}
     </div>
+    </LeftHanded>
   );
 }

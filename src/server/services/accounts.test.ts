@@ -14,6 +14,7 @@ describe.skipIf(!uri)("accounts and progress (MongoDB)", async () => {
   const { getPath } = await import("./content");
   const { getMe, updateProfile } = await import("./profile");
   const { saveProgress } = await import("./progress");
+  const { getStats } = await import("./stats");
   const { answerReview, getDueReview } = await import("./review");
   const { getPlacement, submitPlacement } = await import("./placement");
 
@@ -88,6 +89,30 @@ describe.skipIf(!uri)("accounts and progress (MongoDB)", async () => {
     expect(await ReviewItemModel.findOne({ userId: viewer.userId }).lean()).toMatchObject({ intervalDays: 1, lapses: 1, lastResult: "wrong" });
     expect((await getMe(viewer, later(4))).today!.streak).toBe(1); // days 2 and 3 were missed
     await expect(answerReview(viewer, { conceptId: "octave", correct: true }, later(4))).rejects.toMatchObject({ status: 404 });
+  });
+
+  test("practice time is what the device measured, capped at three times the lesson's length", async () => {
+    const viewer = user();
+    await updateProfile(viewer, setup);
+    const done = (lessonSlug: string, seconds?: number) => saveProgress(viewer, { lessonSlug, stepIndex: 6, completed: true, seconds }, day1);
+    expect((await done("what-is-a-note", 240)).today!.minutes).toBe(4);
+    expect((await done("the-octave", 7200)).today!.minutes).toBe(4 + 15); // a tab left open for two hours
+    expect((await done("guitar-layout")).today!.minutes).toBe(4 + 15 + 5); // older clients send no time: planned length
+  });
+
+  test("stats: totals, accuracy, history, topics for the learner's instrument, and review strength", async () => {
+    const viewer = user(true);
+    await updateProfile(viewer, setup);
+    expect(await getStats(viewer, day1)).toMatchObject({ totals: { minutes: 0, lessonsCompleted: 0, accuracy: null }, history: [], review: { concepts: 0 } });
+    await saveProgress(viewer, { lessonSlug: "what-is-a-note", stepIndex: 6, completed: true, seconds: 300, drills: { answered: 4, correct: 3 } }, day1);
+    await answerReview(viewer, { conceptId: "pitch", correct: true, seconds: 30 }, later(1));
+    await answerReview(viewer, { conceptId: "pitch", correct: true, seconds: 999 }, later(4)); // capped at two minutes
+    const stats = await getStats(viewer, later(4));
+    expect(stats.streak).toEqual({ current: 1, longest: 2 });
+    expect(stats.totals).toEqual({ minutes: 8, lessonsCompleted: 1, daysPractised: 3, accuracy: 5 / 6 });
+    expect(stats.history.map((h) => [h.date, h.minutes])).toEqual([["2026-03-13", 2], ["2026-03-10", 1], ["2026-03-09", 5]]);
+    expect(stats.topics[0]).toEqual({ level: 1, title: "Sound and pitch", done: 1, total: 3 }); // the piano lesson is not counted for a guitarist
+    expect(stats.review).toEqual({ concepts: 1, strong: 1, due: 0 });
   });
 
   test("placement skips modules from the start of the path while every answer is right", async () => {

@@ -38,8 +38,9 @@ export async function saveProgress(viewer: Viewer, input: ProgressInput, now = n
   const score = input.drills?.answered ? input.drills.correct / input.drills.answered : undefined;
   await LessonProgressModel.updateOne(key, { $set: { status: "completed", stepIndex: 0, score, completedAt: now }, $inc: { attempts: 1 } }, { upsert: true });
   await startReviewing(viewer.userId, result.lesson.concepts, now);
-  // shortcut: a finished lesson counts as its planned length, not measured time.
-  // Measure real time on the client if the daily goal needs to be exact.
-  const today = await recordActivity(profile, { minutes: result.lesson.minutes, lessons: 1, answered: input.drills?.answered, correct: input.drills?.correct }, now);
+  // Time comes from the learner's device, so cap it: a tab left open must not fill a week of goals.
+  const planned = result.lesson.minutes;
+  const minutes = input.seconds === undefined ? planned : Math.min(input.seconds / 60, planned * 3);
+  const today = await recordActivity(profile, { minutes, lessons: 1, answered: input.drills?.answered, correct: input.drills?.correct }, now);
   return { today };
 }

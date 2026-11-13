@@ -5,6 +5,8 @@ export const WEBHOOK_SECRET = "e2e-webhook-secret";
 
 export default defineConfig({
   testDir: "e2e",
+  timeout: 90_000,
+  expect: { timeout: 15_000 }, // the dev server compiles each page on first visit
   use: { baseURL: "http://localhost:3000" },
   projects: [
     { name: "desktop", use: devices["Desktop Chrome"] },
@@ -15,6 +17,7 @@ export default defineConfig({
     { command: "node e2e/fake-razorpay.mjs", url: "http://localhost:4010/health", reuseExistingServer: !process.env.CI },
     {
       command: "npm run seed && npm run dev",
+      timeout: 180_000, // a cold first compile can be slow
       url: "http://localhost:3000",
       reuseExistingServer: !process.env.CI,
       env: {

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./test";
 import { signUp } from "./helpers";
 
 const next = (page: import("@playwright/test").Page) => page.getByRole("button", { name: /^(Continue|Finish)$/ });
@@ -49,7 +49,7 @@ test("a whole lesson: four steps, every drill type, completion shows on the path
 
   await expect(page.getByText("Lesson complete")).toBeVisible();
   await expect(page.getByText("2 of 5 drills right first time.")).toBeVisible();
-  await expect(page.getByText("1-day streak. 5 of 10 minutes today.")).toBeVisible();
+  await expect(page.getByText(/1-day streak\. \d+ of 10 minutes today\./)).toBeVisible(); // minutes are measured now
   await expect(page.getByRole("link", { name: "Next: One sound, two names" })).toBeVisible();
   await page.getByRole("link", { name: "Back to the path" }).click();
   await expect(page.getByRole("link", { name: /Sharps and flats\s*, Completed/ })).toBeVisible();

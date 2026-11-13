@@ -8,7 +8,7 @@ import { accessibleLessons } from "./content";
 import { recordActivity, requireProfile } from "./profile";
 
 const SESSION_SIZE = 20;
-const MINUTES_PER_ANSWER = 1 / 3; // shortcut: review time is estimated at 20 seconds a drill
+const MAX_SECONDS_PER_DRILL = 120; // the time is reported by the device, so cap it
 
 /** Review is part of the subscription. */
 function requireSubscriber(viewer: Viewer) {
@@ -32,13 +32,13 @@ export async function getDueReview(viewer: Viewer, now = new Date()): Promise<Re
 }
 
 /** POST /review/answer: record the result and reschedule the concept. */
-export async function answerReview(viewer: Viewer, answer: { conceptId: string; correct: boolean }, now = new Date()) {
+export async function answerReview(viewer: Viewer, answer: { conceptId: string; correct: boolean; seconds?: number }, now = new Date()) {
   requireSubscriber(viewer);
   const profile = await requireProfile(viewer.userId);
   const item = await ReviewItemModel.findOne({ userId: viewer.userId, conceptId: answer.conceptId });
   if (!item) throw new ServiceError(404, "not_found", "You are not reviewing that concept.");
   const next = schedule(item, answer.correct, now);
   await ReviewItemModel.updateOne({ _id: item._id }, { $set: next });
-  const today = await recordActivity(profile, { minutes: MINUTES_PER_ANSWER, answered: 1, correct: answer.correct ? 1 : 0 }, now);
+  const today = await recordActivity(profile, { minutes: Math.min(answer.seconds ?? 20, MAX_SECONDS_PER_DRILL) / 60, answered: 1, correct: answer.correct ? 1 : 0 }, now);
   return { dueAt: next.dueAt, intervalDays: next.intervalDays, today };
 }

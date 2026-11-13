@@ -7,13 +7,15 @@ import { stopAudio } from "@/features/audio/engine";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 import type { ReviewDrill } from "@/server/services/review";
+import { LeftHanded } from "./InstrumentView";
 import { BlockView } from "./LessonPlayer";
 
 /** A quick mixed session of the drills that are due. Each answer reschedules its concept. */
-export function ReviewSession({ drills, instrument }: { drills: ReviewDrill[]; instrument: Instrument }) {
+export function ReviewSession({ drills, instrument, leftHanded }: { drills: ReviewDrill[]; instrument: Instrument; leftHanded: boolean }) {
   const [index, setIndex] = useState(0);
   const [results, setResults] = useState<boolean[]>([]);
   const [error, setError] = useState<string>();
+  const [shownAt, setShownAt] = useState(() => Date.now());
   const shell = "mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-4 py-10 lg:py-16";
 
   if (index >= drills.length) {
@@ -35,18 +37,18 @@ export function ReviewSession({ drills, instrument }: { drills: ReviewDrill[]; i
   const record = (correct: boolean) => {
     setResults((r) => [...r, correct]);
     setError(undefined);
-    api("/review/answer", { method: "POST", body: { conceptId: drill.conceptId, correct } }).catch((err: Error) => setError(`${err.message} This answer was not saved; the drill will come back.`));
+    api("/review/answer", { method: "POST", body: { conceptId: drill.conceptId, correct, seconds: Math.min(600, Math.round((Date.now() - shownAt) / 1000)) } }).catch((err: Error) => setError(`${err.message} This answer was not saved; the drill will come back.`));
   };
 
   return (
     <div className={shell}>
       <p className="text-sm text-muted-foreground" aria-live="polite">Review {index + 1} of {drills.length} · from “{drill.lessonTitle}”</p>
       <div key={index} className="step-in flex flex-col gap-8">
-        <BlockView block={drill.block} instrument={instrument} onSolved={record} />
+        <LeftHanded value={leftHanded}><BlockView block={drill.block} instrument={instrument} onSolved={record} /></LeftHanded>
       </div>
       {error && <p role="alert" className="text-destructive">{error}</p>}
       <div className="flex justify-end">
-        <Button size="lg" disabled={!answered} onClick={() => { stopAudio(); setIndex(index + 1); }} className="max-sm:w-full">
+        <Button size="lg" disabled={!answered} onClick={() => { stopAudio(); setIndex(index + 1); setShownAt(Date.now()); }} className="max-sm:w-full">
           {index === drills.length - 1 ? "Finish" : "Continue"}
         </Button>
       </div>

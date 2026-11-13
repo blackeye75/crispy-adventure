@@ -29,7 +29,7 @@ async function Lesson({ params }: { params: Params }) {
     );
   }
   const progress = await getProgress(viewer.userId, slug);
-  return <LessonPlayer key={slug} lesson={result.lesson} next={result.next} instrument={profile.instrument} startIndex={progress?.status === "started" ? progress.stepIndex : 0} />;
+  return <LessonPlayer key={slug} lesson={result.lesson} next={result.next} instrument={profile.instrument} leftHanded={profile.leftHanded} startIndex={progress?.status === "started" ? progress.stepIndex : 0} />;
 }
 
 export default function LessonPage({ params }: { params: Params }) {

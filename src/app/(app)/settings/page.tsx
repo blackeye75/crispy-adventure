@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
+import { PreferencesForm, ThemeSwitch } from "@/features/account/Preferences";
 import { BillingSettings } from "@/features/billing/billing";
 import { requireLearner } from "@/server/auth/session";
 import { getMe } from "@/server/services/profile";
@@ -12,13 +12,8 @@ async function Settings() {
   const { subscription } = await getMe(viewer);
   return (
     <>
-      <section aria-label="Preferences" className="flex flex-col gap-3 rounded-2xl border bg-card p-6">
-        <h2 className="text-2xl">Preferences</h2>
-        <p className="text-muted-foreground">
-          {profile.instrument === "guitar" ? "Guitar" : "Piano"} · {profile.dailyGoalMinutes} minutes a day
-        </p>
-        <div><Link href="/onboarding" className="underline underline-offset-4 hover:text-primary">Change instrument, level or daily goal</Link></div>
-      </section>
+      <PreferencesForm initial={{ instrument: profile.instrument, dailyGoalMinutes: profile.dailyGoalMinutes, leftHanded: profile.leftHanded }} />
+      <ThemeSwitch />
       <BillingSettings initial={subscription} />
     </>
   );

@@ -31,7 +31,8 @@
   --background: oklch(0.985 0.004 85);
   --foreground: oklch(0.22 0.01 80);
   --card: oklch(1 0 0);
-  --primary: oklch(0.78 0.15 80);
+  --primary: oklch(0.55 0.13 70); /* darker gold: readable as text on a light page */
+  --primary-foreground: oklch(0.99 0.004 85);
   --secondary: oklch(0.94 0.006 85);
   --muted: oklch(0.955 0.005 85);
   --muted-foreground: oklch(0.46 0.012 80);
@@ -90,6 +91,7 @@
 
 /* Instruments. The same in both themes: they are objects, not UI chrome. */
 :root {
+  --marker-root: oklch(0.8 0.14 80); /* the root marker keeps its gold in both themes */
   --wood: oklch(0.27 0.03 60);
   --fret: oklch(0.62 0.01 85);
   --string: oklch(0.74 0.02 85);
@@ -123,7 +125,7 @@
     transition: transform 180ms var(--ease-out);
   }
   .note-marker .hit { fill: transparent; }
-  .note-marker .halo { fill: var(--primary); opacity: 0; transition: opacity 180ms var(--ease-out); }
+  .note-marker .halo { fill: var(--marker-root); opacity: 0; transition: opacity 180ms var(--ease-out); }
   .note-marker .plate { fill: var(--marker-plate); }
   .note-marker .dot { fill: var(--marker-plate); stroke: var(--marker-tone); stroke-width: 2; }
   .note-marker text {
@@ -136,7 +138,7 @@
     user-select: none;
   }
   .note-marker[data-role="chord"] .dot { fill: var(--marker-tone); stroke: none; }
-  .note-marker[data-role="root"] .dot { fill: var(--primary); stroke: none; }
+  .note-marker[data-role="root"] .dot { fill: var(--marker-root); stroke: none; }
   .note-marker[data-role="chord"] text,
   .note-marker[data-role="root"] text { fill: var(--marker-plate); }
   .note-marker[data-role="root"] text { font-weight: 700; }

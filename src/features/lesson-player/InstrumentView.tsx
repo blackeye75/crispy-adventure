@@ -1,5 +1,6 @@
 "use client";
 
+import { createContext, useContext } from "react";
 import { STANDARD_TUNING, fretMidi } from "@/core/instruments/fretboard";
 import type { ResolvedCanvas } from "@/core/instruments/resolveCanvas";
 import type { CanvasState } from "@/core/schemas/canvas";
@@ -11,6 +12,9 @@ import type { Instrument } from "@/core/schemas/api";
 
 // Lessons show twelve frets: one full octave per string, and less to scroll on a phone.
 const GUITAR = { tuning: STANDARD_TUNING, frets: 12, leftHanded: false };
+
+/** The learner's left-handed preference, set once by the lesson or review screen. Mirrors the fretboard only. */
+export const LeftHanded = createContext(false);
 const KEYS = { from: "E2", to: "E6" };
 const NO_EVENTS: NoteEvents = { sounding: [], onNoteHover: () => {}, onNoteTap: () => {} };
 
@@ -43,8 +47,9 @@ type Props = Partial<NoteEvents> & {
 /** The fretboard or the keyboard, whichever the learner plays. */
 export function InstrumentView({ instrument, markers, position, onTap, ...events }: Props) {
   const all = { ...NO_EVENTS, ...events };
+  const leftHanded = useContext(LeftHanded);
   return instrument === "guitar" ? (
-    <Fretboard markers={markers.fretboard} strings={GUITAR.tuning.length} frets={GUITAR.frets} leftHanded={GUITAR.leftHanded} position={position}
+    <Fretboard markers={markers.fretboard} strings={GUITAR.tuning.length} frets={GUITAR.frets} leftHanded={leftHanded} position={position}
       onCellTap={onTap && ((string, fret) => onTap({ midi: fretMidi(GUITAR.tuning, string, fret), string, fret }))} {...all} />
   ) : (
     <Keyboard markers={markers.keyboard} from={KEYS.from} to={KEYS.to} onKeyTap={onTap && ((m) => onTap({ midi: m }))} {...all} />

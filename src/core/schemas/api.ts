@@ -25,12 +25,14 @@ export const progressInputSchema = z.object({
   stepIndex: z.number().int().min(0).max(100),
   completed: z.boolean().default(false),
   /** With `completed`: drills in the lesson and how many were right first time. */
+  /** With `completed`: seconds actually spent in the lesson this sitting. */
+  seconds: z.number().int().min(0).max(7200).optional(),
   drills: z.object({ answered: z.number().int().min(0).max(50), correct: z.number().int().min(0).max(50) }).refine((d) => d.correct <= d.answered).optional(),
 });
 export type ProgressInput = z.infer<typeof progressInputSchema>;
 
 /** POST /review/answer */
-export const reviewAnswerSchema = z.object({ conceptId: slug, correct: z.boolean() });
+export const reviewAnswerSchema = z.object({ conceptId: slug, correct: z.boolean(), /** seconds spent on the drill */ seconds: z.number().int().min(0).max(600).optional() });
 
 /** POST /placement: the learner's answers to the placement questions GET /placement returned. */
 export const placementAnswersSchema = z.object({
