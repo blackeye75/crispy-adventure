@@ -53,6 +53,15 @@ export const tab = (notes: string, caption: string, bpm = 70): BlockInput => ({ 
 /** The same tab as a sound over a click, for Listen steps and ear drills. */
 export const tabSound = (notes: string, bpm = 70): Sound => rhythm(parseTab(notes).map((item) => (item.bar ? "|" : `${item.notes.length ? tabSteps([item])[0].midis.map((m) => nameMidi(m)).join("+") : "r"}/${item.duration}${item.dotted ? "." : ""}`)).join(" "), bpm);
 
+/**
+ * A backing track to play over: a chord per bar, struck on beats 1 and 3 over a click, looping, with a tempo control.
+ * backing("Solo over the blues.", [["A7", "A2 E3 G3 C#4"], ...], 70, canvas)
+ */
+export const backing = (prompt: string, bars: [name: string, notes: string][], bpm = 70, canvas?: CanvasInput): BlockInput => ({
+  type: "play-along", prompt, bpm, canvas, bars: bars.map(([name]) => name),
+  sound: rhythm(bars.map(([, notes]) => `${notes.split(" ").join("+")}/h ${notes.split(" ").join("+")}/h`).join(" | "), bpm),
+});
+
 // Level 3 additions.
 import { playbackSteps } from "@/core/instruments/resolveCanvas";
 import { DEFAULT_CANVAS } from "@/core/schemas/canvas";

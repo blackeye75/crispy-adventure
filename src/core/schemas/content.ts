@@ -112,7 +112,15 @@ export const blockSchema = z.discriminatedUnion("type", [
     why: z.string().min(1),
   }),
   z.object({ type: z.literal("quiz-build"), prompt: z.string().min(1), notes: z.array(noteName).min(2), only: instrument.optional(), why: z.string().min(1) }),
-  z.object({ type: z.literal("play-along"), prompt: z.string().min(1), sound: soundSchema, bpm: bpm.default(60), canvas: lessonCanvas.optional() }),
+  z.object({
+    type: z.literal("play-along"),
+    prompt: z.string().min(1),
+    sound: soundSchema,
+    bpm: bpm.default(60),
+    canvas: lessonCanvas.optional(),
+    /** A backing track: the chord name of each four-beat bar of the sound, shown and lit as it plays. */
+    bars: z.array(z.string().min(1)).min(1).max(16).optional(),
+  }),
 ]);
 export type Block = z.infer<typeof blockSchema>;
 export type BlockOf<T extends Block["type"]> = Extract<Block, { type: T }>;

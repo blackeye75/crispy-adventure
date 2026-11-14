@@ -234,7 +234,7 @@ Tick tasks as they complete. Each phase ends in something you can use.
   - [x] Guitar strumming Basic (7 lessons; technique wording and demo videos await the owner)
   - [x] `tab` block and guitar lead Basic (9 lessons; same caveats)
 - [x] Tempo trainer and section looping (practice room: metronome, trainer, loop a range of chords; looping bars of written music in lessons is still open)
-- [ ] Play-along backing tracks
+- [x] Play-along backing tracks (synth chords over a click, with chord display; real recorded tracks are still open)
 - [ ] Piano: MIDI keyboard input (Web MIDI)
 - [ ] Guitar: microphone single-note detection for "play this note" drills
 - [ ] Indian note names (Sa Re Ga) and Hindi language option

@@ -3,7 +3,7 @@
 // pull off, slide, bend and add vibrato) is standard teaching written from memory, not checked against a
 // player. Each such passage is marked "OWNER REVIEW" below. These lessons also still need their demo videos.
 import type { LessonInput } from "@/core/schemas/content";
-import { audio, choice, ear, find, position, seq, shape, show, tab, tabSound, text } from "../helpers";
+import { audio, backing, choice, ear, find, position, seq, shape, show, tab, tabSound, text } from "../helpers";
 
 const base = { moduleSlug: "lead-basic", track: "guitar-lead", strand: "guitar", isFree: false, version: 1, minutes: 7 } as const;
 const G = { only: "guitar" } as const;
@@ -26,6 +26,11 @@ const LICK_2 = "3:7/q^b 2:5/8 3:7/8 3:5/8^p 4:7/8 4:7/q^v";
 const LICK_3 = "1:8/8 1:5/8 2:8/8 2:5/8 3:7/8 3:5/8^p 4:7/q^v";
 const CALL = "r/8 3:5/8 3:7/8^h 2:5/8 2:5/h";
 const RESPONSE = "2:8/8 2:5/8 3:7/8 3:5/8^p 4:7/h^v";
+const A7 = "A2 E3 G3 C#4";
+const D7 = "D3 A3 C4 F#4";
+const E7 = "E2 B2 D3 G#3";
+const BOX = position("A", "minor-pentatonic", 5, 8);
+const BLUES: [string, string][] = [["A7", A7], ["A7", A7], ["A7", A7], ["A7", A7], ["D7", D7], ["D7", D7], ["A7", A7], ["A7", A7], ["E7", E7], ["D7", D7], ["A7", A7], ["A7", A7]];
 // The study piece: twelve bars over A, A, A, A, D, D, A, A, E, D, A, A.
 const SOLO_1 = `${CALL} | ${RESPONSE} | ${CALL} | 2:8/8 2:5/8 3:7/q^b r/h`;
 const SOLO_2 = "r/8 3:5/8 3:7/8^h 2:5/8 3:7/h | 3:5/8 3:7/8^h 3:5/8^p 4:7/8 4:7/h^v | r/8 3:5/8 3:7/8^h 2:5/8 2:5/h | 2:8/8 1:5/8 1:5/h^v r/q";
@@ -365,6 +370,7 @@ In a blues, the call is usually played twice and answered once. You will use exa
         ear("And this?", tabSound(CALL, 80), ["Call: it ends open", "Response: it ends on the root"], 0, "It stops on E and waits."),
         choice("Why leave space between phrases?", ["So the listener and the player can both hear the idea", "Because long solos are wrong", "To save energy"], 0, "A gap gives a phrase its shape."),
         tab(`${CALL} | ${RESPONSE}`, "Play along at 70.", 70),
+        backing("Now trade with yourself over an A7 chord: play for one bar, rest for one bar. Any notes from the box.", [["A7", A7], ["A7", A7], ["A7", A7], ["A7", A7]], 70, BOX),
       ] },
     ],
   },
@@ -413,6 +419,7 @@ Learn four bars at a time. Join them only when each line is steady.`)] },
         tab(SOLO_1, "Play along: bars 1 to 4 at 70.", 70),
         tab(SOLO_2, "Bars 5 to 8 at 70.", 70),
         tab(SOLO_3, "Bars 9 to 12 at 70.", 70),
+        backing("The backing track: twelve bars of blues in A. Play the solo over it, then make up your own from the box.", BLUES, 70, BOX),
       ] },
     ],
   },

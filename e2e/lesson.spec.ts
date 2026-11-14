@@ -272,3 +272,22 @@ test("lead guitar: a tab plays, its notes light up on the tab and on the fretboa
   await page.screenshot({ path: `test-results/tab-${info.project.name}.png`, fullPage: true });
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
 });
+
+test("backing track: twelve bars of blues loop under the box, and the chord of the bar lights up", async ({ page }) => {
+  test.setTimeout(90_000);
+  await signUpSubscribed(page);
+  await page.goto("/learn/blues-solo-study-piece");
+  for (let i = 0; i < 3; i++) await next(page).click(); // to Practice
+  for (const answer of ["Twelve", "A minor pentatonic", "E"]) {
+    await page.getByRole("button", { name: answer, exact: true }).click();
+    await next(page).click();
+  }
+  for (let i = 0; i < 3; i++) await next(page).click(); // past the three tabs
+  const bars = page.getByRole("list", { name: "Chords, one per bar" });
+  await expect(bars.getByRole("listitem")).toHaveCount(12);
+  await page.getByLabel("Tempo in beats per minute").fill("160");
+  await page.getByRole("button", { name: "Play along (loops)" }).click();
+  await expect(bars.locator('li[aria-current="true"]')).toHaveText("A7", { timeout: 15_000 });
+  await expect(bars.getByRole("listitem").nth(4)).toHaveAttribute("aria-current", "true", { timeout: 20_000 }); // bar 5: D7
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
+});
