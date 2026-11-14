@@ -28,6 +28,7 @@ describe("fretboard", () => {
   test("chord shapes: open C is C E G C E, with string 6 silent", () => {
     expect(shapeMidis("x32010")).toEqual([null, 48, 52, 55, 60, 64]);
     expect(shapeMidis("133211").map((m) => m! % 12)).toEqual([5, 0, 5, 9, 0, 5]); // F barre: F C F A C F
+    expect(shapeMidis("8-10-10-9-8-8").map((m) => m! % 12)).toEqual([0, 7, 0, 4, 7, 0]); // C as an E-shape barre at fret 8
     expect(() => shapeMidis("x3201")).toThrow();
     expect(() => shapeMidis("x3201y")).toThrow();
   });
@@ -128,6 +129,13 @@ describe("resolveCanvas", () => {
     expect(fifth.fretboard.map((m) => [m.string, m.fret, m.label])).toEqual([[1, 0, "A"], [1, 4, "C♯"]]);
     expect(playbackSteps(canvas({ show: { kind: "notes", pitches: ["C4", "E4"] } }), "up").map((s) => s.midis)).toEqual([[60], [64]]);
   });
+  test("notes pinned to exact string and fret: a shape, with each note in one place", () => {
+    // G major, three notes per string, lowest two strings
+    const show = { kind: "notes" as const, pitches: ["G2", "A2", "B2", "C3", "D3", "E3"], at: [[6, 3], [6, 5], [6, 7], [5, 3], [5, 5], [5, 7]] as [number, number][] };
+    const r = resolveCanvas(canvas({ show }));
+    expect(r.fretboard.map((m) => [6 - m.string, m.fret, m.pitch])).toEqual([[6, 3, "G2"], [6, 5, "A2"], [6, 7, "B2"], [5, 3, "C3"], [5, 5, "D3"], [5, 7, "E3"]]);
+    expect(r.keyboard.map((m) => m.pitch)).toEqual(show.pitches); // the keyboard just shows the pitches
+  });
   test("left-handed changes no notes", () => {
     const lefty = resolveCanvas(canvas({ guitar: { ...DEFAULT_CANVAS.guitar, leftHanded: true } }));
     expect(lefty.fretboard).toEqual(resolveCanvas(DEFAULT_CANVAS).fretboard);
@@ -170,6 +178,7 @@ describe("canvas URL", () => {
       canvas({ show: { kind: "interval", interval: "4A" } }),
       canvas({ show: { kind: "progression", numerals: ["ii7", "V7", "Imaj7"], activeIndex: 0 } }),
       canvas({ show: { kind: "notes", pitches: ["A2", "C#3"], strings: [5], within: [0, 5] } }),
+      canvas({ show: { kind: "notes", pitches: ["G2", "C3"], at: [[6, 3], [5, 3]] } }),
       canvas({ guitar: { tuning: ["D2", "A2", "D3", "G3", "B3", "E4"], frets: 24, leftHanded: true } }),
     ];
     for (const s of states) expect(canvasFromQuery(Object.fromEntries(new URLSearchParams(canvasToQuery(s))))).toEqual(s);

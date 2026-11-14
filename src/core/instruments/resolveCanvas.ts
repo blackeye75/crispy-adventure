@@ -66,7 +66,7 @@ const chordRole = (interval: string): Role => (interval === "1P" ? "root" : "cho
 
 type Described = Omit<ResolvedCanvas, "fretboard" | "keyboard" | "announce"> & {
   /** "notes" selections mark exact pitches instead of every octave. */
-  exact?: { midis: Set<number>; strings?: number[]; within?: [number, number] };
+  exact?: { midis: Set<number>; strings?: number[]; within?: [number, number]; at?: [number, number][] };
 };
 
 function describe(state: CanvasState): Described {
@@ -129,7 +129,7 @@ function describe(state: CanvasState): Described {
       pattern: "",
       sentence: "",
       related: [],
-      exact: { midis: new Set(show.pitches.map(midi)), strings: show.strings, within: show.within },
+      exact: { midis: new Set(show.pitches.map(midi)), strings: show.strings, within: show.within, at: show.at },
     };
   }
 
@@ -183,6 +183,7 @@ export function resolveCanvas(state: CanvasState): ResolvedCanvas {
 
   const fretboard = tuning.flatMap((_, string) =>
     Array.from({ length: frets + 1 }, (_, fret) => {
+      if (exact?.at && !exact.at.some(([s, f]) => s === tuning.length - string && f === fret)) return [];
       if (exact?.strings && !exact.strings.includes(tuning.length - string)) return [];
       if (exact?.within && (fret < exact.within[0] || fret > exact.within[1])) return [];
       const outside = state.position ? fret < state.position.fromFret || fret > state.position.toFret : false;
@@ -206,6 +207,8 @@ export type PlaybackStep = {
   beats: number;
   /** How long each note sounds, when some outlast the step (a held note under moving ones). Defaults to `beats`. */
   holds?: number[];
+  /** How hard the notes are played, 0–1. Default: the instrument's normal level. */
+  velocity?: number;
   /** progression chord index */
   index?: number;
 };

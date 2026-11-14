@@ -3,7 +3,7 @@
 import type { PlaybackStep } from "@/core/instruments/resolveCanvas";
 
 type Tone = typeof import("tone");
-type Voice = { triggerAttackRelease(notes: number[], duration: number | number[], time?: number): unknown };
+type Voice = { triggerAttackRelease(notes: number[], duration: number | number[], time?: number, velocity?: number): unknown };
 type Engine = { Tone: Tone; voice: Voice; click: Voice };
 
 let loading: Promise<Engine> | undefined;
@@ -92,7 +92,7 @@ export function playSteps(steps: PlaybackStep[], { bpm, loop = false, metronome,
     let at = 0;
     steps.forEach((step, i) => {
       transport.schedule((time) => {
-        if (step.midis.length) voice.triggerAttackRelease(step.midis.map(hz), step.holds ? step.holds.map((b) => b * beat * 0.95) : step.beats * beat * 0.95, time);
+        if (step.midis.length) voice.triggerAttackRelease(step.midis.map(hz), step.holds ? step.holds.map((b) => b * beat * 0.95) : step.beats * beat * 0.95, time, step.velocity);
         draw.schedule(() => id === run && onStep(i), time);
       }, at);
       at += step.beats * beat;

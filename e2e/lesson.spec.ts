@@ -209,3 +209,35 @@ test("Level 3 lessons: chord diagrams, and progressions that step through their 
   await expect(page.getByRole("group", { name: "Guitar fretboard" }).locator('.note-marker[data-role="root"] text').first()).toHaveText("D");
   await expect(current).toHaveText("Em", { timeout: 10_000 });
 });
+
+test("Level 4 lessons: scale positions on fifteen frets, CAGED shapes up the neck, triplets", async ({ page }) => {
+  await signUpSubscribed(page);
+  const toStep = async (step: string) => {
+    await expect(async () => {
+      await next(page).click();
+      await expect(page.getByRole("listitem").filter({ hasText: step })).toHaveAttribute("aria-current", "step", { timeout: 2000 });
+    }).toPass();
+  };
+
+  await page.goto("/learn/five-pentatonic-positions");
+  for (const step of ["Listen", "Learn"]) await toStep(step);
+  const first = page.getByRole("group", { name: "Guitar fretboard" }).first();
+  await expect(first.locator(".note-marker:not([data-dimmed])")).toHaveCount(12); // position 1: two notes on each of six strings
+  await expect(first.getByRole("button", { name: "A2, root, string 6, fret 5" })).toBeVisible();
+  await expect(first.getByText("15", { exact: true })).toBeVisible(); // this lesson shows fifteen frets
+
+  await page.goto("/learn/the-caged-system");
+  for (const step of ["Listen", "Learn"]) await toStep(step);
+  const eShape = page.getByRole("img", { name: "C chord: string 6 fret 8, string 5 fret 10, string 4 fret 10, string 3 fret 9, string 2 fret 8, string 1 fret 8" });
+  await expect(eShape.getByText("8fr")).toBeVisible();
+  await expect(eShape.locator("rect")).toHaveCount(1);
+
+  await page.goto("/learn/three-notes-per-string");
+  for (const step of ["Listen", "Learn"]) await toStep(step);
+  await expect(page.getByRole("group", { name: "Guitar fretboard" }).locator(".note-marker")).toHaveCount(18); // exactly three on each string
+
+  await page.goto("/learn/triplets");
+  for (const step of ["Listen", "Learn"]) await toStep(step);
+  const score = page.getByRole("img", { name: /^treble staff: B4, B4, B4, B4, B4, B4, B4$/ });
+  await expect(score.locator("svg path").first()).toBeAttached();
+});

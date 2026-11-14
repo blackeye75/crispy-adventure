@@ -1,6 +1,6 @@
 "use client";
 
-import { shapeMidis } from "@/core/instruments/fretboard";
+import { shapeFrets, shapeMidis } from "@/core/instruments/fretboard";
 import type { PlaybackStep } from "@/core/instruments/resolveCanvas";
 import type { BlockOf } from "@/core/schemas/content";
 import { getChord } from "@/core/theory/chords";
@@ -15,7 +15,7 @@ const ROWS = 4;
 
 /** A chord box: the neck standing upright, string 6 on the left. O = open string, X = not played. */
 export function ChordDiagram({ block }: { block: BlockOf<"chord-diagram"> }) {
-  const frets = [...block.shape].map((c) => (c === "x" ? null : Number(c)));
+  const frets = shapeFrets(block.shape);
   const pressed = frets.filter((f): f is number => f !== null && f > 0);
   const lowest = Math.min(...pressed);
   const base = Math.max(...pressed) <= ROWS ? 1 : lowest; // open-position chords start at the nut

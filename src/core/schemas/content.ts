@@ -20,13 +20,13 @@ const notation = z.string().refine((value) => {
 
 /** Audio is data, synthesised from samples: lessons need no recorded files. */
 export const soundSchema = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("sequence"), notes: z.array(pitchSchema).min(1), bpm: bpm.optional() }),
+  z.object({ kind: z.literal("sequence"), notes: z.array(pitchSchema).min(1), bpm: bpm.optional(), /** How hard the notes are played, 0.1 (very soft) to 1. */ velocity: z.number().min(0.1).max(1).optional() }),
   z.object({ kind: z.literal("chord"), notes: z.array(pitchSchema).min(2) }),
   z.object({ kind: z.literal("progression"), chords: z.array(z.array(pitchSchema).min(2)).min(2), bpm: bpm.optional() }),
   // Notes with lengths and rests, over a click that marks the beat (the first beat of each bar is higher).
   // `click` is the gap between clicks in quarter-note beats (0.5 for the eighth-note pulse of 6/8);
   // every `beatsPerBar`-th click is the higher one. beatsPerBar 0 = no click.
-  z.object({ kind: z.literal("rhythm"), notes: notation, bpm: bpm.default(80), beatsPerBar: z.number().int().min(0).max(6).default(4), click: z.number().min(0.25).max(1).default(1) }),
+  z.object({ kind: z.literal("rhythm"), notes: notation, bpm: bpm.default(80), beatsPerBar: z.number().int().min(0).max(7).default(4), click: z.number().min(0.25).max(1).default(1) }),
 ]);
 export type Sound = z.infer<typeof soundSchema>;
 
@@ -36,6 +36,8 @@ const lessonCanvas = z.object({
   show: canvasShowSchema,
   labels: z.enum(["notes", "degrees", "intervals"]).default("notes"),
   position: z.object({ fromFret: z.number().int().min(0), toFret: z.number().int().max(24) }).optional(),
+  /** Frets to show on the guitar; lessons default to 12. */
+  frets: z.number().int().min(12).max(17).optional(),
 });
 
 const quizOptions = { options: z.array(z.string().min(1)).min(2).max(4), answer: z.number().int().min(0), why: z.string().min(1) };
@@ -50,7 +52,7 @@ export const blockSchema = z.discriminatedUnion("type", [
     /** One staff, or two for the grand staff (treble above bass). */
     staves: z.array(z.object({ clef: z.enum(["treble", "bass"]), notes: notation })).min(1).max(2),
     /** Time signature to print. */
-    time: z.enum(["4/4", "3/4", "6/8"]).optional(),
+    time: z.enum(["4/4", "3/4", "6/8", "5/4", "7/8"]).optional(),
     /** Key signature to print, by major key: "G", "F", "Bb". Notes then carry only the accidentals the key does not cover. */
     key: noteName.optional(),
     /** Print each note's letter name under it. */
@@ -66,8 +68,8 @@ export const blockSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("chord-diagram"),
-    /** Fret per string from string 6 to string 1; x = not played, 0 = open. "x32010" is C. */
-    shape: z.string().regex(/^[x0-9]{6}$/),
+    /** Fret per string from string 6 to string 1; x = not played, 0 = open. "x32010" is C; use dashes above fret 9: "8-10-10-9-8-8". */
+    shape: z.string().regex(/^([x0-9]{6}|(x|\d{1,2})(-(x|\d{1,2})){5})$/),
     /** The chord the shape is meant to be. Content tests check that the shape really sounds these notes. */
     chord: z.object({ root: noteName, id: z.enum(CHORD_IDS) }),
     caption: z.string().optional(),
@@ -198,7 +200,7 @@ export function strumSteps(pattern: string, chord: string[]): PlaybackStep[] {
 /** Turn a sound into transport steps. Single notes last one beat, chords two. */
 export function soundSteps(sound: Sound): PlaybackStep[] {
   if (sound.kind === "rhythm") return notationSteps(parseNotation(sound.notes));
-  if (sound.kind === "sequence") return sound.notes.map((note) => ({ midis: [midi(note)], beats: 1 }));
+  if (sound.kind === "sequence") return sound.notes.map((note) => ({ midis: [midi(note)], beats: 1, velocity: sound.velocity }));
   if (sound.kind === "chord") return [{ midis: sound.notes.map(midi), beats: 2 }];
   return sound.chords.map((chord) => ({ midis: chord.map(midi), beats: 2 }));
 }

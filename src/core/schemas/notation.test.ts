@@ -44,3 +44,11 @@ test("dots add half the length, sixteenths are a quarter beat, ties join notes a
   // six eighths fill a bar of 6/8 and a bar of 3/4 alike
   expect(notationSteps(parseNotation("B4/q. B4/q.")).reduce((sum, s) => sum + s.beats, 0)).toBe(3);
 });
+
+test("triplets: three to a beat, and the long-short pair of swing", () => {
+  const beats = (source: string) => notationSteps(parseNotation(source)).reduce((sum, s) => sum + s.beats, 0);
+  expect(beats("B4/8t B4/8t B4/8t")).toBeCloseTo(1);
+  expect(beats("B4/qt B4/8t")).toBeCloseTo(1);
+  expect(beats("B4/qt B4/qt B4/qt")).toBeCloseTo(2);
+  expect(parseNotation("B4/8t")[0]).toMatchObject({ duration: "8t" });
+});

@@ -23,7 +23,7 @@ export const show = (canvas: CanvasInput, caption: string, only?: "guitar" | "pi
 type FindOpts = { strings?: number[]; only?: "guitar" | "piano" };
 /** Notes with lengths over a click: rhythm("B4/q B4/q r/h"). `beatsPerBar` 0 turns the click off. */
 export const rhythm = (notes: string, bpm = 80, beatsPerBar = 4, click = 1): Sound => ({ kind: "rhythm", notes, bpm, beatsPerBar, click });
-export const staff = (clef: "treble" | "bass", notes: string, caption: string, opts: { names?: boolean; time?: true | "3/4" | "6/8"; key?: string; bpm?: number } = {}): BlockInput => ({ type: "notation", staves: [{ clef, notes }], caption, ...opts, time: opts.time === true ? "4/4" : opts.time });
+export const staff = (clef: "treble" | "bass", notes: string, caption: string, opts: { names?: boolean; time?: true | "3/4" | "6/8" | "5/4" | "7/8"; key?: string; bpm?: number } = {}): BlockInput => ({ type: "notation", staves: [{ clef, notes }], caption, ...opts, time: opts.time === true ? "4/4" : opts.time });
 export const choice = (prompt: string, options: string[], answer: number, why: string): BlockInput => ({ type: "quiz-choice", prompt, options, answer, why });
 /** "Which note is this?" over one written note. */
 export const read = (clef: "treble" | "bass", note: string, options: string[], answer: number, why: string): BlockInput => ({ type: "quiz-choice", prompt: "Which note is this?", staff: { clef, notes: note }, options, answer, why });
@@ -61,3 +61,20 @@ export const prog = (key: string, numerals: string, bpm = 84): Sound => ({
 export const chords = (...voicings: string[]): Sound => ({ kind: "progression", chords: voicings.map((v) => v.split(" ")) });
 /** A guitar chord diagram: diagram("x32010", "C", "major", caption). */
 export const diagram = (shape: string, root: string, id: ChordName, caption?: string): BlockInput => ({ type: "chord-diagram", shape, chord: { root, id }, caption });
+
+// Level 4 additions.
+import { STANDARD_TUNING, fretMidi } from "@/core/instruments/fretboard";
+
+/**
+ * Exact places on the neck, as "string:fret" pairs: shape("6:3 6:5 5:2 5:3"). The keyboard shows the same pitches.
+ * `spell` names the notes when sharps are not right for the key: shape("5:1", "Bb").
+ */
+export function shape(positions: string, spell = ""): CanvasInput {
+  const at = positions.split(" ").map((p) => p.split(":").map(Number) as [number, number]);
+  const prefer = spell ? spell.split(" ") : [];
+  return { root: "C", show: { kind: "notes", pitches: at.map(([string, fret]) => nameMidi(fretMidi(STANDARD_TUNING, 6 - string, fret), prefer)), at } };
+}
+/** A scale with one position on the neck picked out; notes outside it are dimmed. */
+export const position = (root: string, id: ScaleName, fromFret: number, toFret: number, frets = 15): CanvasInput => ({ ...scale(root, id), position: { fromFret, toFret }, frets });
+/** Notes played softly or loudly: dynamic("C4 E4 G4", 0.25). */
+export const dynamic = (notes: string, velocity: number, bpm = 80): Sound => ({ kind: "sequence", notes: notes.split(" "), bpm, velocity });

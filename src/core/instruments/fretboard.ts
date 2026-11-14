@@ -21,9 +21,14 @@ export function positionsOf(pitch: number, tuning: readonly string[], frets: num
  * Returns the MIDI number each string sounds, or null where the string is not played.
  */
 export function shapeMidis(shape: string, tuning: readonly string[] = STANDARD_TUNING): (number | null)[] {
-  // shortcut: one character per string, so frets 0–9 only; enough for open and barre chords
-  if (shape.length !== tuning.length || !/^[x0-9]+$/.test(shape)) throw new Error(`Not a chord shape for ${tuning.length} strings: "${shape}"`);
-  return [...shape].map((fret, string) => (fret === "x" ? null : midi(tuning[string]) + Number(fret)));
+  return shapeFrets(shape, tuning.length).map((fret, string) => (fret === null ? null : midi(tuning[string]) + fret));
+}
+
+/** The fret on each string, lowest string first; null = not played. "x32010", or with dashes when a fret has two digits: "8-10-10-9-8-8". */
+export function shapeFrets(shape: string, strings = STANDARD_TUNING.length): (number | null)[] {
+  const parts = shape.includes("-") ? shape.split("-") : [...shape];
+  if (parts.length !== strings || !parts.every((p) => /^(x|\d{1,2})$/.test(p))) throw new Error(`Not a chord shape for ${strings} strings: "${shape}"`);
+  return parts.map((p) => (p === "x" ? null : Number(p)));
 }
 
 /** Column a fret is drawn in, counting from the left edge. Left-handed mirrors the board. */

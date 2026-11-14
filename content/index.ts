@@ -17,6 +17,13 @@ import { inversions } from "./level-3/inversions";
 import { minorKeys } from "./level-3/minor-keys";
 import { progressions } from "./level-3/progressions";
 import { triads } from "./level-3/triads";
+import { chordTonesAndMelody } from "./level-4/chord-tones-and-melody";
+import { ear4 } from "./level-4/ear-4";
+import { expression } from "./level-4/expression";
+import { pentatonicAndBlues } from "./level-4/pentatonic-and-blues";
+import { rhythm3 } from "./level-4/rhythm-3";
+import { seventhChords } from "./level-4/seventh-chords";
+import { wholeInstrument } from "./level-4/whole-instrument";
 import { modules, tracks } from "./modules";
 
 export const content = {
@@ -24,5 +31,6 @@ export const content = {
   modules,
   lessons: [...soundAndPitch, ...musicalAlphabet, ...findingNotes, ...rhythm1, ...readingMusic, ...ear1, ...intervals, ...majorScale, ...keys, ...rhythm2, ...ear2,
     ...triads, ...chordsOfAKey, ...progressions, ...minorKeys, ...inversions, ...chordsOnYourInstrument, ...ear3,
+    ...pentatonicAndBlues, ...wholeInstrument, ...seventhChords, ...chordTonesAndMelody, ...rhythm3, ...expression, ...ear4,
   ],
 };

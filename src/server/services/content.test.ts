@@ -22,7 +22,7 @@ describe("content/", () => {
     }
   });
   test("every note a lesson shows or asks for exists on the lesson instruments (12 frets, E2–E6)", () => {
-    const state = (canvas: { root: string; show: CanvasState["show"] }): CanvasState => ({ ...DEFAULT_CANVAS, ...canvas, guitar: { ...DEFAULT_CANVAS.guitar, frets: 12 } });
+    const state = ({ frets, ...canvas }: { root: string; show: CanvasState["show"]; frets?: number }): CanvasState => ({ ...DEFAULT_CANVAS, ...canvas, guitar: { ...DEFAULT_CANVAS.guitar, frets: frets ?? 12 } });
     for (const lesson of valid.lessons) {
       for (const block of lesson.steps.flatMap((s) => s.blocks)) {
         const canvas = block.type === "instrument" || block.type === "play-along" ? block.canvas : undefined;

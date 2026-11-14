@@ -2,19 +2,20 @@
 //   "C4/q D4/q r/q E4+G4/q | B4/w"
 // note or rest (r), a slash, then its length: w = whole, h = half, q = quarter, 8 = eighth, 16 = sixteenth.
 // "." after the length dots it (half as long again); "~" ties it to the next note.
+// 8t and qt are triplet values: three 8t (or a qt and an 8t) fill one beat.
 // "+" stacks notes into a chord; "|" is a bar line.
 import type { PlaybackStep } from "../instruments/resolveCanvas";
 import { midi } from "../theory/notes";
 
 /** Length of each note value in beats, in 4/4. */
-export const NOTE_BEATS = { w: 4, h: 2, q: 1, "8": 0.5, "16": 0.25 } as const;
+export const NOTE_BEATS = { w: 4, h: 2, q: 1, "8": 0.5, "16": 0.25, qt: 2 / 3, "8t": 1 / 3 } as const;
 export type NoteValue = keyof typeof NOTE_BEATS;
 export type NotationItem = { bar: true } | { bar: false; pitches: string[]; duration: NoteValue; dotted: boolean; tie: boolean };
 
 /** Length of one written note in quarter-note beats. */
 export const itemBeats = (item: { duration: NoteValue; dotted: boolean }) => NOTE_BEATS[item.duration] * (item.dotted ? 1.5 : 1);
 
-const TOKEN = /^(r|[A-G](?:#|b)?\d(?:\+[A-G](?:#|b)?\d)*)\/(w|h|q|8|16)(\.)?(~)?$/;
+const TOKEN = /^(r|[A-G](?:#|b)?\d(?:\+[A-G](?:#|b)?\d)*)\/(w|h|qt|q|8t|8|16)(\.)?(~)?$/;
 
 /** Parse the text form. Throws on anything it does not understand. A rest has no pitches. */
 export function parseNotation(source: string): NotationItem[] {

@@ -48,7 +48,7 @@ function LinkedInstrument({ canvas, instrument, playLabel, bpm, loop, steps }: {
           ))}
         </p>
       )}
-      <InstrumentView instrument={instrument} markers={resolved} position={state.position} sounding={sounding} onNoteHover={(m) => setFocusPitch(m?.pitch)} onNoteTap={tap} />
+      <InstrumentView instrument={instrument} markers={resolved} position={state.position} frets={state.guitar.frets} sounding={sounding} onNoteHover={(m) => setFocusPitch(m?.pitch)} onNoteTap={tap} />
       <div className="flex flex-wrap items-center gap-4">
         {/* in a progression, the instrument follows the chord that is sounding */}
         <PlayButton steps={play} label={playLabel} bpm={bpm} loop={loop} onSounding={setSounding} onStep={(i) => setActiveIndex((i === undefined ? undefined : play[i]?.index) ?? 0)} />

@@ -19,7 +19,7 @@ const KEYS = { from: "E2", to: "E6" };
 const NO_EVENTS: NoteEvents = { sounding: [], onNoteHover: () => {}, onNoteTap: () => {} };
 
 /** A lesson's musical selection on the lesson instruments. */
-export const lessonState = (canvas: Pick<CanvasState, "root" | "show" | "labels" | "position">): CanvasState => ({ ...canvas, guitar: GUITAR, keyboard: KEYS });
+export const lessonState = ({ frets, ...canvas }: Pick<CanvasState, "root" | "show" | "labels" | "position"> & { frets?: number }): CanvasState => ({ ...canvas, guitar: { ...GUITAR, frets: frets ?? GUITAR.frets }, keyboard: KEYS });
 
 export type Tap = { midi: number; string?: number; fret?: number };
 type Markers = Pick<ResolvedCanvas, "fretboard" | "keyboard">;
@@ -40,16 +40,18 @@ type Props = Partial<NoteEvents> & {
   instrument: Instrument;
   markers: Markers;
   position?: CanvasState["position"];
+  /** Frets to draw; lessons default to twelve. */
+  frets?: number;
   /** Drills: taps on any position, marked or not. */
   onTap?: (tap: Tap) => void;
 };
 
 /** The fretboard or the keyboard, whichever the learner plays. */
-export function InstrumentView({ instrument, markers, position, onTap, ...events }: Props) {
+export function InstrumentView({ instrument, markers, position, frets = GUITAR.frets, onTap, ...events }: Props) {
   const all = { ...NO_EVENTS, ...events };
   const leftHanded = useContext(LeftHanded);
   return instrument === "guitar" ? (
-    <Fretboard markers={markers.fretboard} strings={GUITAR.tuning.length} frets={GUITAR.frets} leftHanded={leftHanded} position={position}
+    <Fretboard markers={markers.fretboard} strings={GUITAR.tuning.length} frets={frets} leftHanded={leftHanded} position={position}
       onCellTap={onTap && ((string, fret) => onTap({ midi: fretMidi(GUITAR.tuning, string, fret), string, fret }))} {...all} />
   ) : (
     <Keyboard markers={markers.keyboard} from={KEYS.from} to={KEYS.to} onKeyTap={onTap && ((m) => onTap({ midi: m }))} {...all} />

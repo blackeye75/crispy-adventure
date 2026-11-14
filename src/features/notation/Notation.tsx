@@ -15,7 +15,7 @@ const vexKey = (pitch: string) => `${pitch.slice(0, -1).toLowerCase()}/${pitch.s
 
 /** Draw the staves with VexFlow, which is only downloaded on lessons that show written music. */
 async function draw(host: HTMLDivElement, block: BlockOf<"notation">, parsed: NotationItem[][], width: number) {
-  const { Renderer, Stave, StaveNote, StaveTie, BarNote, Voice, Formatter, Accidental, Annotation, Beam, Dot, Fraction, StaveConnector } = await import("vexflow/bravura");
+  const { Renderer, Stave, StaveNote, StaveTie, BarNote, Voice, Formatter, Accidental, Annotation, Beam, Dot, Fraction, StaveConnector, Tuplet } = await import("vexflow/bravura");
   host.replaceChildren();
   const renderer = new Renderer(host, Renderer.Backends.SVG);
   renderer.resize(width, parsed.length * STAFF_HEIGHT + 20);
@@ -29,22 +29,43 @@ async function draw(host: HTMLDivElement, block: BlockOf<"notation">, parsed: No
     stave.setContext(context).draw();
     const notes = items.map((item) => {
       if (item.bar) return new BarNote();
-      const note = new StaveNote({ clef, keys: item.pitches.length ? item.pitches.map(vexKey) : [REST_KEY[clef]], duration: item.duration + (item.dotted ? "d" : "") + (item.pitches.length ? "" : "r") });
+      const note = new StaveNote({ clef, keys: item.pitches.length ? item.pitches.map(vexKey) : [REST_KEY[clef]], duration: item.duration.replace("t", "") + (item.dotted ? "d" : "") + (item.pitches.length ? "" : "r") });
       if (item.dotted) Dot.buildAndAttach([note], { all: true });
       if (block.names && item.pitches.length === 1) {
         note.addModifier(new Annotation(glyphs(item.pitches[0].slice(0, -1))).setVerticalJustification(Annotation.VerticalJustify.BOTTOM), 0);
       }
       return note;
     });
-    // 6/8 beams its eighth notes in threes; the others beam by the quarter-note beat.
-    const beams = Beam.generateBeams(notes.filter((n): n is InstanceType<typeof StaveNote> => n instanceof StaveNote && !n.isRest()), block.time === "6/8" ? { groups: [new Fraction(3, 8)] } : undefined);
+    // Triplets: gather triplet notes until they fill whole beats, then bracket each group with a 3.
+    const sounding = items.filter((item) => !item.bar);
+    const stemmed = notes.filter((n): n is InstanceType<typeof StaveNote> => n instanceof StaveNote);
+    const tripletGroups: InstanceType<typeof StaveNote>[][] = [];
+    let run: InstanceType<typeof StaveNote>[] = [];
+    let thirds = 0;
+    sounding.forEach((item, k) => {
+      if (item.bar || !item.duration.endsWith("t")) return;
+      run.push(stemmed[k]);
+      thirds += item.duration === "qt" ? 2 : 1;
+      if (thirds % 3 === 0) {
+        tripletGroups.push(run);
+        run = [];
+      }
+    });
+    const inTriplet = new Set(tripletGroups.flat());
+    const tuplets = tripletGroups.map((group) => new Tuplet(group, { numNotes: 3, notesOccupied: 2 }));
+    // 6/8 beams its eighth notes in threes and 7/8 in 2 + 2 + 3; the others beam by the quarter-note beat.
+    const groups = block.time === "6/8" ? [new Fraction(3, 8)] : block.time === "7/8" ? [new Fraction(2, 8), new Fraction(2, 8), new Fraction(3, 8)] : undefined;
+    const beams = [
+      ...Beam.generateBeams(stemmed.filter((n) => !n.isRest() && !inTriplet.has(n)), groups ? { groups } : undefined),
+      ...tripletGroups.filter((group) => group.length === 3 && group.every((n) => !n.isRest())).map((group) => new Beam(group)),
+    ];
     const ties = items.filter((item) => !item.bar).flatMap((item, k, sounding) => {
       const stems = notes.filter((n) => n instanceof StaveNote);
       return !item.bar && item.tie && sounding[k + 1] ? [new StaveTie({ firstNote: stems[k], lastNote: stems[k + 1], firstIndexes: [0], lastIndexes: [0] })] : [];
     });
     const voice = new Voice().setMode(Voice.Mode.SOFT).addTickables(notes); // SOFT: bars need not add up, lessons show fragments
     Accidental.applyAccidentals([voice], block.key ?? "C"); // sharps and flats the key signature does not already cover
-    return { stave, voice, beams, ties };
+    return { stave, voice, beams, ties, tuplets };
   });
   // Formatted together, so notes that sound together line up across the staves.
   const formatter = new Formatter();
@@ -54,6 +75,7 @@ async function draw(host: HTMLDivElement, block: BlockOf<"notation">, parsed: No
     p.voice.draw(context, p.stave);
     p.beams.forEach((beam) => beam.setContext(context).draw());
     p.ties.forEach((tie) => tie.setContext(context).draw());
+    p.tuplets.forEach((tuplet) => tuplet.setContext(context).draw());
   });
   const staves = parts.map((p) => p.stave);
   if (staves.length > 1) {

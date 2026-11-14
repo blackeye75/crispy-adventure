@@ -29,6 +29,8 @@ export const canvasShowSchema = z.discriminatedUnion("kind", [
     strings: z.array(z.number().int().min(1).max(8)).optional(),
     /** Guitar only: limit to this fret range, inclusive. */
     within: z.tuple([z.number().int().min(0), z.number().int().max(24)]).optional(),
+    /** Guitar only: the exact places to mark, as [string, fret] pairs. For shapes, where each note has one position. */
+    at: z.array(z.tuple([z.number().int().min(1).max(8), z.number().int().min(0).max(24)])).optional(),
   }),
 ]);
 
@@ -72,6 +74,7 @@ export function canvasToQuery(state: CanvasState): string {
     q.set("notes", show.pitches.join("-"));
     if (show.strings) q.set("strings", show.strings.join("-"));
     if (show.within) q.set("within", show.within.join("-"));
+    if (show.at) q.set("at", show.at.map((p) => p.join(".")).join("-"));
   }
   if (state.labels !== "notes") q.set("labels", state.labels);
   if (state.guitar.leftHanded) q.set("lh", "1");
@@ -87,7 +90,7 @@ export function canvasFromQuery(query: Query): CanvasState {
   const get = (key: string) => (typeof query[key] === "string" ? (query[key] as string) : undefined);
   const numbers = (key: string) => get(key)?.split("-").map(Number);
   const show =
-    (get("notes") && { kind: "notes", pitches: get("notes")!.split("-"), strings: numbers("strings"), within: numbers("within") }) ||
+    (get("notes") && { kind: "notes", pitches: get("notes")!.split("-"), strings: numbers("strings"), within: numbers("within"), at: get("at")?.split("-").map((p) => p.split(".").map(Number)) }) ||
     (get("chord") && { kind: "chord", chord: get("chord"), inversion: get("inv") ? Number(get("inv")) : undefined }) ||
     (get("interval") && { kind: "interval", interval: get("interval") }) ||
     (get("prog") && { kind: "progression", numerals: get("prog")!.split("-"), activeIndex: 0 }) ||
