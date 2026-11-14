@@ -96,10 +96,11 @@ export function PathView({ path }: { path: Path }) {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-12 px-4 py-10 lg:py-16">
       <h1 className="text-4xl">Your path</h1>
-      {path.flatMap((track) => track.levels).map((level) => (
-        <section key={level.level} className="flex flex-col gap-4">
+      {path.flatMap((track, t) => track.levels.map((level) => ({ ...level, track: t === 0 ? undefined : track }))).map((level) => (
+        <section key={`${level.track?.slug}-${level.level}`} className="flex flex-col gap-4">
           <h2 className="text-2xl">
-            <span className="text-primary">Level {level.level}</span> · {LEVEL_NAMES[level.level - 1]}
+            {/* The first track is the theory path, shown by level. Later ones are playing tracks, shown by name. */}
+            {level.track ? <><span className="text-primary">Playing</span> · {level.track.title}</> : <><span className="text-primary">Level {level.level}</span> · {LEVEL_NAMES[level.level - 1]}</>}
             {level.isFree && <span className="ml-3 rounded-full border px-2.5 py-0.5 align-middle font-sans text-xs tracking-normal text-muted-foreground">Free</span>}
           </h2>
           {level.modules.map((m) => (

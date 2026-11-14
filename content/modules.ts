@@ -2,6 +2,8 @@ import type { Module, Track } from "@/core/schemas/content";
 
 export const tracks: Track[] = [
   { slug: "theory", title: "Music theory", order: 1, description: "From your first note to jazz harmony, always on the instrument." },
+  // Playing tracks from docs/PLAYING.md. They run alongside the theory path.
+  { slug: "guitar-strumming", title: "Rhythm guitar and strumming", order: 2, description: "From your first downstroke to full strumming patterns, in time." },
 ];
 
 // The whole theory path from docs/CURRICULUM.md. Modules without lessons yet show as "coming soon".
@@ -48,6 +50,10 @@ const outline: [level: number, slug: string, title: string, summary: string][] =
   [6, "further-topics", "Further topics", "Quartal harmony, upper structures, and a bridge to Indian music."],
 ];
 
-export const modules: Module[] = outline.map(([level, slug, title, summary], order) => ({
-  slug, trackSlug: "theory", level, title, order, summary, isFree: level === 1, // Level 1 is free
-}));
+export const modules: Module[] = [
+  ...outline.map(([level, slug, title, summary], order) => ({
+    slug, trackSlug: "theory", level, title, order, summary, isFree: level === 1, // Level 1 is free
+  })),
+  // Playing-track stages come after the theory path in lesson order. `level` is the theory level a stage needs.
+  { slug: "strumming-basic", trackSlug: "guitar-strumming", level: 1, title: "Basic", order: 100, summary: "Downstrokes, down-up eighths, first patterns, and changing chords in time.", isFree: false },
+];

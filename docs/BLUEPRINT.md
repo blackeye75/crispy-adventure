@@ -231,6 +231,7 @@ Tick tasks as they complete. Each phase ends in something you can use.
 - [x] Rest of Levels 2–6, released module by module
 - [ ] Technique lane and blocks: `strum-pattern`, `tab`, `picking-pattern`, `hands`, `video` (see `docs/PLAYING.md`)
 - [ ] Guitar strumming Basic and lead Basic stages, then fingerstyle Basic; piano tracks after
+  - [x] Guitar strumming Basic (7 lessons; technique wording and demo videos await the owner)
 - [x] Tempo trainer and section looping (practice room: metronome, trainer, loop a range of chords; looping bars of written music in lessons is still open)
 - [ ] Play-along backing tracks
 - [ ] Piano: MIDI keyboard input (Web MIDI)

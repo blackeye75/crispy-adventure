@@ -80,6 +80,8 @@ export const blockSchema = z.discriminatedUnion("type", [
     pattern: z.string().regex(/^[DU-]( [DU-]){7}$/),
     /** The chord being strummed, low to high. */
     chord: z.array(pitchSchema).min(3).max(6),
+    /** A chord per bar, to strum through a progression. The pattern repeats in every bar; `chord` is then unused. */
+    bars: z.array(z.object({ name: z.string().min(1), chord: z.array(pitchSchema).min(3).max(6) })).min(2).max(8).optional(),
     bpm: bpm.default(80),
     caption: z.string().optional(),
   }),

@@ -42,6 +42,11 @@ export const circle = (highlight: string, caption: string): BlockInput => ({ typ
 /** Eight eighth-note slots: strum("D - D U - U D U", G_CHORD, caption). */
 export const strum = (pattern: string, chordNotes: string, caption: string, bpm = 80): BlockInput => ({ type: "strum-pattern", pattern, chord: chordNotes.split(" "), bpm, caption });
 
+/** One pattern strummed through a progression, a chord per bar: strumBars("D - D U - U D U", [["G", G], ["C", C]], caption). */
+export const strumBars = (pattern: string, bars: [name: string, notes: string][], caption: string, bpm = 80): BlockInput => ({
+  type: "strum-pattern", pattern, chord: bars[0][1].split(" "), bars: bars.map(([name, notes]) => ({ name, chord: notes.split(" ") })), bpm, caption,
+});
+
 // Level 3 additions.
 import { playbackSteps } from "@/core/instruments/resolveCanvas";
 import { DEFAULT_CANVAS } from "@/core/schemas/canvas";

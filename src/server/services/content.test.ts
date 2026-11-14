@@ -41,7 +41,7 @@ describe("content/", () => {
           const wanted = getChord(block.chord.root, block.chord.id).notes.map(chroma).sort();
           expect(sounded, `${lesson.slug}: ${block.chord.root} ${block.chord.id} as ${block.shape}`).toEqual(wanted);
         }
-        if (block.type === "strum-pattern") for (const pitch of block.chord) expect(midi(pitch) >= 40 && midi(pitch) <= 88, `${lesson.slug}: ${pitch}`).toBe(true);
+        if (block.type === "strum-pattern") for (const pitch of [...block.chord, ...(block.bars ?? []).flatMap((b) => b.chord)]) expect(midi(pitch) >= 40 && midi(pitch) <= 88, `${lesson.slug}: ${pitch}`).toBe(true);
         if (block.type === "quiz-find" && block.only !== "piano") {
           // somewhere on an allowed string, within 12 frets, the answer can be tapped
           const strings = block.strings ?? [1, 2, 3, 4, 5, 6];

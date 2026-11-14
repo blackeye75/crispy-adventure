@@ -77,7 +77,7 @@ test("home points at the next lesson; the path shows all six levels", async ({ p
   await page.getByRole("link", { name: "Start the first lesson" }).click();
   await expect(page).toHaveURL(/\/learn\/what-is-a-note/);
   await page.goto("/learn");
-  await expect(page.getByRole("heading", { level: 2 })).toHaveCount(6);
+  await expect(page.getByRole("heading", { level: 2 })).toHaveCount(7);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
 });
 
@@ -239,4 +239,18 @@ test("Level 4 lessons: scale positions on fifteen frets, CAGED shapes up the nec
   for (const step of ["Listen", "Learn"]) await toStep(step);
   const score = page.getByRole("img", { name: /^treble staff: B4, B4, B4, B4, B4, B4, B4$/ });
   await expect(score.locator("svg path").first()).toBeAttached();
+});
+
+test("playing track: the path lists it by name, and a strum pattern follows the chords bar by bar", async ({ page }) => {
+  await signUpSubscribed(page);
+  await page.goto("/learn");
+  await expect(page.getByRole("heading", { level: 2, name: /Playing · Rhythm guitar and strumming/ })).toBeVisible();
+  await page.getByRole("link", { name: /Changing chords in time/ }).click();
+  await next(page).click();
+  await next(page).click();
+  const bars = page.getByRole("list", { name: "Chords, one per bar" }).first();
+  await expect(bars.getByRole("listitem")).toHaveText(["G", "Em", "G", "Em"]);
+  await page.getByRole("button", { name: "Play the pattern (loops)" }).first().click();
+  await expect(bars.locator('li[aria-current="true"]')).toHaveText("Em", { timeout: 15_000 }); // the second bar
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
 });
