@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+import { parseTab, tabSteps } from "@/core/schemas/tab";
 import { content } from "../../../content";
 import { STANDARD_TUNING, fretMidi, shapeMidis } from "@/core/instruments/fretboard";
 import { getChord } from "@/core/theory/chords";
@@ -40,6 +41,19 @@ describe("content/", () => {
           const sounded = [...new Set(shapeMidis(block.shape).filter((m) => m !== null).map((m) => m % 12))].sort();
           const wanted = getChord(block.chord.root, block.chord.id).notes.map(chroma).sort();
           expect(sounded, `${lesson.slug}: ${block.chord.root} ${block.chord.id} as ${block.shape}`).toEqual(wanted);
+        }
+        if (block.type === "tab") {
+          // lesson fretboards show twelve frets, and a bend must not leave the range either
+          for (const item of parseTab(block.notes)) if (!item.bar) for (const n of item.notes) expect(n.fret <= 12, `${lesson.slug}: fret ${n.fret}`).toBe(true);
+          // a hammer-on, pull-off or slide continues from the note before it, on the same string
+          parseTab(block.notes).filter((item) => !item.bar).forEach((item, k, all) => {
+            if (item.bar || !item.mark || !"hps".includes(item.mark)) return;
+            const before = all[k - 1];
+            const ok = before && !before.bar && before.notes.length === 1 && item.notes.length === 1 && before.notes[0].string === item.notes[0].string
+              && (item.mark === "h" ? item.notes[0].fret > before.notes[0].fret : item.mark === "p" ? item.notes[0].fret < before.notes[0].fret : item.notes[0].fret !== before.notes[0].fret);
+            expect(ok, `${lesson.slug}: ^${item.mark} at note ${k + 1} of "${block.notes}"`).toBe(true);
+          });
+          for (const step of tabSteps(parseTab(block.notes))) for (const m of step.midis) expect(m >= 40 && m <= 88, `${lesson.slug}: tab pitch`).toBe(true);
         }
         if (block.type === "strum-pattern") for (const pitch of [...block.chord, ...(block.bars ?? []).flatMap((b) => b.chord)]) expect(midi(pitch) >= 40 && midi(pitch) <= 88, `${lesson.slug}: ${pitch}`).toBe(true);
         if (block.type === "quiz-find" && block.only !== "piano") {

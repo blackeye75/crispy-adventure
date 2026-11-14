@@ -77,7 +77,7 @@ test("home points at the next lesson; the path shows all six levels", async ({ p
   await page.getByRole("link", { name: "Start the first lesson" }).click();
   await expect(page).toHaveURL(/\/learn\/what-is-a-note/);
   await page.goto("/learn");
-  await expect(page.getByRole("heading", { level: 2 })).toHaveCount(7);
+  await expect(page.getByRole("heading", { level: 2 })).toHaveCount(8);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
 });
 
@@ -252,5 +252,23 @@ test("playing track: the path lists it by name, and a strum pattern follows the 
   await expect(bars.getByRole("listitem")).toHaveText(["G", "Em", "G", "Em"]);
   await page.getByRole("button", { name: "Play the pattern (loops)" }).first().click();
   await expect(bars.locator('li[aria-current="true"]')).toHaveText("Em", { timeout: 15_000 }); // the second bar
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
+});
+
+test("lead guitar: a tab plays, its notes light up on the tab and on the fretboard", async ({ page }, info) => {
+  await signUpSubscribed(page);
+  await page.goto("/learn");
+  await expect(page.getByRole("heading", { level: 2, name: /Playing · Lead guitar and solos/ })).toBeVisible();
+  await page.goto("/learn/first-licks");
+  await next(page).click();
+  await next(page).click();
+  const tab = page.getByRole("img", { name: /^Tab\. string 2 fret 8; string 2 fret 5; string 3 fret 7; string 3 fret 5; string 4 fret 7$/ });
+  await expect(tab).toBeVisible();
+  const board = page.getByRole("group", { name: /Guitar fretboard/ }).first();
+  await expect(board.locator(".note-marker")).toHaveCount(5);
+  await page.getByRole("button", { name: "Play the tab" }).first().click();
+  await expect(tab.locator(".tab-note[data-active]")).toHaveCount(1, { timeout: 15_000 });
+  await expect(board.locator(".note-marker[data-active]")).toHaveCount(1);
+  await page.screenshot({ path: `test-results/tab-${info.project.name}.png`, fullPage: true });
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
 });

@@ -18,6 +18,7 @@ import { AudioBlock, InstrumentBlock, PlayAlongBlock } from "./blocks";
 import { ChordDiagram } from "./ChordDiagram";
 import { CircleOfFifths } from "./CircleOfFifths";
 import { StrumPattern } from "./StrumPattern";
+import { TabBlock } from "./Tab";
 import { LeftHanded } from "./InstrumentView";
 import { Markdown } from "./Markdown";
 
@@ -31,6 +32,7 @@ export function BlockView({ block, instrument, onSolved }: { block: Block; instr
     case "notation": return <NotationBlock block={block} />;
     case "circle-of-fifths": return <CircleOfFifths block={block} />;
     case "strum-pattern": return <StrumPattern block={block} />;
+    case "tab": return <TabBlock block={block} />;
     case "chord-diagram": return <ChordDiagram block={block} />;
     case "instrument": return <InstrumentBlock block={block} instrument={instrument} />;
     case "play-along": return <PlayAlongBlock block={block} instrument={instrument} />;

@@ -1,5 +1,6 @@
 // Small builders so lesson files read like lessons. Everything is still validated by Zod in `npm run seed`.
 import type { LessonInput, Sound } from "@/core/schemas/content";
+import { parseTab, tabSteps } from "@/core/schemas/tab";
 
 type Step = LessonInput["steps"][number];
 type BlockInput = Step["blocks"][number];
@@ -46,6 +47,11 @@ export const strum = (pattern: string, chordNotes: string, caption: string, bpm 
 export const strumBars = (pattern: string, bars: [name: string, notes: string][], caption: string, bpm = 80): BlockInput => ({
   type: "strum-pattern", pattern, chord: bars[0][1].split(" "), bars: bars.map(([name, notes]) => ({ name, chord: notes.split(" ") })), bpm, caption,
 });
+
+/** Guitar tab with rhythm, in the text form of src/core/schemas/tab.ts: tab("6:5/8 6:8/8 5:5/q", caption). */
+export const tab = (notes: string, caption: string, bpm = 70): BlockInput => ({ type: "tab", notes, caption, bpm });
+/** The same tab as a sound over a click, for Listen steps and ear drills. */
+export const tabSound = (notes: string, bpm = 70): Sound => rhythm(parseTab(notes).map((item) => (item.bar ? "|" : `${item.notes.length ? tabSteps([item])[0].midis.map((m) => nameMidi(m)).join("+") : "r"}/${item.duration}${item.dotted ? "." : ""}`)).join(" "), bpm);
 
 // Level 3 additions.
 import { playbackSteps } from "@/core/instruments/resolveCanvas";

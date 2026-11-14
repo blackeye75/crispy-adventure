@@ -4,6 +4,7 @@ import { midi } from "../theory/notes";
 import { CHORD_IDS } from "../theory/chords";
 import { canvasShowSchema, pitchSchema } from "./canvas";
 import { notationSteps, parseNotation } from "./notation";
+import { parseTab } from "./tab";
 
 const slug = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/);
 const noteName = z.string().regex(/^[A-G](#|b)?$/);
@@ -83,6 +84,19 @@ export const blockSchema = z.discriminatedUnion("type", [
     /** A chord per bar, to strum through a progression. The pattern repeats in every bar; `chord` is then unused. */
     bars: z.array(z.object({ name: z.string().min(1), chord: z.array(pitchSchema).min(3).max(6) })).min(2).max(8).optional(),
     bpm: bpm.default(80),
+    caption: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal("tab"),
+    /** Guitar tablature in the text form of ./tab.ts. */
+    notes: z.string().refine((value) => {
+      try {
+        return parseTab(value).length > 0;
+      } catch {
+        return false;
+      }
+    }, "not valid tab"),
+    bpm: bpm.default(70),
     caption: z.string().optional(),
   }),
   z.object({ type: z.literal("quiz-choice"), prompt: z.string().min(1), sound: soundSchema.optional(), /** A written note to read. */ staff: z.object({ clef: z.enum(["treble", "bass"]), notes: notation }).optional(), ...quizOptions }).refine(answerInRange, "answer must index an option"),
