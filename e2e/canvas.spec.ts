@@ -53,7 +53,10 @@ test("left-handed mirrors the fretboard only", async ({ page }) => {
 
 test("playback pulses markers on both instruments, then stops", async ({ page }) => {
   await page.goto("/practice");
-  await page.getByRole("button", { name: "Play" }).click();
+  await expect(async () => { // the first click can land before the canvas is interactive
+    await page.getByRole("button", { name: "Play" }).click({ timeout: 1000 }).catch(() => {});
+    await expect(page.getByRole("button", { name: "Stop" })).toBeVisible({ timeout: 1500 });
+  }).toPass();
   await expect(fretboard(page).locator('.note-marker[data-active][data-midi="50"]').first()).toBeVisible({ timeout: 10_000 });
   await expect(keyboard(page).locator('.note-marker[data-active][data-midi="50"]')).toBeVisible();
   await expect(page.getByRole("button", { name: "Play" })).toBeVisible({ timeout: 15_000 }); // back from "Stop" at the end

@@ -24,6 +24,13 @@ import { pentatonicAndBlues } from "./level-4/pentatonic-and-blues";
 import { rhythm3 } from "./level-4/rhythm-3";
 import { seventhChords } from "./level-4/seventh-chords";
 import { wholeInstrument } from "./level-4/whole-instrument";
+import { borrowedChords } from "./level-5/borrowed-chords";
+import { ear5 } from "./level-5/ear-5";
+import { extendedChords } from "./level-5/extended-chords";
+import { modulation } from "./level-5/modulation";
+import { modes } from "./level-5/modes";
+import { secondaryDominants } from "./level-5/secondary-dominants";
+import { voiceLeading } from "./level-5/voice-leading";
 import { modules, tracks } from "./modules";
 
 export const content = {
@@ -32,5 +39,6 @@ export const content = {
   lessons: [...soundAndPitch, ...musicalAlphabet, ...findingNotes, ...rhythm1, ...readingMusic, ...ear1, ...intervals, ...majorScale, ...keys, ...rhythm2, ...ear2,
     ...triads, ...chordsOfAKey, ...progressions, ...minorKeys, ...inversions, ...chordsOnYourInstrument, ...ear3,
     ...pentatonicAndBlues, ...wholeInstrument, ...seventhChords, ...chordTonesAndMelody, ...rhythm3, ...expression, ...ear4,
+    ...modes, ...secondaryDominants, ...borrowedChords, ...voiceLeading, ...extendedChords, ...modulation, ...ear5,
   ],
 };
