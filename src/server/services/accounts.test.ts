@@ -49,6 +49,8 @@ describe.skipIf(!uri)("accounts and progress (MongoDB)", async () => {
     await expect(saveProgress(viewer, { ...input, lessonSlug: "nope" }, day1)).rejects.toMatchObject({ status: 404 });
     await saveProgress(viewer, input, day1);
     expect(await LessonProgressModel.findOne({ userId: viewer.userId }).lean()).toMatchObject({ status: "started", stepIndex: 2 });
+    await saveProgress(viewer, { ...input, stepIndex: 1 }, day1); // an older save arriving late
+    expect((await LessonProgressModel.findOne({ userId: viewer.userId }).lean())!.stepIndex).toBe(2);
   });
 
   test("review is for subscribers; finishing lessons still queues it up for later", async () => {

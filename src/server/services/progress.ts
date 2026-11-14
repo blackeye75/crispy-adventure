@@ -31,7 +31,8 @@ export async function saveProgress(viewer: Viewer, input: ProgressInput, now = n
 
   if (!input.completed) {
     // Never turn a completed lesson back into "started" when it is replayed.
-    await LessonProgressModel.updateOne(key, { $set: { stepIndex: input.stepIndex }, $setOnInsert: { status: "started" } }, { upsert: true });
+    // $max: two quick saves can arrive out of order, and the position must never go backwards.
+    await LessonProgressModel.updateOne(key, { $max: { stepIndex: input.stepIndex }, $setOnInsert: { status: "started" } }, { upsert: true });
     return { today: null };
   }
 
