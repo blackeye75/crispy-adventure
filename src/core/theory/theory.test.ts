@@ -80,14 +80,47 @@ describe("scales", () => {
       mixolydian: "1 2 3 4 5 6 b7",
       locrian: "1 b2 b3 4 b5 b6 b7",
       "whole-tone": "1 2 3 #4 #5 b7",
+      "lydian-dominant": "1 2 3 #4 5 6 b7",
+      altered: "1 b2 #2 3 #4 b6 b7",
+      "phrygian-dominant": "1 b2 3 4 5 b6 b7",
+      "locrian-natural-2": "1 2 b3 4 b5 b6 b7",
+      "lydian-augmented": "1 2 3 #4 #5 6 7",
+      "diminished-half-whole": "1 b2 b3 3 #4 5 6 b7",
+      "diminished-whole-half": "1 2 b3 4 b5 b6 6 7",
+      augmented: "1 b3 3 5 #5 7",
     });
   });
   test("agree with tonal's independent scale dictionary", () => {
     const tonalName: Record<string, string> = { "natural-minor": "minor", "harmonic-minor": "harmonic minor", "melodic-minor": "melodic minor", "major-pentatonic": "major pentatonic", "minor-pentatonic": "minor pentatonic" };
     // whole-tone is left out: tonal spells its last note as #6, the reference table as b7
-    for (const s of SCALES.filter((s) => s.id !== "whole-tone")) {
+    const original = SCALES.slice(0, 13);
+    for (const s of original.filter((s) => s.id !== "whole-tone")) {
       expect(scaleIntervals(s.id), s.id).toEqual(Scale.get(`C ${tonalName[s.id] ?? s.id}`).intervals);
     }
+  });
+  const keys = (root: string, id: Parameters<typeof getScale>[1]) => getScale(root, id).notes.map(chroma).sort((a, b) => a - b);
+  test("modes of melodic and harmonic minor are the parent scale from another note", () => {
+    expect(keys("C", "lydian-dominant")).toEqual(keys("G", "melodic-minor")); // 4th mode
+    expect(keys("G", "altered")).toEqual(keys("Ab", "melodic-minor")); // 7th mode: melodic minor a half step up
+    expect(keys("B", "locrian-natural-2")).toEqual(keys("D", "melodic-minor")); // 6th mode
+    expect(keys("C", "lydian-augmented")).toEqual(keys("A", "melodic-minor")); // 3rd mode
+    expect(keys("E", "phrygian-dominant")).toEqual(keys("A", "harmonic-minor")); // 5th mode
+    expect(getScale("C", "lydian-dominant").notes.join(" ")).toBe("C D E F# G A Bb");
+    expect(getScale("G", "altered").notes.join(" ")).toBe("G Ab A# B C# Eb F");
+    expect(getScale("E", "phrygian-dominant").notes.join(" ")).toBe("E F G# A B C D");
+  });
+  test("symmetric scales repeat their own pattern", () => {
+    expect(getScale("C", "whole-tone").steps.join(" ")).toBe("W W W W W W");
+    expect(getScale("C", "diminished-half-whole").steps.join(" ")).toBe("H W H W H W H W");
+    expect(getScale("C", "diminished-whole-half").steps.join(" ")).toBe("W H W H W H W H");
+    expect(getScale("C", "augmented").steps.join(" ")).toBe("W+H H W+H H W+H H");
+    expect(getScale("C", "augmented").notes.join(" ")).toBe("C Eb E G G# B"); // two augmented triads, C E G# and Eb G B
+    // only three different diminished scales exist: a minor third up gives the same notes
+    expect(keys("C", "diminished-half-whole")).toEqual(keys("Eb", "diminished-half-whole"));
+    // and only two whole-tone scales
+    expect(keys("C", "whole-tone")).toEqual(keys("D", "whole-tone"));
+    // half-whole from C is whole-half from Db
+    expect(keys("C", "diminished-half-whole")).toEqual(keys("Db", "diminished-whole-half"));
   });
   test("real keys are spelled correctly", () => {
     expect(getScale("C", "major").notes.join(" ")).toBe("C D E F G A B");

@@ -16,6 +16,16 @@ export const SCALES = [
   { id: "mixolydian", name: "Mixolydian mode", formula: "1 2 3 4 5 6 b7" },
   { id: "locrian", name: "Locrian mode", formula: "1 b2 b3 4 b5 b6 b7" },
   { id: "whole-tone", name: "whole-tone scale", formula: "1 2 3 #4 #5 b7" },
+  // Level 6: modes of melodic and harmonic minor, and the symmetric scales.
+  { id: "lydian-dominant", name: "Lydian dominant scale", formula: "1 2 3 #4 5 6 b7" },
+  // Spelled the way players name its notes over a dominant chord: b9 #9 3 #11 b13 b7.
+  { id: "altered", name: "altered scale", formula: "1 b2 #2 3 #4 b6 b7" },
+  { id: "phrygian-dominant", name: "Phrygian dominant scale", formula: "1 b2 3 4 5 b6 b7" },
+  { id: "locrian-natural-2", name: "Locrian natural 2 scale", formula: "1 2 b3 4 b5 b6 b7" },
+  { id: "lydian-augmented", name: "Lydian augmented scale", formula: "1 2 3 #4 #5 6 7" },
+  { id: "diminished-half-whole", name: "half-whole diminished scale", formula: "1 b2 b3 3 #4 5 6 b7" },
+  { id: "diminished-whole-half", name: "whole-half diminished scale", formula: "1 2 b3 4 b5 b6 6 7" },
+  { id: "augmented", name: "augmented scale", formula: "1 b3 3 5 #5 7" },
 ] as const;
 
 export type ScaleId = (typeof SCALES)[number]["id"];

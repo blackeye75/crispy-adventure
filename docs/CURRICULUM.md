@@ -310,6 +310,16 @@ The owner reviews every lesson for accuracy before it is published. Claude Code 
 | Mixolydian | 1 2 3 4 5 6 b7 |
 | Locrian | 1 b2 b3 4 b5 b6 b7 |
 | Whole tone | 1 2 3 #4 #5 b7 |
+| Lydian dominant | 1 2 3 #4 5 6 b7 |
+| Altered | 1 b2 #2 3 #4 b6 b7 |
+| Phrygian dominant | 1 b2 3 4 5 b6 b7 |
+| Locrian natural 2 | 1 2 b3 4 b5 b6 b7 |
+| Lydian augmented | 1 2 3 #4 #5 6 7 |
+| Diminished, half-whole | 1 b2 b3 3 #4 5 6 b7 |
+| Diminished, whole-half | 1 2 b3 4 b5 b6 6 7 |
+| Augmented | 1 b3 3 5 #5 7 |
+
+The last eight rows were added when Level 6 was written and need the owner's review. The altered scale is spelled as players name it over a dominant chord (b9 #9 3 #11 b13 b7).
 
 ### Chord formulas
 

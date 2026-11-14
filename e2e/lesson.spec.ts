@@ -78,7 +78,6 @@ test("home points at the next lesson; the path shows all six levels", async ({ p
   await expect(page).toHaveURL(/\/learn\/what-is-a-note/);
   await page.goto("/learn");
   await expect(page.getByRole("heading", { level: 2 })).toHaveCount(6);
-  await expect(page.getByText("Coming soon").first()).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
 });
 
