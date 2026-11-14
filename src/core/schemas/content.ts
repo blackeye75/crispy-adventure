@@ -4,6 +4,7 @@ import { midi } from "../theory/notes";
 import { CHORD_IDS } from "../theory/chords";
 import { canvasShowSchema, pitchSchema } from "./canvas";
 import { notationSteps, parseNotation } from "./notation";
+import { fingersFit } from "./hands";
 import { parseTab } from "./tab";
 
 const slug = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/);
@@ -110,6 +111,24 @@ export const blockSchema = z.discriminatedUnion("type", [
       return true; // the notes are already reported as invalid
     }
   }, "fingers must name one finger (or -) for every note and rest"),
+  z.object({
+    type: z.literal("hands"),
+    /** The right-hand part, and optionally the left, in the notation text form (no ties). */
+    right: notation,
+    left: notation.optional(),
+    /** Finger numbers (1 = thumb) for each note or rest in turn: "135" for a chord, "-" for a rest. */
+    rightFingers: z.string().optional(),
+    leftFingers: z.string().optional(),
+    beatsPerBar: z.number().int().min(2).max(7).default(4),
+    bpm: bpm.default(70),
+    caption: z.string().optional(),
+  }).refine((b) => {
+    try {
+      return (!b.rightFingers || fingersFit(b.right, b.rightFingers)) && (!b.leftFingers || (b.left !== undefined && fingersFit(b.left, b.leftFingers)));
+    } catch {
+      return true; // the notes are already reported as invalid
+    }
+  }, "finger numbers must give one finger per note, and - for a rest"),
   z.object({ type: z.literal("quiz-choice"), prompt: z.string().min(1), sound: soundSchema.optional(), /** A written note to read. */ staff: z.object({ clef: z.enum(["treble", "bass"]), notes: notation }).optional(), ...quizOptions }).refine(answerInRange, "answer must index an option"),
   z.object({ type: z.literal("quiz-ear"), prompt: z.string().min(1), sound: soundSchema, ...quizOptions }).refine(answerInRange, "answer must index an option"),
   z.object({

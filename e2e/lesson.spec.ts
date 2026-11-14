@@ -77,7 +77,7 @@ test("home points at the next lesson; the path shows all six levels", async ({ p
   await page.getByRole("link", { name: "Start the first lesson" }).click();
   await expect(page).toHaveURL(/\/learn\/what-is-a-note/);
   await page.goto("/learn");
-  await expect(page.getByRole("heading", { level: 2 })).toHaveCount(9);
+  await expect(page.getByRole("heading", { level: 2 })).toHaveCount(10);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
 });
 
@@ -245,7 +245,7 @@ test("playing track: the path lists it by name, and a strum pattern follows the 
   await signUpSubscribed(page);
   await page.goto("/learn");
   await expect(page.getByRole("heading", { level: 2, name: /Playing · Rhythm guitar and strumming/ })).toBeVisible();
-  await page.getByRole("link", { name: /Changing chords in time/ }).click();
+  await page.getByRole("link", { name: /Changing chords in time(?! at)/ }).click();
   await next(page).click();
   await next(page).click();
   const bars = page.getByRole("list", { name: "Chords, one per bar" }).first();
@@ -306,4 +306,26 @@ test("fingerstyle: a picking pattern names the finger for every note and plays i
   await expect(waltz.locator(".tab-note[data-active]")).toHaveCount(1, { timeout: 15_000 });
   await waltz.scrollIntoViewIfNeeded();
   await page.screenshot({ path: `test-results/picking-${info.project.name}.png` });
+});
+
+test("piano accompaniment: both hands show their notes and fingers, and the keyboard follows the playback", async ({ page }, info) => {
+  await signUpSubscribed(page);
+  await page.goto("/learn");
+  await expect(page.getByRole("heading", { level: 2, name: /Playing · Piano accompaniment/ })).toBeVisible();
+  await page.goto("/learn/first-pop-pattern");
+  await next(page).click();
+  await next(page).click();
+  const right = page.getByRole("group", { name: "Right hand" }).first();
+  const left = page.getByRole("group", { name: "Left hand" }).first();
+  await expect(right.getByRole("listitem")).toHaveCount(4);
+  await expect(right.getByRole("listitem").first()).toContainText("C E G");
+  await expect(right.getByRole("listitem").first()).toContainText("1 3 5");
+  await expect(left.getByRole("listitem")).toHaveText([/C.*5/, /G.*1/]);
+  const keyboard = page.getByRole("group", { name: "Piano keyboard" }).first();
+  await expect(keyboard.locator(".note-marker")).toHaveCount(5); // C3 G3 C4 E4 G4
+  await page.getByRole("button", { name: "Play both hands" }).first().click();
+  await expect(left.locator("li[data-active]")).toHaveText(/G/, { timeout: 15_000 }); // beat 3: the fifth
+  await expect(keyboard.locator(".note-marker[data-active]")).toHaveCount(4); // G3 with the chord above it
+  await page.screenshot({ path: `test-results/hands-${info.project.name}.png` });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
 });

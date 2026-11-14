@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+import { handsPlayback } from "@/core/schemas/hands";
 import { parseTab, tabSteps } from "@/core/schemas/tab";
 import { content } from "../../../content";
 import { STANDARD_TUNING, fretMidi, shapeMidis } from "@/core/instruments/fretboard";
@@ -55,6 +56,7 @@ describe("content/", () => {
           });
           for (const step of tabSteps(parseTab(block.notes))) for (const m of step.midis) expect(m >= 40 && m <= 88, `${lesson.slug}: tab pitch`).toBe(true);
         }
+        if (block.type === "hands") for (const m of handsPlayback(block.right, block.left).steps.flatMap((s) => s.midis)) expect(m >= 40 && m <= 88, `${lesson.slug}: hands pitch`).toBe(true);
         if (block.type === "strum-pattern") for (const pitch of [...block.chord, ...(block.bars ?? []).flatMap((b) => b.chord)]) expect(midi(pitch) >= 40 && midi(pitch) <= 88, `${lesson.slug}: ${pitch}`).toBe(true);
         if (block.type === "quiz-find" && block.only !== "piano") {
           // somewhere on an allowed string, within 12 frets, the answer can be tapped

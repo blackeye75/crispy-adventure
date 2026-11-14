@@ -1,5 +1,6 @@
 // Small builders so lesson files read like lessons. Everything is still validated by Zod in `npm run seed`.
 import type { LessonInput, Sound } from "@/core/schemas/content";
+import { handsPlayback } from "@/core/schemas/hands";
 import { parseTab, tabSteps } from "@/core/schemas/tab";
 
 type Step = LessonInput["steps"][number];
@@ -63,6 +64,19 @@ export const backing = (prompt: string, bars: [name: string, notes: string][], b
   type: "play-along", prompt, bpm, canvas, bars: bars.map(([name]) => name),
   sound: rhythm(bars.map(([, notes]) => `${notes.split(" ").join("+")}/h ${notes.split(" ").join("+")}/h`).join(" | "), bpm),
 });
+
+/** A piano part for two hands with finger numbers: hands({ right: "C4+E4+G4/w", rightFingers: "135", left: "C3/w", leftFingers: "5" }, caption). */
+export const hands = (part: { right: string; left?: string; rightFingers?: string; leftFingers?: string }, caption: string, bpm = 70, beatsPerBar = 4): BlockInput => ({ type: "hands", ...part, caption, bpm, beatsPerBar });
+/** Both hands as a sound over a click, for Listen steps and ear drills. */
+export function handsSound(right: string, left: string, bpm = 70, beatsPerBar = 4): Sound {
+  const LENGTHS: Record<number, string> = { 4: "w", 3: "h.", 2: "h", 1.5: "q.", 1: "q", 0.5: "8" };
+  // shortcut: a held note is cut to the length of the step it starts in; fine for accompaniment patterns, upgrade if a sound needs true overlaps.
+  const notes = handsPlayback(right, left).steps.map((step) => {
+    if (!LENGTHS[step.beats]) throw new Error(`handsSound cannot write a step of ${step.beats} beats`);
+    return `${step.midis.length ? step.midis.map((m) => nameMidi(m)).join("+") : "r"}/${LENGTHS[step.beats]}`;
+  });
+  return rhythm(notes.join(" "), bpm, beatsPerBar);
+}
 
 // Level 3 additions.
 import { playbackSteps } from "@/core/instruments/resolveCanvas";
