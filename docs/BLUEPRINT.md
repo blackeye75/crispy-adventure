@@ -228,10 +228,10 @@ Tick tasks as they complete. Each phase ends in something you can use.
 - [ ] Beta with 20–30 players; fix what they stumble on
 
 ### Phase 6 — After launch
-- [ ] Rest of Levels 2–6, released module by module
+- [x] Rest of Levels 2–6, released module by module
 - [ ] Technique lane and blocks: `strum-pattern`, `tab`, `picking-pattern`, `hands`, `video` (see `docs/PLAYING.md`)
 - [ ] Guitar strumming Basic and lead Basic stages, then fingerstyle Basic; piano tracks after
-- [ ] Tempo trainer and section looping
+- [x] Tempo trainer and section looping (practice room: metronome, trainer, loop a range of chords; looping bars of written music in lessons is still open)
 - [ ] Play-along backing tracks
 - [ ] Piano: MIDI keyboard input (Web MIDI)
 - [ ] Guitar: microphone single-note detection for "play this note" drills

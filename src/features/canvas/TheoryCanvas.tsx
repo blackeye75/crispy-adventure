@@ -1,8 +1,9 @@
 "use client";
 
-import { Pause, Play, Repeat, Volume2, VolumeX } from "lucide-react";
+import { Metronome, Pause, Play, Repeat, TrendingUp, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { STANDARD_TUNING } from "@/core/instruments/fretboard";
+import { loopSection, SILENT_BAR, trainerBpm } from "@/core/instruments/practice";
 import { playbackSteps, resolveCanvas, type Marker } from "@/core/instruments/resolveCanvas";
 import { canvasToQuery, type CanvasShow, type CanvasState } from "@/core/schemas/canvas";
 import { CHORDS, chordIntervals } from "@/core/theory/chords";
@@ -49,6 +50,10 @@ export function TheoryCanvas({ initial }: { initial: CanvasState }) {
   const [bpm, setBpm] = useState(80);
   const [mode, setMode] = useState<PlayMode>("up");
   const [muted, setMuted] = useState(false);
+  const [click, setClick] = useState(false); // metronome
+  const [trainer, setTrainer] = useState(false); // tempo trainer: implies loop
+  const [section, setSection] = useState<[number, number]>([0, Infinity]); // chords of a progression to loop
+  const trained = useRef({ start: 80, passes: 0 });
   const pulseTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const resolved = useMemo(() => resolveCanvas(state), [state]);
@@ -72,6 +77,7 @@ export function TheoryCanvas({ initial }: { initial: CanvasState }) {
   const change = (patch: Partial<CanvasState>) => {
     stop();
     setState((s) => ({ ...s, ...patch, focusPitch: undefined }));
+    setSection([0, Infinity]);
   };
   const changeShow = (next: CanvasShow, root = state.root) => change({ show: next, root: respellRoot(root, spellingOf(next)) });
 
@@ -89,14 +95,27 @@ export function TheoryCanvas({ initial }: { initial: CanvasState }) {
   };
   const setActiveChord = (index: number) => setState((s) => (s.show.kind === "progression" ? { ...s, show: { ...s.show, activeIndex: index } } : s));
 
-  const togglePlay = () => {
-    if (playing) return stop();
-    const steps = playbackSteps(state, mode);
+  const chordCount = show.kind === "progression" ? show.numerals.length : 0;
+  const from = Math.min(section[0], Math.max(chordCount - 1, 0));
+  const to = Math.max(from, Math.min(section[1], chordCount - 1));
+  const sectioned = loop || trainer; // a section only makes sense while looping
+
+  /** Start the notes, or with `notes` false the metronome on its own. */
+  const start = (notes: boolean, withClick = click) => {
+    const all = notes ? playbackSteps(state, mode) : SILENT_BAR;
+    const steps = notes && sectioned && chordCount ? loopSection(all, from, to) : all;
+    trained.current = { start: bpm, passes: 0 };
     setPlaying(true);
     playSteps(steps, {
       bpm,
-      loop,
+      loop: sectioned || !notes,
+      metronome: withClick ? { every: 1, accent: 4 } : undefined,
       onStep: (i) => {
+        if (i === 0 && notes && trainer) {
+          const next = trainerBpm(trained.current.start, trained.current.passes++);
+          setBpm(next);
+          setAudioBpm(next);
+        }
         setSounding(steps[i].midis);
         if (steps[i].index !== undefined) setActiveChord(steps[i].index);
       },
@@ -106,6 +125,7 @@ export function TheoryCanvas({ initial }: { initial: CanvasState }) {
       },
     });
   };
+  const togglePlay = () => (playing ? stop() : start(true));
 
   const activeChromas = useMemo(
     () => new Set([...sounding, ...(state.focusPitch ? [midi(state.focusPitch)] : [])].map((m) => m % 12)),
@@ -220,8 +240,28 @@ export function TheoryCanvas({ initial }: { initial: CanvasState }) {
           <label className="flex shrink-0 items-center gap-2 text-sm tabular-nums">
             <span aria-hidden>♩ {bpm}</span>
             <input type="range" aria-label="Tempo in beats per minute" min={40} max={200} step={5} value={bpm} className="h-11 w-24 accent-primary sm:w-36"
-              onChange={(e) => { const next = Number(e.target.value); setBpm(next); setAudioBpm(next); }} />
+              onChange={(e) => { const next = Number(e.target.value); setBpm(next); setAudioBpm(next); trained.current = { start: next, passes: 0 }; }} />
           </label>
+          <Button variant={click ? "secondary" : "ghost"} size="icon" aria-label="Metronome" aria-pressed={click} className="shrink-0"
+            onClick={() => { stop(); setClick(!click); if (!click) start(false, true); }}>
+            <Metronome className={click ? "text-primary" : undefined} />
+          </Button>
+          <Button variant={trainer ? "secondary" : "ghost"} size="icon" aria-label="Tempo trainer: loop, 5 faster every second time round" title="Tempo trainer" aria-pressed={trainer} className="shrink-0"
+            onClick={() => { stop(); setTrainer(!trainer); }}>
+            <TrendingUp className={trainer ? "text-primary" : undefined} />
+          </Button>
+          {sectioned && chordCount > 1 && (
+            <label className="flex shrink-0 items-center gap-1 text-sm">
+              <span>Chords</span>
+              <select aria-label="Loop from chord" value={from} className={field} onChange={(e) => { stop(); setSection([Number(e.target.value), to]); }}>
+                {show.kind === "progression" && show.numerals.map((_, i) => <option key={i} value={i}>{i + 1}</option>)}
+              </select>
+              <span>to</span>
+              <select aria-label="Loop to chord" value={to} className={field} onChange={(e) => { stop(); setSection([from, Number(e.target.value)]); }}>
+                {show.kind === "progression" && show.numerals.map((_, i) => i >= from && <option key={i} value={i}>{i + 1}</option>)}
+              </select>
+            </label>
+          )}
           {show.kind !== "progression" && (
             <Segmented label="Playback pattern" value={mode} options={[["up", "Up"], ["down", "Down"], ["chord", "Chord"]]} onChange={(next) => { stop(); setMode(next); }} />
           )}

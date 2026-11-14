@@ -74,3 +74,39 @@ test("phone: no page overflow, touch targets of 44px, transport stays reachable"
   await expect(page.getByRole("button", { name: "Play" })).toBeInViewport();
   await expect(page.getByText("Details")).toBeInViewport();
 });
+
+test("practice tools: metronome on its own, tempo trainer speeds up the loop, a section of a progression loops", async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.goto("/practice?root=C&prog=I-IV-V");
+  const transport = page.getByRole("group", { name: "Playback" });
+  const tempo = transport.getByLabel("Tempo in beats per minute");
+
+  // Metronome alone: it runs, lights no notes, and Stop ends it.
+  await transport.getByRole("button", { name: "Metronome" }).click();
+  await expect(transport.getByRole("button", { name: "Stop" })).toBeVisible();
+  await expect(page.locator(".note-marker[data-active]")).toHaveCount(0);
+  await transport.getByRole("button", { name: "Stop" }).click();
+  await transport.getByRole("button", { name: "Metronome" }).click(); // off again
+
+  // Section: with the trainer on (it loops), choose chords 2 to 3 only.
+  await expect(transport.getByLabel("Loop from chord")).toHaveCount(0);
+  await transport.getByRole("button", { name: /Tempo trainer/ }).click();
+  await transport.getByLabel("Loop from chord").selectOption({ index: 1 });
+  await expect(transport.getByLabel("Loop to chord").locator("option")).toHaveCount(2);
+  await tempo.fill("200");
+  await transport.getByRole("button", { name: "Play" }).click();
+  // Two chords of two beats at 200 bpm: a pass takes just over a second. The loop never stops by itself and never plays chord 1.
+  const chordCells = page.locator('aside[aria-label="Theory"] button[aria-pressed]');
+  await expect(chordCells.nth(2)).toHaveAttribute("aria-pressed", "true", { timeout: 10_000 }); // reached chord 3
+  await expect(chordCells.nth(1)).toHaveAttribute("aria-pressed", "true", { timeout: 10_000 }); // wrapped to chord 2, not 1
+  await expect(chordCells.nth(0)).toHaveAttribute("aria-pressed", "false");
+  await transport.getByRole("button", { name: "Stop" }).click();
+
+  // Trainer: from 60, the tempo has risen after two passes.
+  await tempo.fill("60");
+  await transport.getByLabel("Loop to chord").selectOption({ index: 0 }); // one chord: a pass is two beats
+  await transport.getByRole("button", { name: "Play" }).click();
+  await expect(tempo).toHaveValue("65", { timeout: 20_000 });
+  await transport.getByRole("button", { name: "Stop" }).click();
+  await expect(tempo).toHaveValue("65"); // stays where you got to
+});
