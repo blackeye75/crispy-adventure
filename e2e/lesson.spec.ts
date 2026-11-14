@@ -179,3 +179,33 @@ test("Level 2 lessons: circle of fifths, key signatures, 6/8 and strumming patte
   await play.click();
   await expect(play).toHaveAttribute("aria-pressed", "false");
 });
+
+test("Level 3 lessons: chord diagrams, and progressions that step through their chords", async ({ page }) => {
+  await signUpSubscribed(page);
+  const toStep = async (step: string) => {
+    await expect(async () => {
+      await next(page).click();
+      await expect(page.getByRole("listitem").filter({ hasText: step })).toHaveAttribute("aria-current", "step", { timeout: 2000 });
+    }).toPass();
+  };
+
+  await page.goto("/learn/open-major-chords");
+  for (const step of ["Listen", "Learn"]) await toStep(step);
+  await expect(page.getByRole("img", { name: "C chord: string 6 not played, string 5 fret 3, string 4 fret 2, string 3 open, string 2 fret 1, string 1 open" })).toBeVisible();
+  await expect(page.getByRole("img", { name: /^D chord: string 6 not played, string 5 not played, string 4 open/ })).toBeVisible();
+
+  await page.goto("/learn/barre-chords");
+  for (const step of ["Listen", "Learn"]) await toStep(step);
+  const f = page.getByRole("img", { name: /^F chord: string 6 fret 1/ });
+  await expect(f.locator("rect")).toHaveCount(1); // the barre, drawn as one bar across the strings
+  await expect(page.getByRole("img", { name: /^B chord: string 6 not played, string 5 fret 2/ }).getByText("2fr")).toHaveCount(0); // still within four frets of the nut
+
+  await page.goto("/learn/harmonising-the-major-scale");
+  for (const step of ["Listen", "Learn"]) await toStep(step);
+  const current = page.locator("p span.text-primary");
+  await expect(current).toHaveText("C");
+  await page.getByRole("button", { name: "Play the chords" }).click();
+  await expect(current).toHaveText("Dm", { timeout: 10_000 });
+  await expect(page.getByRole("group", { name: "Guitar fretboard" }).locator('.note-marker[data-role="root"] text').first()).toHaveText("D");
+  await expect(current).toHaveText("Em", { timeout: 10_000 });
+});

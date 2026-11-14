@@ -41,3 +41,23 @@ export const build = (prompt: string, notes: string, why: string, only?: "guitar
 export const circle = (highlight: string, caption: string): BlockInput => ({ type: "circle-of-fifths", highlight, caption });
 /** Eight eighth-note slots: strum("D - D U - U D U", G_CHORD, caption). */
 export const strum = (pattern: string, chordNotes: string, caption: string, bpm = 80): BlockInput => ({ type: "strum-pattern", pattern, chord: chordNotes.split(" "), bpm, caption });
+
+// Level 3 additions.
+import { playbackSteps } from "@/core/instruments/resolveCanvas";
+import { DEFAULT_CANVAS } from "@/core/schemas/canvas";
+import { nameMidi } from "@/core/theory/notes";
+
+type ChordName = Extract<CanvasInput["show"], { kind: "chord" }>["chord"];
+export const chordOf = (root: string, id: ChordName): CanvasInput => ({ root, show: { kind: "chord", chord: id } });
+/** A progression on the instruments, stepping through its chords as it plays: progression("C", "I IV V"). */
+export const progression = (key: string, numerals: string): CanvasInput => ({ root: key, show: { kind: "progression", numerals: numerals.split(" "), activeIndex: 0 } });
+/** The same progression as sound, two beats a chord: prog("C", "I IV V I"). Numerals are read against the major scale of the key. */
+export const prog = (key: string, numerals: string, bpm = 84): Sound => ({
+  kind: "progression",
+  chords: playbackSteps({ ...DEFAULT_CANVAS, ...progression(key, numerals), labels: "notes" }, "chord").map((step) => step.midis.map((m) => nameMidi(m))),
+  bpm,
+});
+/** Chords spelled out, two beats each: chords("C3 E3 G3", "B2 D3 G3"). */
+export const chords = (...voicings: string[]): Sound => ({ kind: "progression", chords: voicings.map((v) => v.split(" ")) });
+/** A guitar chord diagram: diagram("x32010", "C", "major", caption). */
+export const diagram = (shape: string, root: string, id: ChordName, caption?: string): BlockInput => ({ type: "chord-diagram", shape, chord: { root, id }, caption });

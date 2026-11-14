@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { content } from "../../../content";
-import { STANDARD_TUNING, fretMidi } from "@/core/instruments/fretboard";
+import { STANDARD_TUNING, fretMidi, shapeMidis } from "@/core/instruments/fretboard";
+import { getChord } from "@/core/theory/chords";
 import { resolveCanvas } from "@/core/instruments/resolveCanvas";
 import { DEFAULT_CANVAS, type CanvasState } from "@/core/schemas/canvas";
 import { isQuiz, soundSteps, validateContent } from "@/core/schemas/content";
@@ -33,6 +34,12 @@ describe("content/", () => {
             if (only !== "piano") expect(r.fretboard.some((x) => x.midi === m), `${lesson.slug}: ${pitch} on the fretboard`).toBe(true);
             if (only !== "guitar") expect(r.keyboard.some((x) => x.midi === m), `${lesson.slug}: ${pitch} on the keyboard`).toBe(true);
           }
+        }
+        if (block.type === "chord-diagram") {
+          // the shape must sound exactly the notes of the chord it claims to be
+          const sounded = [...new Set(shapeMidis(block.shape).filter((m) => m !== null).map((m) => m % 12))].sort();
+          const wanted = getChord(block.chord.root, block.chord.id).notes.map(chroma).sort();
+          expect(sounded, `${lesson.slug}: ${block.chord.root} ${block.chord.id} as ${block.shape}`).toEqual(wanted);
         }
         if (block.type === "strum-pattern") for (const pitch of block.chord) expect(midi(pitch) >= 40 && midi(pitch) <= 88, `${lesson.slug}: ${pitch}`).toBe(true);
         if (block.type === "quiz-find" && block.only !== "piano") {

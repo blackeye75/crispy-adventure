@@ -24,10 +24,15 @@ function LinkedInstrument({ canvas, instrument, playLabel, bpm, loop, steps }: {
   steps?: ReturnType<typeof soundSteps>;
 }) {
   const [focusPitch, setFocusPitch] = useState<string>();
+  const [activeIndex, setActiveIndex] = useState(0); // which chord of a progression is showing
   const [sounding, setSounding] = useState<number[]>([]);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const state = useMemo(() => ({ ...lessonState(canvas), focusPitch }), [canvas, focusPitch]);
+  const state = useMemo(() => {
+    const base = lessonState(canvas);
+    return { ...base, show: base.show.kind === "progression" ? { ...base.show, activeIndex } : base.show, focusPitch };
+  }, [canvas, focusPitch, activeIndex]);
   const resolved = useMemo(() => resolveCanvas(state), [state]);
+  const play = steps ?? playbackSteps(state, "up");
   const tap = (marker: Marker) => {
     clearTimeout(timer.current);
     setSounding([marker.midi]);
@@ -36,9 +41,17 @@ function LinkedInstrument({ canvas, instrument, playLabel, bpm, loop, steps }: {
   };
   return (
     <>
+      {resolved.chords && (
+        <p className="flex flex-wrap gap-x-4 gap-y-1 text-lg" aria-live="off">
+          {resolved.chords.map((c, i) => (
+            <span key={i} className={i === activeIndex ? "font-semibold text-primary" : "text-muted-foreground"}>{c.symbol}</span>
+          ))}
+        </p>
+      )}
       <InstrumentView instrument={instrument} markers={resolved} position={state.position} sounding={sounding} onNoteHover={(m) => setFocusPitch(m?.pitch)} onNoteTap={tap} />
       <div className="flex flex-wrap items-center gap-4">
-        <PlayButton steps={steps ?? playbackSteps(state, "up")} label={playLabel} bpm={bpm} loop={loop} onSounding={setSounding} />
+        {/* in a progression, the instrument follows the chord that is sounding */}
+        <PlayButton steps={play} label={playLabel} bpm={bpm} loop={loop} onSounding={setSounding} onStep={(i) => setActiveIndex((i === undefined ? undefined : play[i]?.index) ?? 0)} />
         <Link href={`/practice?${canvasToQuery(state)}`} target="_blank" className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground">
           Explore in the Canvas
         </Link>
@@ -51,7 +64,7 @@ export function InstrumentBlock({ block, instrument }: { block: BlockOf<"instrum
   return (
     <figure className="flex flex-col gap-4">
       {block.caption && <figcaption className="text-lg text-foreground/85">{block.caption}</figcaption>}
-      <LinkedInstrument canvas={block.canvas} instrument={block.only ?? instrument} playLabel="Play these notes" />
+      <LinkedInstrument canvas={block.canvas} instrument={block.only ?? instrument} playLabel={block.canvas.show.kind === "progression" ? "Play the chords" : "Play these notes"} />
     </figure>
   );
 }

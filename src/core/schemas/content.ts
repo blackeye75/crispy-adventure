@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { PlaybackStep } from "../instruments/resolveCanvas";
 import { midi } from "../theory/notes";
+import { CHORD_IDS } from "../theory/chords";
 import { canvasShowSchema, pitchSchema } from "./canvas";
 import { notationSteps, parseNotation } from "./notation";
 
@@ -61,6 +62,14 @@ export const blockSchema = z.discriminatedUnion("type", [
     type: z.literal("circle-of-fifths"),
     /** Major key to start on. */
     highlight: noteName.default("C"),
+    caption: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal("chord-diagram"),
+    /** Fret per string from string 6 to string 1; x = not played, 0 = open. "x32010" is C. */
+    shape: z.string().regex(/^[x0-9]{6}$/),
+    /** The chord the shape is meant to be. Content tests check that the shape really sounds these notes. */
+    chord: z.object({ root: noteName, id: z.enum(CHORD_IDS) }),
     caption: z.string().optional(),
   }),
   z.object({

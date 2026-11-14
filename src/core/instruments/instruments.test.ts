@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { DEFAULT_CANVAS, canvasFromQuery, canvasToQuery, type CanvasState } from "../schemas/canvas";
-import { STANDARD_TUNING, fretColumn, fretMidi, positionsOf } from "./fretboard";
+import { STANDARD_TUNING, fretColumn, fretMidi, positionsOf, shapeMidis } from "./fretboard";
 import { keyboardKeys } from "./keyboard";
 import { playbackSteps, resolveCanvas } from "./resolveCanvas";
 
@@ -24,6 +24,12 @@ describe("fretboard", () => {
     const dropD = ["D2", ...STANDARD_TUNING.slice(1)];
     expect(fretMidi(dropD, 0, 2)).toBe(40); // E2 moves to the 2nd fret
     expect(positionsOf(38, dropD, 15)).toEqual([{ string: 0, fret: 0 }]);
+  });
+  test("chord shapes: open C is C E G C E, with string 6 silent", () => {
+    expect(shapeMidis("x32010")).toEqual([null, 48, 52, 55, 60, 64]);
+    expect(shapeMidis("133211").map((m) => m! % 12)).toEqual([5, 0, 5, 9, 0, 5]); // F barre: F C F A C F
+    expect(() => shapeMidis("x3201")).toThrow();
+    expect(() => shapeMidis("x3201y")).toThrow();
   });
   test("left-handed mirrors the columns", () => {
     expect(fretColumn(0, 15, false)).toBe(0);

@@ -10,10 +10,19 @@ import { intervals } from "./level-2/intervals";
 import { keys } from "./level-2/keys";
 import { majorScale } from "./level-2/major-scale";
 import { rhythm2 } from "./level-2/rhythm-2";
+import { chordsOfAKey } from "./level-3/chords-of-a-key";
+import { chordsOnYourInstrument } from "./level-3/chords-on-your-instrument";
+import { ear3 } from "./level-3/ear-3";
+import { inversions } from "./level-3/inversions";
+import { minorKeys } from "./level-3/minor-keys";
+import { progressions } from "./level-3/progressions";
+import { triads } from "./level-3/triads";
 import { modules, tracks } from "./modules";
 
 export const content = {
   tracks,
   modules,
-  lessons: [...soundAndPitch, ...musicalAlphabet, ...findingNotes, ...rhythm1, ...readingMusic, ...ear1, ...intervals, ...majorScale, ...keys, ...rhythm2, ...ear2],
+  lessons: [...soundAndPitch, ...musicalAlphabet, ...findingNotes, ...rhythm1, ...readingMusic, ...ear1, ...intervals, ...majorScale, ...keys, ...rhythm2, ...ear2,
+    ...triads, ...chordsOfAKey, ...progressions, ...minorKeys, ...inversions, ...chordsOnYourInstrument, ...ear3,
+  ],
 };
