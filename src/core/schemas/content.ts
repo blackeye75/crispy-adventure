@@ -20,6 +20,26 @@ const notation = z.string().refine((value) => {
   }
 }, "not valid notation");
 
+/**
+ * How a bar of strumming is divided. `slots` is how many swings fill the bar, `beats` how long each lasts
+ * (swing alternates long and short), `counts` what to say, `click` the metronome under it.
+ */
+export const STRUM_FEELS = {
+  "4/4": { slots: 8, beats: 0.5, counts: "1 & 2 & 3 & 4 &", click: { every: 1, accent: 4 } },
+  "16ths": { slots: 16, beats: 0.25, counts: "1 e & a 2 e & a 3 e & a 4 e & a", click: { every: 1, accent: 4 } },
+  "3/4": { slots: 6, beats: 0.5, counts: "1 & 2 & 3 &", click: { every: 1, accent: 3 } },
+  "6/8": { slots: 6, beats: 0.5, counts: "1 2 3 4 5 6", click: { every: 0.5, accent: 3 } },
+  swing: { slots: 8, beats: 0.5, counts: "1 & 2 & 3 & 4 &", click: { every: 1, accent: 4 } },
+} as const;
+export type StrumFeel = keyof typeof STRUM_FEELS;
+const strumFeel = z.enum(["4/4", "16ths", "3/4", "6/8", "swing"]).default("4/4");
+/**
+ * One token per swing of the hand: D = down strum, U = up strum, - = the hand swings but misses,
+ * x = a muted, percussive strum. D> and U> are accented; D. and U. are cut short (palm-muted or staccato).
+ */
+const strumPattern = z.string().regex(/^((D|U)[>.]?|x|-)( ((D|U)[>.]?|x|-))*$/);
+const strumFits = (s: { pattern: string; feel: StrumFeel }) => s.pattern.split(" ").length === STRUM_FEELS[s.feel].slots;
+
 /** Audio is data, synthesised from samples: lessons need no recorded files. */
 export const soundSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("sequence"), notes: z.array(pitchSchema).min(1), bpm: bpm.optional(), /** How hard the notes are played, 0.1 (very soft) to 1. */ velocity: z.number().min(0.1).max(1).optional() }),
@@ -28,6 +48,8 @@ export const soundSchema = z.discriminatedUnion("kind", [
   // Notes with lengths and rests, over a click that marks the beat (the first beat of each bar is higher).
   // `click` is the gap between clicks in quarter-note beats (0.5 for the eighth-note pulse of 6/8);
   // every `beatsPerBar`-th click is the higher one. beatsPerBar 0 = no click.
+  // A strumming pattern on one chord, over a click.
+  z.object({ kind: z.literal("strum"), pattern: strumPattern, chord: z.array(pitchSchema).min(3).max(6), feel: strumFeel, bpm: bpm.default(80) }).refine(strumFits, "the pattern must fill the bar"),
   z.object({ kind: z.literal("rhythm"), notes: notation, bpm: bpm.default(80), beatsPerBar: z.number().int().min(0).max(7).default(4), click: z.number().min(0.25).max(1).default(1) }),
 ]);
 export type Sound = z.infer<typeof soundSchema>;
@@ -78,15 +100,16 @@ export const blockSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("strum-pattern"),
-    /** Eight eighth-note slots, "1 & 2 & 3 & 4 &": D = down strum, U = up strum, - = the hand swings but misses. */
-    pattern: z.string().regex(/^[DU-]( [DU-]){7}$/),
+    /** One bar of swings; see `strumPattern`. Eight eighth-note slots unless `feel` says otherwise. */
+    pattern: strumPattern,
+    feel: strumFeel,
     /** The chord being strummed, low to high. */
     chord: z.array(pitchSchema).min(3).max(6),
     /** A chord per bar, to strum through a progression. The pattern repeats in every bar; `chord` is then unused. */
     bars: z.array(z.object({ name: z.string().min(1), chord: z.array(pitchSchema).min(3).max(6) })).min(2).max(8).optional(),
     bpm: bpm.default(80),
     caption: z.string().optional(),
-  }),
+  }).refine(strumFits, "the pattern must fill the bar"),
   z.object({
     type: z.literal("tab"),
     /** Guitar tablature in the text form of ./tab.ts. */
@@ -242,18 +265,28 @@ export type Click = { every: number; accent: number };
 
 /** Everything the player needs for a sound: steps, tempo, and the click that goes with it, if any. */
 export function soundPlayback(sound: Sound): { steps: PlaybackStep[]; bpm?: number; metronome?: Click } {
-  const metronome = sound.kind === "rhythm" && sound.beatsPerBar ? { every: sound.click, accent: sound.beatsPerBar } : undefined;
+  const metronome = sound.kind === "strum" ? STRUM_FEELS[sound.feel].click : sound.kind === "rhythm" && sound.beatsPerBar ? { every: sound.click, accent: sound.beatsPerBar } : undefined;
   return { steps: soundSteps(sound), bpm: "bpm" in sound ? sound.bpm : undefined, metronome };
 }
 
 /** A strumming pattern as sound: the chord on every swing that hits the strings, silence where it misses. */
-export function strumSteps(pattern: string, chord: string[]): PlaybackStep[] {
-  return pattern.split(" ").map((slot) => ({ midis: slot === "-" ? [] : chord.map(midi), beats: 0.5 }));
+export function strumSteps(pattern: string, chord: string[], feel: StrumFeel = "4/4"): PlaybackStep[] {
+  const midis = chord.map(midi);
+  const quiet = pattern.includes(">") ? 0.5 : undefined; // accents only stand out if the other strums step back
+  return pattern.split(" ").map((slot, i) => {
+    const beats = feel === "swing" ? (i % 2 === 0 ? 2 / 3 : 1 / 3) : STRUM_FEELS[feel].beats;
+    if (slot === "-") return { midis: [], beats };
+    // shortcut: a muted strum is the chord cut very short, not a real dead-string sound; upgrade with samples.
+    if (slot === "x") return { midis, beats, velocity: 0.5, holds: midis.map(() => 0.06) };
+    if (slot.endsWith(".")) return { midis, beats, velocity: 0.6, holds: midis.map(() => beats * 0.35) };
+    return { midis, beats, velocity: slot.endsWith(">") ? 1 : quiet };
+  });
 }
 
 /** Turn a sound into transport steps. Single notes last one beat, chords two. */
 export function soundSteps(sound: Sound): PlaybackStep[] {
   if (sound.kind === "rhythm") return notationSteps(parseNotation(sound.notes));
+  if (sound.kind === "strum") return strumSteps(sound.pattern, sound.chord, sound.feel);
   if (sound.kind === "sequence") return sound.notes.map((note) => ({ midis: [midi(note)], beats: 1, velocity: sound.velocity }));
   if (sound.kind === "chord") return [{ midis: sound.notes.map(midi), beats: 2 }];
   return sound.chords.map((chord) => ({ midis: chord.map(midi), beats: 2 }));

@@ -1,5 +1,5 @@
 // Small builders so lesson files read like lessons. Everything is still validated by Zod in `npm run seed`.
-import type { LessonInput, Sound } from "@/core/schemas/content";
+import type { LessonInput, Sound, StrumFeel } from "@/core/schemas/content";
 import { handsPlayback } from "@/core/schemas/hands";
 import { parseTab, tabSteps } from "@/core/schemas/tab";
 
@@ -42,11 +42,13 @@ export const chord = (root: string, id: "major" | "minor"): CanvasInput => ({ ro
 export const build = (prompt: string, notes: string, why: string, only?: "guitar" | "piano"): BlockInput => ({ type: "quiz-build", prompt, notes: notes.split(" "), why, only });
 export const circle = (highlight: string, caption: string): BlockInput => ({ type: "circle-of-fifths", highlight, caption });
 /** Eight eighth-note slots: strum("D - D U - U D U", G_CHORD, caption). */
-export const strum = (pattern: string, chordNotes: string, caption: string, bpm = 80): BlockInput => ({ type: "strum-pattern", pattern, chord: chordNotes.split(" "), bpm, caption });
+export const strum = (pattern: string, chordNotes: string, caption: string, bpm = 80, feel: StrumFeel = "4/4"): BlockInput => ({ type: "strum-pattern", pattern, chord: chordNotes.split(" "), bpm, caption, feel });
+/** The same pattern as a sound over a click, for Listen steps and ear drills. */
+export const strumSound = (pattern: string, chordNotes: string, bpm = 80, feel: StrumFeel = "4/4"): Sound => ({ kind: "strum", pattern, chord: chordNotes.split(" "), bpm, feel });
 
 /** One pattern strummed through a progression, a chord per bar: strumBars("D - D U - U D U", [["G", G], ["C", C]], caption). */
-export const strumBars = (pattern: string, bars: [name: string, notes: string][], caption: string, bpm = 80): BlockInput => ({
-  type: "strum-pattern", pattern, chord: bars[0][1].split(" "), bars: bars.map(([name, notes]) => ({ name, chord: notes.split(" ") })), bpm, caption,
+export const strumBars = (pattern: string, bars: [name: string, notes: string][], caption: string, bpm = 80, feel: StrumFeel = "4/4"): BlockInput => ({
+  type: "strum-pattern", pattern, chord: bars[0][1].split(" "), bars: bars.map(([name, notes]) => ({ name, chord: notes.split(" ") })), bpm, caption, feel,
 });
 
 /** Guitar tab with rhythm, in the text form of src/core/schemas/tab.ts: tab("6:5/8 6:8/8 5:5/q", caption). */

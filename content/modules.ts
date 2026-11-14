@@ -61,5 +61,6 @@ export const modules: Module[] = [
   { slug: "strumming-basic", trackSlug: "guitar-strumming", level: 1, title: "Basic", order: 100, summary: "Downstrokes, down-up eighths, first patterns, and changing chords in time.", isFree: false },
   { slug: "fingerstyle-basic", trackSlug: "guitar-fingerstyle", level: 1, title: "Basic", order: 120, summary: "Finger names, thumb on the bass, arpeggio patterns, pinches and the alternating thumb.", isFree: false },
   { slug: "accompaniment-basic", trackSlug: "piano-accompaniment", level: 1, title: "Basic", order: 130, summary: "Block chords, left-hand roots, changing in time, broken chords and a first pop pattern.", isFree: false },
+  { slug: "strumming-intermediate", trackSlug: "guitar-strumming", level: 1, title: "Intermediate", order: 101, summary: "Sixteenth notes, accents, syncopation, muting, 3/4 and 6/8, power chords, barre chords, shuffle and off-beats.", isFree: false },
   { slug: "lead-basic", trackSlug: "guitar-lead", level: 1, title: "Basic", order: 110, summary: "Alternate picking, the minor pentatonic box, hammer-ons, slides, bends, and a first blues solo.", isFree: false },
 ];

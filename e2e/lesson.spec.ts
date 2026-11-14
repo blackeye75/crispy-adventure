@@ -329,3 +329,22 @@ test("piano accompaniment: both hands show their notes and fingers, and the keyb
   await page.screenshot({ path: `test-results/hands-${info.project.name}.png` });
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
 });
+
+test("strumming Intermediate: sixteenth notes, accents and muted strums are drawn, described and played", async ({ page }, info) => {
+  await signUpSubscribed(page);
+  await page.goto("/learn/accents-and-dynamics");
+  await next(page).click();
+  await next(page).click();
+  await expect(page.getByRole("img", { name: /^Strumming pattern\. 1: down, and: up, 2: down, accented, and: up, 3: down, and: up, 4: down, accented, and: up$/ })).toBeVisible();
+  const sixteenths = page.getByRole("img", { name: /^Strumming pattern\. 1: down, accented, e: up, and: down, a: up, 2: down, accented/ });
+  await expect(sixteenths.locator(".strum-slot")).toHaveCount(16);
+  await page.getByRole("button", { name: "Play the pattern (loops)" }).nth(1).click();
+  await expect(sixteenths.locator(".strum-slot[data-active]")).toHaveCount(1, { timeout: 15_000 });
+  await sixteenths.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: `test-results/sixteenths-${info.project.name}.png` });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
+  await page.goto("/learn/muting-and-the-chuck");
+  await next(page).click();
+  await next(page).click();
+  await expect(page.getByRole("img", { name: /^Strumming pattern\. 1: down, and: up, 2: muted strum, and: up, 3: down, and: up, 4: muted strum, and: up$/ })).toBeVisible();
+});
