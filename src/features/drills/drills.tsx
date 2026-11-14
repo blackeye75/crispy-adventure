@@ -41,7 +41,7 @@ export function ChoiceQuiz({ block, onSolved }: { block: BlockOf<"quiz-choice"> 
   return (
     <div className="flex flex-col gap-5">
       <p className="text-xl">{block.prompt}</p>
-      {"staff" in block && block.staff && <NotationBlock block={{ type: "notation", staves: [block.staff], time: false, names: false, bpm: 80 }} />}
+      {"staff" in block && block.staff && <NotationBlock block={{ type: "notation", staves: [block.staff], names: false, bpm: 80 }} />}
       {block.sound && <PlayButton {...soundPlayback(block.sound)} label="Listen" variant="default" />}
       <div className="flex flex-col gap-3">
         {block.options.map((option, i) => {

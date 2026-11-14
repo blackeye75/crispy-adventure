@@ -2,7 +2,7 @@ import { Scale } from "tonal";
 import { describe, expect, test } from "vitest";
 import { CHORDS, chordPitches, getChord } from "./chords";
 import { INTERVALS, degreeToInterval, intervalToDegree, invert, semitones, shortName } from "./intervals";
-import { harmonise, parseNumeral, relativeMajor, relativeMinor } from "./keys";
+import { circleOfFifths, harmonise, parseNumeral, relativeMajor, relativeMinor } from "./keys";
 import { chroma, glyphs, midi, respellRoot, rootChoices, spellMidi, transpose } from "./notes";
 import { SCALES, getScale, scaleIntervals } from "./scales";
 
@@ -163,6 +163,16 @@ describe("keys", () => {
     expect(parseNumeral("C", "viiø7").symbol).toBe("Bm7b5");
     expect(() => parseNumeral("C", "VIII")).toThrow();
     expect(() => parseNumeral("C", "I°")).toThrow();
+  });
+  test("circle of fifths: each step clockwise is a fifth up and one more sharp or one fewer flat", () => {
+    const circle = circleOfFifths();
+    expect(circle.map((k) => k.accidentals)).toEqual([0, 1, 2, 3, 4, 5, 6, -5, -4, -3, -2, -1]);
+    expect(circle.map((k) => k.minor).join(" ")).toBe("A E B F# C# G# D# Bb F C G D");
+    circle.forEach((k, i) => expect(chroma(circle[(i + 1) % 12].major)).toBe((chroma(k.major) + 7) % 12));
+    expect(circle[2]).toEqual({ major: "D", minor: "B", accidentals: 2, signature: ["F#", "C#"] });
+    expect(circle[9]).toEqual({ major: "Eb", minor: "C", accidentals: -3, signature: ["Bb", "Eb", "Ab"] });
+    // the signature is exactly the altered notes of the scale
+    for (const k of circle) expect([...k.signature].sort()).toEqual(getScale(k.major, "major").notes.filter((n) => n.length > 1).sort());
   });
   test("relative keys", () => {
     expect(relativeMinor("C")).toBe("A");

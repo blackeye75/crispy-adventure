@@ -55,6 +55,23 @@ export function parseNumeral(keyRoot: string, numeral: string): KeyChord {
   return { numeral, root, chord, symbol: getChord(root, chord).symbol };
 }
 
+export const SHARP_ORDER = ["F#", "C#", "G#", "D#", "A#", "E#", "B#"];
+export const FLAT_ORDER = ["Bb", "Eb", "Ab", "Db", "Gb", "Cb", "Fb"];
+const CIRCLE = ["C", "G", "D", "A", "E", "B", "F#", "Db", "Ab", "Eb", "Bb", "F"]; // clockwise, each a fifth above the last
+
+/**
+ * The twelve keys in circle-of-fifths order. `accidentals` is the key signature:
+ * positive = that many sharps, negative = that many flats, listed in `signature` in written order.
+ */
+export function circleOfFifths() {
+  return CIRCLE.map((major) => {
+    const notes = getScale(major, "major").notes;
+    const sharps = notes.filter((n) => n.includes("#")).length;
+    const flats = notes.filter((n) => n.includes("b")).length;
+    return { major, minor: transpose(major, "6M"), accidentals: sharps - flats, signature: sharps ? SHARP_ORDER.slice(0, sharps) : FLAT_ORDER.slice(0, flats) };
+  });
+}
+
 /** The minor key that shares a major key's notes (C → A), and the reverse (A → C). */
 export const relativeMinor = (majorRoot: string) => transpose(majorRoot, "6M");
 export const relativeMajor = (minorRoot: string) => transpose(minorRoot, "3m");

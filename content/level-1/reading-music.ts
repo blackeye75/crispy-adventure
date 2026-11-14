@@ -149,7 +149,7 @@ Notes written exactly above one another are played at the same moment.`)] },
       { kind: "learn", blocks: [{
         type: "notation",
         staves: [{ clef: "treble", notes: "E4/h G4/h | C5/w" }, { clef: "bass", notes: "C3/h C3/h | C3/w" }],
-        time: true,
+        time: "4/4",
         caption: "The right hand reads the top staff, the left hand the bottom. Notes lined up above each other sound together.",
       }] },
       { kind: "practice", blocks: [

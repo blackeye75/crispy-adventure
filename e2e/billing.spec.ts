@@ -1,30 +1,9 @@
-import { createHmac } from "node:crypto";
-import type { APIRequestContext } from "@playwright/test";
 import { expect, test } from "./test";
 import { MongoClient } from "mongodb";
-import { MONGODB_URI, WEBHOOK_SECRET } from "../playwright.config";
-import { signUp } from "./helpers";
+import { MONGODB_URI } from "../playwright.config";
+import { nowSecs, signUp, webhook } from "./helpers";
 
 const DAY = 86_400;
-const nowSecs = () => Math.floor(Date.now() / 1000);
-
-/** Deliver a webhook the way Razorpay does: raw JSON body, HMAC-SHA256 signature header. */
-async function webhook(request: APIRequestContext, subscriptionId: string, status: string, opts: { signature?: string; eventId?: string; at?: number } = {}) {
-  const body = JSON.stringify({
-    entity: "event",
-    event: `subscription.${status}`,
-    created_at: opts.at ?? nowSecs(),
-    payload: { subscription: { entity: { id: subscriptionId, status, customer_id: "cust_e2e", current_end: nowSecs() + 30 * DAY } } },
-  });
-  return request.post("/api/v1/billing/webhook", {
-    data: body,
-    headers: {
-      "content-type": "application/json",
-      "x-razorpay-signature": opts.signature ?? createHmac("sha256", WEBHOOK_SECRET).update(body).digest("hex"),
-      "x-razorpay-event-id": opts.eventId ?? `evt_${Math.random().toString(36).slice(2)}`,
-    },
-  });
-}
 
 test.beforeAll(async () => {
   // The seeded content has no paid lesson yet (only Level 1 is written), so add one to lock.

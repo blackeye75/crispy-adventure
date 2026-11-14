@@ -1,5 +1,5 @@
 import { expect, test } from "./test";
-import { signUp } from "./helpers";
+import { signUp, signUpSubscribed } from "./helpers";
 
 const next = (page: import("@playwright/test").Page) => page.getByRole("button", { name: /^(Continue|Finish)$/ });
 
@@ -140,4 +140,42 @@ test("rhythm, notation and TAB lessons render and play", async ({ page }) => {
   // Guitar TAB keeps its spacing
   await page.goto("/learn/tab-and-chord-diagrams");
   await expect(page.locator("pre")).toContainText("D|---0-2-3-----------------|");
+});
+
+test("Level 2 lessons: circle of fifths, key signatures, 6/8 and strumming patterns", async ({ page }) => {
+  await signUpSubscribed(page);
+  const toStep = async (step: string) => {
+    await expect(async () => {
+      await next(page).click();
+      await expect(page.getByRole("listitem").filter({ hasText: step })).toHaveAttribute("aria-current", "step", { timeout: 2000 });
+    }).toPass();
+  };
+  const drawn = (name: RegExp) => expect(page.getByRole("img", { name }).locator("svg path").first()).toBeAttached();
+
+  await page.goto("/learn/the-circle-of-fifths");
+  for (const step of ["Listen", "Learn"]) await toStep(step);
+  const circle = page.getByRole("group", { name: "Circle of fifths" });
+  await expect(page.getByRole("status")).toContainText("no sharps or flats");
+  await circle.getByRole("button", { name: "A major, 3 sharps" }).click();
+  await expect(page.getByRole("status")).toContainText("3 sharps: F♯ C♯ G♯");
+  await expect(page.getByRole("status")).toContainText("Relative minor: F♯ minor");
+  await circle.getByRole("button", { name: "E♭ major, 3 flats" }).click();
+  await expect(page.getByRole("status")).toContainText("3 flats: B♭ E♭ A♭");
+
+  await page.goto("/learn/key-signatures");
+  for (const step of ["Listen", "Learn"]) await toStep(step);
+  await drawn(/^treble staff: G4, A4, B4, C5, D5, E5, F♯5, G5/);
+
+  await page.goto("/learn/three-four-and-six-eight");
+  for (const step of ["Listen", "Learn"]) await toStep(step);
+  await drawn(/^treble staff: B4, B4, B4, B4, B4, B4, bar line, B4, B4$/);
+
+  await page.goto("/learn/down-up-strumming");
+  for (const step of ["Listen", "Learn"]) await toStep(step);
+  await expect(page.getByRole("img", { name: "Strumming pattern. 1: down, and: miss, 2: down, and: up, 3: miss, and: up, 4: down, and: up" })).toBeVisible();
+  const play = page.getByRole("button", { name: "Play the pattern (loops)" }).first();
+  await play.click();
+  await expect(play).toHaveAttribute("aria-pressed", "true");
+  await play.click();
+  await expect(play).toHaveAttribute("aria-pressed", "false");
 });

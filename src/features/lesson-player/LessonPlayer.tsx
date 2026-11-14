@@ -15,6 +15,8 @@ import { api } from "@/lib/api";
 import type { Today } from "@/server/services/profile";
 import { cn } from "@/lib/utils";
 import { AudioBlock, InstrumentBlock, PlayAlongBlock } from "./blocks";
+import { CircleOfFifths } from "./CircleOfFifths";
+import { StrumPattern } from "./StrumPattern";
 import { LeftHanded } from "./InstrumentView";
 import { Markdown } from "./Markdown";
 
@@ -26,6 +28,8 @@ export function BlockView({ block, instrument, onSolved }: { block: Block; instr
     case "text": return <Markdown>{block.markdown}</Markdown>;
     case "audio": return <AudioBlock block={block} />;
     case "notation": return <NotationBlock block={block} />;
+    case "circle-of-fifths": return <CircleOfFifths block={block} />;
+    case "strum-pattern": return <StrumPattern block={block} />;
     case "instrument": return <InstrumentBlock block={block} instrument={instrument} />;
     case "play-along": return <PlayAlongBlock block={block} instrument={instrument} />;
     case "quiz-choice":

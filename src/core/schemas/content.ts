@@ -23,7 +23,9 @@ export const soundSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("chord"), notes: z.array(pitchSchema).min(2) }),
   z.object({ kind: z.literal("progression"), chords: z.array(z.array(pitchSchema).min(2)).min(2), bpm: bpm.optional() }),
   // Notes with lengths and rests, over a click that marks the beat (the first beat of each bar is higher).
-  z.object({ kind: z.literal("rhythm"), notes: notation, bpm: bpm.default(80), beatsPerBar: z.number().int().min(0).max(6).default(4) }),
+  // `click` is the gap between clicks in quarter-note beats (0.5 for the eighth-note pulse of 6/8);
+  // every `beatsPerBar`-th click is the higher one. beatsPerBar 0 = no click.
+  z.object({ kind: z.literal("rhythm"), notes: notation, bpm: bpm.default(80), beatsPerBar: z.number().int().min(0).max(6).default(4), click: z.number().min(0.25).max(1).default(1) }),
 ]);
 export type Sound = z.infer<typeof soundSchema>;
 
@@ -46,12 +48,29 @@ export const blockSchema = z.discriminatedUnion("type", [
     type: z.literal("notation"),
     /** One staff, or two for the grand staff (treble above bass). */
     staves: z.array(z.object({ clef: z.enum(["treble", "bass"]), notes: notation })).min(1).max(2),
-    /** Show the 4/4 time signature. */
-    time: z.boolean().default(false),
+    /** Time signature to print. */
+    time: z.enum(["4/4", "3/4", "6/8"]).optional(),
+    /** Key signature to print, by major key: "G", "F", "Bb". Notes then carry only the accidentals the key does not cover. */
+    key: noteName.optional(),
     /** Print each note's letter name under it. */
     names: z.boolean().default(false),
     caption: z.string().optional(),
     bpm: bpm.default(80),
+  }),
+  z.object({
+    type: z.literal("circle-of-fifths"),
+    /** Major key to start on. */
+    highlight: noteName.default("C"),
+    caption: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal("strum-pattern"),
+    /** Eight eighth-note slots, "1 & 2 & 3 & 4 &": D = down strum, U = up strum, - = the hand swings but misses. */
+    pattern: z.string().regex(/^[DU-]( [DU-]){7}$/),
+    /** The chord being strummed, low to high. */
+    chord: z.array(pitchSchema).min(3).max(6),
+    bpm: bpm.default(80),
+    caption: z.string().optional(),
   }),
   z.object({ type: z.literal("quiz-choice"), prompt: z.string().min(1), sound: soundSchema.optional(), /** A written note to read. */ staff: z.object({ clef: z.enum(["treble", "bass"]), notes: notation }).optional(), ...quizOptions }).refine(answerInRange, "answer must index an option"),
   z.object({ type: z.literal("quiz-ear"), prompt: z.string().min(1), sound: soundSchema, ...quizOptions }).refine(answerInRange, "answer must index an option"),
@@ -154,9 +173,17 @@ export function validateContent(raw: { tracks: unknown[]; modules: unknown[]; le
   return content;
 }
 
-/** Everything the player needs for a sound: steps, tempo, and the click's bar length (0 = no click). */
-export function soundPlayback(sound: Sound): { steps: PlaybackStep[]; bpm?: number; metronome: number } {
-  return { steps: soundSteps(sound), bpm: "bpm" in sound ? sound.bpm : undefined, metronome: sound.kind === "rhythm" ? sound.beatsPerBar : 0 };
+export type Click = { every: number; accent: number };
+
+/** Everything the player needs for a sound: steps, tempo, and the click that goes with it, if any. */
+export function soundPlayback(sound: Sound): { steps: PlaybackStep[]; bpm?: number; metronome?: Click } {
+  const metronome = sound.kind === "rhythm" && sound.beatsPerBar ? { every: sound.click, accent: sound.beatsPerBar } : undefined;
+  return { steps: soundSteps(sound), bpm: "bpm" in sound ? sound.bpm : undefined, metronome };
+}
+
+/** A strumming pattern as sound: the chord on every swing that hits the strings, silence where it misses. */
+export function strumSteps(pattern: string, chord: string[]): PlaybackStep[] {
+  return pattern.split(" ").map((slot) => ({ midis: slot === "-" ? [] : chord.map(midi), beats: 0.5 }));
 }
 
 /** Turn a sound into transport steps. Single notes last one beat, chords two. */

@@ -3,7 +3,7 @@
 import type { PlaybackStep } from "@/core/instruments/resolveCanvas";
 
 type Tone = typeof import("tone");
-type Voice = { triggerAttackRelease(notes: number[], duration: number, time?: number): unknown };
+type Voice = { triggerAttackRelease(notes: number[], duration: number | number[], time?: number): unknown };
 type Engine = { Tone: Tone; voice: Voice; click: Voice };
 
 let loading: Promise<Engine> | undefined;
@@ -50,7 +50,7 @@ function load(): Promise<Engine> {
       : synth();
     const click = new Tone.Synth({ envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.01 }, volume: -10 }).toDestination();
     Tone.getDestination().mute = muted;
-    engine = { Tone, voice, click: { triggerAttackRelease: (n, d, t) => click.triggerAttackRelease(n[0], d, t) } };
+    engine = { Tone, voice, click: { triggerAttackRelease: (n, d, t) => click.triggerAttackRelease(n[0], Array.isArray(d) ? d[0] : d, t) } };
     return engine;
   })().catch((err) => {
     loading = undefined; // retry on the next tap
@@ -68,8 +68,8 @@ export function playNotes(midis: number[], seconds = 0.8) {
 export type PlayOptions = {
   bpm: number;
   loop?: boolean;
-  /** Click on every beat, higher on the first beat of each bar of this many beats. 0 = no click. */
-  metronome?: number;
+  /** A click every `every` beats; each `accent`-th click is higher (the first beat of the bar). */
+  metronome?: { every: number; accent: number };
   /** Called in time with the audio as each step sounds. */
   onStep: (index: number) => void;
   /** Called once when the sequence finishes or is stopped or replaced. */
@@ -77,7 +77,7 @@ export type PlayOptions = {
 };
 
 /** Play a sequence on the transport. Replaces whatever was playing. */
-export function playSteps(steps: PlaybackStep[], { bpm, loop = false, metronome = 0, onStep, onEnd }: PlayOptions) {
+export function playSteps(steps: PlaybackStep[], { bpm, loop = false, metronome, onStep, onEnd }: PlayOptions) {
   stopAudio(); // ends whatever else was playing, and tells it so
   const id = ++run;
   endCurrent = onEnd;
@@ -92,13 +92,13 @@ export function playSteps(steps: PlaybackStep[], { bpm, loop = false, metronome 
     let at = 0;
     steps.forEach((step, i) => {
       transport.schedule((time) => {
-        if (step.midis.length) voice.triggerAttackRelease(step.midis.map(hz), step.beats * beat * 0.95, time);
+        if (step.midis.length) voice.triggerAttackRelease(step.midis.map(hz), step.holds ? step.holds.map((b) => b * beat * 0.95) : step.beats * beat * 0.95, time);
         draw.schedule(() => id === run && onStep(i), time);
       }, at);
       at += step.beats * beat;
     });
-    for (let b = 0; metronome && b * beat < at - 0.001; b++) {
-      transport.schedule((time) => click.triggerAttackRelease([hz(b % metronome === 0 ? 96 : 84)], 0.03, time), b * beat);
+    for (let n = 0; metronome && n * metronome.every * beat < at - 0.001; n++) {
+      transport.schedule((time) => click.triggerAttackRelease([hz(n % metronome.accent === 0 ? 96 : 84)], 0.03, time), n * metronome.every * beat);
     }
     transport.loop = loop;
     transport.loopStart = 0;

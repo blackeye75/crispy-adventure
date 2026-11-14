@@ -34,6 +34,7 @@ describe("content/", () => {
             if (only !== "guitar") expect(r.keyboard.some((x) => x.midi === m), `${lesson.slug}: ${pitch} on the keyboard`).toBe(true);
           }
         }
+        if (block.type === "strum-pattern") for (const pitch of block.chord) expect(midi(pitch) >= 40 && midi(pitch) <= 88, `${lesson.slug}: ${pitch}`).toBe(true);
         if (block.type === "quiz-find" && block.only !== "piano") {
           // somewhere on an allowed string, within 12 frets, the answer can be tapped
           const strings = block.strings ?? [1, 2, 3, 4, 5, 6];

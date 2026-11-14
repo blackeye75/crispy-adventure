@@ -199,7 +199,16 @@ export function resolveCanvas(state: CanvasState): ResolvedCanvas {
   return { ...described, announce: `${described.title}: ${spoken.join(" ")}`, fretboard, keyboard };
 }
 
-export type PlaybackStep = { midis: number[]; beats: number; /** progression chord index */ index?: number };
+export type PlaybackStep = {
+  /** Notes that start on this step. */
+  midis: number[];
+  /** Time until the next step. */
+  beats: number;
+  /** How long each note sounds, when some outlast the step (a held note under moving ones). Defaults to `beats`. */
+  holds?: number[];
+  /** progression chord index */
+  index?: number;
+};
 
 /** What the transport plays for the current selection. The root starts in octave 3 (C3–B3). */
 export function playbackSteps(state: CanvasState, mode: "up" | "down" | "chord"): PlaybackStep[] {

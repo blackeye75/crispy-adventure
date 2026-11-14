@@ -15,7 +15,7 @@ const vexKey = (pitch: string) => `${pitch.slice(0, -1).toLowerCase()}/${pitch.s
 
 /** Draw the staves with VexFlow, which is only downloaded on lessons that show written music. */
 async function draw(host: HTMLDivElement, block: BlockOf<"notation">, parsed: NotationItem[][], width: number) {
-  const { Renderer, Stave, StaveNote, BarNote, Voice, Formatter, Accidental, Annotation, Beam, StaveConnector } = await import("vexflow/bravura");
+  const { Renderer, Stave, StaveNote, StaveTie, BarNote, Voice, Formatter, Accidental, Annotation, Beam, Dot, Fraction, StaveConnector } = await import("vexflow/bravura");
   host.replaceChildren();
   const renderer = new Renderer(host, Renderer.Backends.SVG);
   renderer.resize(width, parsed.length * STAFF_HEIGHT + 20);
@@ -24,23 +24,27 @@ async function draw(host: HTMLDivElement, block: BlockOf<"notation">, parsed: No
     const { clef } = block.staves[i];
     const stave = new Stave(parsed.length > 1 ? 24 : 4, i * STAFF_HEIGHT + 10, width - (parsed.length > 1 ? 30 : 10));
     stave.addClef(clef);
-    if (block.time) stave.addTimeSignature("4/4");
+    if (block.key) stave.addKeySignature(block.key);
+    if (block.time) stave.addTimeSignature(block.time);
     stave.setContext(context).draw();
     const notes = items.map((item) => {
       if (item.bar) return new BarNote();
-      const note = new StaveNote({ clef, keys: item.pitches.length ? item.pitches.map(vexKey) : [REST_KEY[clef]], duration: item.duration + (item.pitches.length ? "" : "r") });
-      item.pitches.forEach((pitch, k) => {
-        const accidental = pitch.slice(1, -1);
-        if (accidental) note.addModifier(new Accidental(accidental), k);
-      });
+      const note = new StaveNote({ clef, keys: item.pitches.length ? item.pitches.map(vexKey) : [REST_KEY[clef]], duration: item.duration + (item.dotted ? "d" : "") + (item.pitches.length ? "" : "r") });
+      if (item.dotted) Dot.buildAndAttach([note], { all: true });
       if (block.names && item.pitches.length === 1) {
         note.addModifier(new Annotation(glyphs(item.pitches[0].slice(0, -1))).setVerticalJustification(Annotation.VerticalJustify.BOTTOM), 0);
       }
       return note;
     });
-    const beams = Beam.generateBeams(notes.filter((n): n is InstanceType<typeof StaveNote> => n instanceof StaveNote && !n.isRest()));
+    // 6/8 beams its eighth notes in threes; the others beam by the quarter-note beat.
+    const beams = Beam.generateBeams(notes.filter((n): n is InstanceType<typeof StaveNote> => n instanceof StaveNote && !n.isRest()), block.time === "6/8" ? { groups: [new Fraction(3, 8)] } : undefined);
+    const ties = items.filter((item) => !item.bar).flatMap((item, k, sounding) => {
+      const stems = notes.filter((n) => n instanceof StaveNote);
+      return !item.bar && item.tie && sounding[k + 1] ? [new StaveTie({ firstNote: stems[k], lastNote: stems[k + 1], firstIndexes: [0], lastIndexes: [0] })] : [];
+    });
     const voice = new Voice().setMode(Voice.Mode.SOFT).addTickables(notes); // SOFT: bars need not add up, lessons show fragments
-    return { stave, voice, beams };
+    Accidental.applyAccidentals([voice], block.key ?? "C"); // sharps and flats the key signature does not already cover
+    return { stave, voice, beams, ties };
   });
   // Formatted together, so notes that sound together line up across the staves.
   const formatter = new Formatter();
@@ -49,6 +53,7 @@ async function draw(host: HTMLDivElement, block: BlockOf<"notation">, parsed: No
   parts.forEach((p) => {
     p.voice.draw(context, p.stave);
     p.beams.forEach((beam) => beam.setContext(context).draw());
+    p.ties.forEach((tie) => tie.setContext(context).draw());
   });
   const staves = parts.map((p) => p.stave);
   if (staves.length > 1) {
@@ -60,7 +65,7 @@ async function draw(host: HTMLDivElement, block: BlockOf<"notation">, parsed: No
 export function NotationBlock({ block }: { block: BlockOf<"notation"> }) {
   const host = useRef<HTMLDivElement>(null);
   const parsed = useMemo(() => block.staves.map((s) => parseNotation(s.notes)), [block]);
-  const width = Math.max(260, Math.max(...parsed.map((items) => items.length)) * NOTE_WIDTH + 110);
+  const width = Math.max(260, Math.max(...parsed.map((items) => items.length)) * NOTE_WIDTH + (block.key ? 170 : 110));
   const height = parsed.length * STAFF_HEIGHT + 20;
   useEffect(() => {
     if (host.current) draw(host.current, block, parsed, width).catch((err) => console.error("Notation failed to draw", err));
