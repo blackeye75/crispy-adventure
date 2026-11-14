@@ -5,6 +5,7 @@ export const tracks: Track[] = [
   // Playing tracks from docs/PLAYING.md. They run alongside the theory path.
   { slug: "guitar-strumming", title: "Rhythm guitar and strumming", order: 2, description: "From your first downstroke to full strumming patterns, in time." },
   { slug: "guitar-lead", title: "Lead guitar and solos", order: 3, description: "From your first picked notes to a twelve-bar blues solo." },
+  { slug: "guitar-fingerstyle", title: "Fingerstyle guitar", order: 4, description: "From thumb and three fingers to a full arpeggiated piece." },
 ];
 
 // The whole theory path from docs/CURRICULUM.md. Modules without lessons yet show as "coming soon".
@@ -57,5 +58,6 @@ export const modules: Module[] = [
   })),
   // Playing-track stages come after the theory path in lesson order. `level` is the theory level a stage needs.
   { slug: "strumming-basic", trackSlug: "guitar-strumming", level: 1, title: "Basic", order: 100, summary: "Downstrokes, down-up eighths, first patterns, and changing chords in time.", isFree: false },
+  { slug: "fingerstyle-basic", trackSlug: "guitar-fingerstyle", level: 1, title: "Basic", order: 120, summary: "Finger names, thumb on the bass, arpeggio patterns, pinches and the alternating thumb.", isFree: false },
   { slug: "lead-basic", trackSlug: "guitar-lead", level: 1, title: "Basic", order: 110, summary: "Alternate picking, the minor pentatonic box, hammer-ons, slides, bends, and a first blues solo.", isFree: false },
 ];

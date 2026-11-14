@@ -96,9 +96,20 @@ export const blockSchema = z.discriminatedUnion("type", [
         return false;
       }
     }, "not valid tab"),
+    /** A picking pattern: the plucking finger for each note or rest in turn. p i m a, joined for a pinch ("pa"), "-" for a rest. */
+    fingers: z.string().regex(/^(-|[pima]{1,4})( (-|[pima]{1,4}))*$/).optional(),
+    /** Beats in a bar, for the count and the click: 3 for 3/4. */
+    beatsPerBar: z.number().int().min(2).max(7).default(4),
     bpm: bpm.default(70),
     caption: z.string().optional(),
-  }),
+  }).refine((b) => {
+    if (!b.fingers) return true;
+    try {
+      return parseTab(b.notes).filter((item) => !item.bar).length === b.fingers.split(" ").length;
+    } catch {
+      return true; // the notes are already reported as invalid
+    }
+  }, "fingers must name one finger (or -) for every note and rest"),
   z.object({ type: z.literal("quiz-choice"), prompt: z.string().min(1), sound: soundSchema.optional(), /** A written note to read. */ staff: z.object({ clef: z.enum(["treble", "bass"]), notes: notation }).optional(), ...quizOptions }).refine(answerInRange, "answer must index an option"),
   z.object({ type: z.literal("quiz-ear"), prompt: z.string().min(1), sound: soundSchema, ...quizOptions }).refine(answerInRange, "answer must index an option"),
   z.object({

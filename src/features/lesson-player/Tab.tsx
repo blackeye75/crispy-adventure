@@ -14,6 +14,7 @@ const LINE = 22; // gap between string lines
 const TOP = 30;
 const LEFT = 34;
 const MARK_TEXT: Record<TabMark, string> = { h: "h", p: "p", s: "sl", b: "full", bh: "½", v: "~~" };
+const FINGER_NAMES: Record<string, string> = { p: "thumb", i: "index", m: "middle", a: "ring" };
 const STRING_NAMES = ["e", "B", "G", "D", "A", "E"];
 
 /** Where each item sits: its width grows with its length, and the beat count restarts at every bar line. `index` counts notes and rests only. */
@@ -43,7 +44,8 @@ export function TabBlock({ block }: { block: BlockOf<"tab"> }) {
 
   const layout = useMemo(() => layoutOf(items), [items]);
   const width = Math.max(260, layout.length ? layout[layout.length - 1].x + 60 : 260);
-  const height = TOP + 5 * LINE + 34;
+  const fingers = block.fingers?.split(" ");
+  const height = TOP + 5 * LINE + (fingers ? 56 : 34);
 
   const board = useMemo(() => {
     const at = [...new Map(sounding.flatMap((item) => (item.bar ? [] : item.notes)).map((n) => [`${n.string}:${n.fret}`, [n.string, n.fret] as [number, number]])).values()];
@@ -51,7 +53,7 @@ export function TabBlock({ block }: { block: BlockOf<"tab"> }) {
     return resolveCanvas(lessonState({ root: "C", show: { kind: "notes", pitches, at }, labels: "notes" }));
   }, [sounding]);
 
-  const spoken = sounding.map((item) => (item.bar ? "" : item.notes.length ? `${item.notes.map((n) => `string ${n.string} fret ${n.fret}`).join(" and ")}${item.mark ? `, ${TAB_MARKS[item.mark]}` : ""}` : "rest")).join("; ");
+  const spoken = sounding.map((item) => (item.bar ? "" : item.notes.length ? `${item.notes.map((n) => `string ${n.string} fret ${n.fret}`).join(" and ")}${item.mark ? `, ${TAB_MARKS[item.mark]}` : ""}` : "rest")).map((said, i) => (fingers && fingers[i] !== "-" ? `${said}, ${fingers[i].split("").map((f) => FINGER_NAMES[f]).join(" and ")}` : said)).join("; ");
 
   return (
     <figure className="flex flex-col gap-4">
@@ -81,13 +83,14 @@ export function TabBlock({ block }: { block: BlockOf<"tab"> }) {
                 {item.mark && item.notes.length > 0 && (
                   <text x={x} y={TOP + (Math.min(...item.notes.map((n) => n.string)) - 1) * LINE - 14} textAnchor="middle" className="fill-primary text-xs font-medium">{MARK_TEXT[item.mark]}</text>
                 )}
+                {fingers && fingers[index] !== "-" && <text x={x} y={height - 28} textAnchor="middle" className="fill-primary text-sm font-semibold italic">{fingers[index].split("").join("+")}</text>}
                 {count && <text x={x} y={height - 6} textAnchor="middle" className="fill-muted-foreground text-xs tabular-nums">{count}</text>}
               </g>
             );
           })}
         </svg>
       </div>
-      <div><PlayButton steps={tabSteps(items)} label="Play the tab" bpm={block.bpm} metronome={{ every: 1, accent: 4 }} onStep={setActive} /></div>
+      <div><PlayButton steps={tabSteps(items)} label="Play the tab" bpm={block.bpm} metronome={{ every: 1, accent: block.beatsPerBar }} onStep={setActive} /></div>
     </figure>
   );
 }

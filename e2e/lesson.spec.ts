@@ -77,7 +77,7 @@ test("home points at the next lesson; the path shows all six levels", async ({ p
   await page.getByRole("link", { name: "Start the first lesson" }).click();
   await expect(page).toHaveURL(/\/learn\/what-is-a-note/);
   await page.goto("/learn");
-  await expect(page.getByRole("heading", { level: 2 })).toHaveCount(8);
+  await expect(page.getByRole("heading", { level: 2 })).toHaveCount(9);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
 });
 
@@ -290,4 +290,20 @@ test("backing track: twelve bars of blues loop under the box, and the chord of t
   await expect(bars.locator('li[aria-current="true"]')).toHaveText("A7", { timeout: 15_000 });
   await expect(bars.getByRole("listitem").nth(4)).toHaveAttribute("aria-current", "true", { timeout: 20_000 }); // bar 5: D7
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
+});
+
+test("fingerstyle: a picking pattern names the finger for every note and plays in 3/4", async ({ page }, info) => {
+  await signUpSubscribed(page);
+  await page.goto("/learn");
+  await expect(page.getByRole("heading", { level: 2, name: /Playing · Fingerstyle guitar/ })).toBeVisible();
+  await page.goto("/learn/picking-through-chords");
+  await next(page).click();
+  await next(page).click();
+  const waltz = page.getByRole("img", { name: /^Tab\. string 5 fret 0, thumb; string 3 fret 2, index; string 2 fret 1, middle; string 1 fret 0, ring; string 2 fret 1, middle; string 3 fret 2, index; string 5 fret 3, thumb/ });
+  await expect(waltz).toBeVisible();
+  await expect(waltz.locator("text", { hasText: /^3$/ })).toHaveCount(2 + 1); // beat 3 of both bars, and the fret 3 of the C chord
+  await page.getByRole("button", { name: "Play the tab" }).nth(2).click();
+  await expect(waltz.locator(".tab-note[data-active]")).toHaveCount(1, { timeout: 15_000 });
+  await waltz.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: `test-results/picking-${info.project.name}.png` });
 });
