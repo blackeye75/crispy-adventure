@@ -1,8 +1,7 @@
 import { Img, interpolate, staticFile, useCurrentFrame } from "remotion";
-import { C, Label, LINEAR, OUT, rise, serif, Stage } from "../theme";
+import { C, Label, LINEAR, OUT, rise, serif, Stage, useTall } from "../theme";
 
-// The screenshot is 2880 × 1800; it is shown 1240 wide.
-const K = 1240 / 2880;
+// The screenshot is 2880 × 1800; it is shown 1240 wide, or 1010 wide in the vertical cut.
 const REGIONS = [
   { name: "Fretboard", at: 70, x: 100, y: 305, w: 2060, h: 715 },
   { name: "Keyboard", at: 104, x: 100, y: 1125, w: 2060, h: 265 },
@@ -13,16 +12,19 @@ const SWITCH = 196; // the key changes here
 /** The signature screen: one musical idea on the fretboard, the keyboard and in words, all linked. */
 export const Canvas = () => {
   const frame = useCurrentFrame();
+  const tall = useTall();
+  const shown = tall ? 1010 : 1240;
+  const K = shown / 2880;
   return (
-    <Stage glow="70% 50%">
-      <div style={{ position: "absolute", left: 90, top: 190, width: 520 }}>
+    <Stage glow={tall ? "50% 55%" : "70% 50%"}>
+      <div style={{ position: "absolute", left: tall ? 70 : 90, top: tall ? 250 : 190, width: tall ? 940 : 520 }}>
         <Label style={rise(frame, 4)}>The Theory Canvas</Label>
-        <div style={{ ...rise(frame, 14), fontFamily: serif, fontSize: 104, lineHeight: 1.06, marginTop: 30 }}>
+        <div style={{ ...rise(frame, 14), fontFamily: serif, fontSize: tall ? 98 : 104, lineHeight: 1.06, marginTop: 30, whiteSpace: tall ? "nowrap" : "normal" }}>
           One idea.
           <br />
           <span style={{ color: C.gold }}>Three</span> linked views.
         </div>
-        <div style={{ position: "relative", marginTop: 54, fontSize: 46, lineHeight: 1.3, color: C.muted, height: 260 }}>
+        <div style={{ position: tall ? "absolute" : "relative", top: tall ? 1010 : undefined, width: tall ? 940 : undefined, marginTop: tall ? 0 : 54, fontSize: tall ? 52 : 46, lineHeight: 1.3, color: C.muted, height: 260 }}>
           <div style={{ position: "absolute", opacity: interpolate(frame, [40, 56, SWITCH - 10, SWITCH], [0, 1, 1, 0], LINEAR) }}>Any scale, chord or progression, on both instruments at once.</div>
           <div style={{ position: "absolute", ...rise(frame, SWITCH + 4) }}>
             Change the key.
@@ -34,10 +36,10 @@ export const Canvas = () => {
       <div
         style={{
           position: "absolute",
-          left: 640,
-          top: 150,
-          width: 1240,
-          height: 775,
+          left: tall ? 35 : 640,
+          top: tall ? 560 : 150,
+          width: shown,
+          height: shown * 0.625,
           borderRadius: 26,
           overflow: "hidden",
           border: `3px solid ${C.line}`,

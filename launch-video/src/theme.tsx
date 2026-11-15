@@ -32,7 +32,7 @@ export const rise = (frame: number, at: number, distance = 40, length = 22): CSS
 /** The dark stage every scene sits on: a slow warm glow and faint string lines, fading out at the end of the scene. */
 export const Stage = ({ children, glow = "50% 40%" }: { children: ReactNode; glow?: string }) => {
   const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
+  const { durationInFrames, height } = useVideoConfig();
   return (
     <AbsoluteFill style={{ backgroundColor: C.bg, fontFamily: sans, color: C.text }}>
       <AbsoluteFill
@@ -42,7 +42,7 @@ export const Stage = ({ children, glow = "50% 40%" }: { children: ReactNode; glo
         }}
       />
       {[0, 1, 2, 3, 4, 5].map((i) => (
-        <div key={i} style={{ position: "absolute", left: 0, right: 0, top: 150 + i * 156, height: 1, backgroundColor: "rgba(244,240,231,0.045)" }} />
+        <div key={i} style={{ position: "absolute", left: 0, right: 0, top: (height / 7) * (i + 1), height: 1, backgroundColor: "rgba(244,240,231,0.045)" }} />
       ))}
       <AbsoluteFill style={{ opacity: interpolate(frame, [durationInFrames - 9, durationInFrames - 1], [1, 0], LINEAR) }}>{children}</AbsoluteFill>
     </AbsoluteFill>
@@ -66,6 +66,15 @@ export const Phone = ({ shot, width = 300, style, active = false }: { shot: stri
     <Img src={staticFile(`shots/${shot}.png`)} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} />
   </div>
 );
+
+/**
+ * True in the 9:16 cut. Scenes then stack their content and keep it between about y 230 and y 1500:
+ * Instagram covers the top and bottom of a reel with its own buttons and caption.
+ */
+export const useTall = () => {
+  const { width, height } = useVideoConfig();
+  return height > width;
+};
 
 export const Label = ({ children, style }: { children: ReactNode; style?: CSSProperties }) => (
   <div style={{ fontSize: 34, fontWeight: 600, letterSpacing: 7, textTransform: "uppercase", color: C.gold, ...style }}>{children}</div>

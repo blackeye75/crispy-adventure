@@ -1,5 +1,5 @@
 import { Audio } from "@remotion/media";
-import { AbsoluteFill, interpolate, Series, staticFile, useCurrentFrame } from "remotion";
+import { AbsoluteFill, interpolate, Series, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { Canvas } from "./scenes/Canvas";
 import { Cta } from "./scenes/Cta";
 import { Habit } from "./scenes/Habit";
@@ -16,6 +16,7 @@ const CUTS = [144, 288, 576, 936, 1224, 1440, 1656];
 /** A gold line that sweeps across at every cut, like a plucked string. */
 const Wipe = () => {
   const frame = useCurrentFrame();
+  const { width } = useVideoConfig();
   const cut = CUTS.find((c) => Math.abs(frame - c) <= 9);
   if (cut === undefined) return null;
   return (
@@ -27,7 +28,7 @@ const Wipe = () => {
         width: 10,
         backgroundColor: C.gold,
         boxShadow: "0 0 80px 24px rgba(236,178,63,0.55)",
-        left: interpolate(frame, [cut - 9, cut + 9], [-60, 1980], LINEAR),
+        left: interpolate(frame, [cut - 9, cut + 9], [-60, width + 60], LINEAR),
         opacity: interpolate(frame, [cut - 9, cut - 5, cut + 5, cut + 9], [0, 1, 1, 0], LINEAR),
       }}
     />

@@ -1,5 +1,5 @@
 import { interpolate, useCurrentFrame } from "remotion";
-import { C, LINEAR, OUT, Phone, rise, serif, Stage } from "../theme";
+import { C, LINEAR, OUT, Phone, rise, serif, Stage, useTall } from "../theme";
 
 const STEPS = [
   { name: "Understand", line: "A short, plain explanation", shot: "step-understand" },
@@ -14,6 +14,57 @@ const EACH = 62; // frames each step holds the spotlight
 export const Lesson = () => {
   const frame = useCurrentFrame();
   const current = Math.min(STEPS.length - 1, Math.max(0, Math.floor((frame - FIRST) / EACH)));
+  const tall = useTall();
+  if (tall) {
+    // Four phones do not fit side by side: show one large phone that changes with the step, under a row of step names.
+    return (
+      <Stage glow="50% 60%">
+        <div style={{ ...rise(frame, 4), position: "absolute", left: 60, right: 60, top: 240, textAlign: "center", fontFamily: serif, fontSize: 104, lineHeight: 1.1 }}>
+          Every lesson,
+          <br />
+          <span style={{ color: C.gold }}>four steps.</span>
+        </div>
+        <div style={{ ...rise(frame, 18), position: "absolute", left: 40, right: 40, top: 520, display: "flex", justifyContent: "space-between", whiteSpace: "nowrap" }}>
+          {STEPS.map((step, i) => {
+            const on = current === i && frame >= FIRST;
+            return (
+              <div key={step.name} style={{ fontSize: 34, fontWeight: 600, padding: "14px 20px", borderRadius: 40, color: on ? C.bg : C.muted, backgroundColor: on ? C.gold : "transparent", border: `2px solid ${on ? C.gold : C.line}` }}>
+                {i + 1}. {step.name}
+              </div>
+            );
+          })}
+        </div>
+        {STEPS.map((step, i) => {
+          const at = FIRST + i * EACH;
+          const last = i === STEPS.length - 1;
+          return (
+            <div
+              key={step.name}
+              style={{
+                position: "absolute",
+                left: 340,
+                top: 650,
+                opacity: interpolate(frame, i === 0 ? [14, 28, at + EACH - 4, at + EACH + 6] : [at - 4, at + 8, at + EACH - 4, at + EACH + 6], [0, 1, 1, last ? 1 : 0], LINEAR),
+                translate: `${interpolate(frame, [at - 4, at + 16], [i === 0 ? 0 : 120, 0], OUT)}px 0px`,
+              }}
+            >
+              <Phone shot={step.shot} width={400} active={frame >= FIRST} />
+            </div>
+          );
+        })}
+        <div style={{ position: "absolute", left: 0, right: 0, top: 1478, textAlign: "center", fontSize: 46, color: C.muted }}>
+          {STEPS.map((step, i) => {
+            const at = FIRST + i * EACH;
+            return (
+              <div key={step.name} style={{ position: "absolute", left: 0, right: 0, opacity: interpolate(frame, [at, at + 10, at + EACH - 4, at + EACH + 6], [0, 1, 1, i === STEPS.length - 1 ? 1 : 0], LINEAR) }}>
+                {step.line}
+              </div>
+            );
+          })}
+        </div>
+      </Stage>
+    );
+  }
   return (
     <Stage glow="50% 60%">
       <div style={{ ...rise(frame, 4), position: "absolute", left: 0, right: 0, top: 70, textAlign: "center", fontFamily: serif, fontSize: 112 }}>

@@ -6,7 +6,10 @@ A 60-second launch video (1920 × 1080, 30 fps), built with [Remotion](https://r
 npm install
 npm run dev          # open the editor (Remotion Studio)
 npx remotion render LaunchVideo out/fretkey-launch.mp4 --codec=h264 --crf=18
+npx remotion render LaunchVideoVertical out/fretkey-launch-vertical.mp4 --codec=h264 --crf=18   # 1080 × 1920, for Reels and Shorts
 ```
+
+Both cuts use the same scenes. Each scene checks `useTall()` and has its own 9:16 layout, kept clear of the top and bottom of the frame where Instagram draws its buttons and caption.
 
 ## What is in here
 

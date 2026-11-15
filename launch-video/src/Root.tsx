@@ -15,6 +15,8 @@ const size = { width: 1920, height: 1080, fps: FPS };
 export const RemotionRoot: React.FC = () => (
   <>
     <Composition id="LaunchVideo" component={LaunchVideo} durationInFrames={1800} {...size} />
+    {/* The same scenes in 9:16 for Reels and Shorts; each scene has its own tall layout. */}
+    <Composition id="LaunchVideoVertical" component={LaunchVideo} durationInFrames={1800} width={1080} height={1920} fps={FPS} />
     <Folder name="Scenes">
       <Composition id="Hook" component={Hook} durationInFrames={144} {...size} />
       <Composition id="Logo" component={Logo} durationInFrames={144} {...size} />

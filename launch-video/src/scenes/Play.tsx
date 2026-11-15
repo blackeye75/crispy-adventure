@@ -1,5 +1,5 @@
 import { interpolate, useCurrentFrame } from "remotion";
-import { C, Label, LINEAR, OUT, Phone, rise, serif, Stage } from "../theme";
+import { C, Label, LINEAR, OUT, Phone, rise, serif, Stage, useTall } from "../theme";
 
 const PHONES = [
   { shot: "strum", rotate: -7, x: 0, y: 46, tag: "Strum patterns" },
@@ -11,9 +11,10 @@ const TRACKS = ["Strumming", "Lead guitar", "Fingerstyle", "Piano accompaniment"
 /** Theory is half of it: the playing tracks. */
 export const Play = () => {
   const frame = useCurrentFrame();
+  const tall = useTall();
   return (
-    <Stage glow="68% 55%">
-      <div style={{ position: "absolute", left: 100, top: 130, width: 780 }}>
+    <Stage glow={tall ? "50% 65%" : "68% 55%"}>
+      <div style={{ position: "absolute", left: tall ? 80 : 100, top: tall ? 245 : 130, width: tall ? 940 : 780 }}>
         <Label style={rise(frame, 4)}>Playing tracks</Label>
         <div style={{ ...rise(frame, 12), fontFamily: serif, fontSize: 128, lineHeight: 1.04, marginTop: 28, whiteSpace: "nowrap" }}>
           Then <span style={{ color: C.gold }}>play it.</span>
@@ -23,13 +24,13 @@ export const Play = () => {
             <div key={name} style={{ ...rise(frame, 50 + i * 12, 30), fontSize: 44, fontWeight: 500, padding: "16px 36px", borderRadius: 50, backgroundColor: C.card, border: `2px solid ${C.line}` }}>{name}</div>
           ))}
         </div>
-        <div style={{ ...rise(frame, 150), marginTop: 50, fontSize: 46, lineHeight: 1.3, color: C.muted }}>
+        <div style={{ ...rise(frame, 150), marginTop: tall ? 36 : 50, fontSize: 46, lineHeight: 1.3, color: C.muted }}>
           Every pattern plays with a click.
           <br />
           <span style={{ color: C.text }}>Backing tracks to solo over.</span>
         </div>
       </div>
-      <div style={{ position: "absolute", left: 900, top: 150 }}>
+      <div style={{ position: "absolute", left: tall ? 45 : 900, top: tall ? 900 : 150, scale: tall ? "0.97" : "1", transformOrigin: "0 0" }}>
         {PHONES.map((p, i) => (
           <div
             key={p.shot}
