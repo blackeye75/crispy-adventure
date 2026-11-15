@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- The Fretkey mark: an F made of a piano key (the stem) and two strings (the arms), with a note on the string. -->
+  <rect width="512" height="512" rx="112" fill="#17140f"/>
+  <rect x="133" y="112" width="84" height="288" rx="18" fill="#f3efe6"/><rect x="175" y="112" width="198" height="34" rx="17" fill="#f3efe6"/><rect x="175" y="214" width="150" height="34" rx="17" fill="#f3efe6"/><circle cx="339" cy="231" r="40" fill="#eeb443"/>
+</svg>

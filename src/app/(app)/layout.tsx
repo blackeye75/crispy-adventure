@@ -1,3 +1,4 @@
+import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
 import { AccountLink } from "@/features/account/AccountLink";
 
@@ -9,7 +10,7 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
     <>
       <header className="border-b">
         <nav aria-label="Main" className="mx-auto flex w-full max-w-[1400px] items-center gap-1 overflow-x-auto px-4 lg:px-8">
-          <Link href="/dashboard" className="mr-auto py-3 font-display text-xl">Fretkey</Link>
+          <Link href="/dashboard" className="mr-auto flex items-center gap-2 py-3 font-display text-xl"><Logo />Fretkey</Link>
           {LINKS.map(([href, name]) => (
             <Link key={href} href={href} className={link}>
               {name}
