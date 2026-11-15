@@ -1,5 +1,5 @@
 import { Easing, interpolate, useCurrentFrame } from "remotion";
-import { C, LINEAR, OUT, rise, serif, Stage, useTall } from "../theme";
+import { C, LINEAR, Mark, OUT, rise, serif, Stage, useTall } from "../theme";
 
 /** The close, on the final chord. */
 export const Cta = () => {
@@ -29,8 +29,11 @@ export const Cta = () => {
           Level 1 is free
         </div>
         <div style={{ display: "flex", flexDirection: tall ? "column" : "row", alignItems: "center", gap: tall ? 16 : 30, marginTop: tall ? 110 : 64, opacity: interpolate(frame, [72, 88], [0, 1], LINEAR) }}>
-          <div style={{ fontFamily: serif, fontSize: tall ? 120 : 92, fontWeight: 600 }}>
-            Fret<span style={{ color: C.gold }}>key</span>
+          <div style={{ display: "flex", alignItems: "center", gap: tall ? 28 : 22 }}>
+            <Mark height={tall ? 124 : 96} at={70} />
+            <div style={{ fontFamily: serif, fontSize: tall ? 120 : 92, fontWeight: 600 }}>
+              Fret<span style={{ color: C.gold }}>key</span>
+            </div>
           </div>
           {!tall && <div style={{ width: interpolate(frame, [76, 100], [0, 3], OUT), height: 70, backgroundColor: C.line }} />}
           <div style={{ fontSize: 44, color: C.muted }}>Music theory, on your instrument.</div>

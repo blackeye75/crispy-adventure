@@ -76,6 +76,33 @@ export const useTall = () => {
   return height > width;
 };
 
+const KEY = 288 / 5; // height of one white key in the stem of the mark
+
+/**
+ * The Fretkey mark (brand/render.mjs): an F whose stem is a strip of piano keys and whose arms are strings, with a note on the string.
+ * From frame `at` it builds itself: the keyboard rises, the strings draw out, the note lands. Leave `at` out for a still mark.
+ */
+export const Mark = ({ height, at = -1000, style }: { height: number; at?: number; style?: CSSProperties }) => {
+  const frame = useCurrentFrame();
+  const stem = interpolate(frame, [at, at + 16], [0, 288], OUT);
+  return (
+    <svg viewBox="100 80 312 352" height={height} width={(height * 312) / 352} style={{ flexShrink: 0, overflow: "visible", ...style }}>
+      <rect x={125} y={400 - stem} width={100} height={stem} rx={14} fill={C.text} />
+      <rect x={185} y={112} width={interpolate(frame, [at + 12, at + 26], [0, 196], OUT)} height={34} rx={17} fill={C.text} />
+      <rect x={185} y={214} width={interpolate(frame, [at + 16, at + 28], [0, 150], OUT)} height={34} rx={17} fill={C.text} />
+      <g opacity={interpolate(frame, [at + 12, at + 20], [0, 1], LINEAR)} fill={C.bg}>
+        {[1, 2, 3, 4].map((k) => (
+          <rect key={`line${k}`} x={125} y={112 + k * KEY - 2.5} width={100} height={5} />
+        ))}
+        {[1, 2, 4].map((k) => (
+          <rect key={`black${k}`} x={124} y={112 + k * KEY - 16} width={interpolate(frame, [at + 14 + k * 2, at + 24 + k * 2], [0, 60], OUT)} height={32} rx={5} />
+        ))}
+      </g>
+      <circle cx={345} cy={231} r={interpolate(frame, [at + 26, at + 40], [0, 40], { ...LINEAR, easing: Easing.spring({ damping: 9 }) })} fill={C.gold} />
+    </svg>
+  );
+};
+
 export const Label = ({ children, style }: { children: ReactNode; style?: CSSProperties }) => (
   <div style={{ fontSize: 34, fontWeight: 600, letterSpacing: 7, textTransform: "uppercase", color: C.gold, ...style }}>{children}</div>
 );
