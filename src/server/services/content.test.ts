@@ -44,12 +44,19 @@ describe("content/", () => {
           expect(sounded, `${lesson.slug}: ${block.chord.root} ${block.chord.id} as ${block.shape}`).toEqual(wanted);
         }
         if (block.type === "tab") {
+          // a unison bend is two notes on neighbouring strings that end on the same pitch
+          for (const item of parseTab(block.notes)) if (!item.bar && item.mark === "ub") expect(new Set(tabSteps([item])[0].midis).size, `${lesson.slug}: unison bend`).toBe(1);
           // lesson fretboards show twelve frets, and a bend must not leave the range either
           for (const item of parseTab(block.notes)) if (!item.bar) for (const n of item.notes) expect(n.fret <= 12, `${lesson.slug}: fret ${n.fret}`).toBe(true);
           // a hammer-on, pull-off or slide continues from the note before it, on the same string
           parseTab(block.notes).filter((item) => !item.bar).forEach((item, k, all) => {
-            if (item.bar || !item.mark || !"hps".includes(item.mark)) return;
             const before = all[k - 1];
+            if (!item.bar && item.mark === "r") {
+              // a release needs a bend to release: the same note, bent, just before it
+              const bent = before && !before.bar && ["b", "bh", "pb"].includes(before.mark ?? "") && before.notes[0].string === item.notes[0].string && before.notes[0].fret === item.notes[0].fret;
+              expect(bent, `${lesson.slug}: ^r at note ${k + 1} of "${block.notes}"`).toBe(true);
+            }
+            if (item.bar || !item.mark || !["h", "p", "s"].includes(item.mark)) return;
             const ok = before && !before.bar && before.notes.length === 1 && item.notes.length === 1 && before.notes[0].string === item.notes[0].string
               && (item.mark === "h" ? item.notes[0].fret > before.notes[0].fret : item.mark === "p" ? item.notes[0].fret < before.notes[0].fret : item.notes[0].fret !== before.notes[0].fret);
             expect(ok, `${lesson.slug}: ^${item.mark} at note ${k + 1} of "${block.notes}"`).toBe(true);

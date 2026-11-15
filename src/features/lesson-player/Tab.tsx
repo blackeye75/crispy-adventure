@@ -13,7 +13,7 @@ import { PlayButton } from "./PlayButton";
 const LINE = 22; // gap between string lines
 const TOP = 30;
 const LEFT = 34;
-const MARK_TEXT: Record<TabMark, string> = { h: "h", p: "p", s: "sl", b: "full", bh: "½", v: "~~" };
+const MARK_TEXT: Record<TabMark, string> = { h: "h", p: "p", s: "sl", b: "full", bh: "½", v: "~~", r: "rel", pb: "pre", ub: "full" };
 const FINGER_NAMES: Record<string, string> = { p: "thumb", i: "index", m: "middle", a: "ring" };
 const STRING_NAMES = ["e", "B", "G", "D", "A", "E"];
 
@@ -28,10 +28,10 @@ function layoutOf(items: TabItem[]) {
       x += 10;
       return { x: x - 5, count: undefined, index: -1 };
     }
-    const at = { x, count: Number.isInteger(beat) ? beat + 1 : undefined, index: ++index };
-    const beats = itemBeats(item);
-    beat = Math.round((beat + beats) * 1000) / 1000;
-    x += Math.min(120, Math.max(28, beats * 52));
+    const whole = Math.round(beat);
+    const at = { x, count: Math.abs(beat - whole) < 0.01 ? whole + 1 : undefined, index: ++index }; // thirds of a beat never sum exactly
+    beat += itemBeats(item);
+    x += Math.min(120, Math.max(28, itemBeats(item) * 52));
     return at;
   });
 }

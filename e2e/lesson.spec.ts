@@ -348,3 +348,19 @@ test("strumming Intermediate: sixteenth notes, accents and muted strums are draw
   await next(page).click();
   await expect(page.getByRole("img", { name: /^Strumming pattern\. 1: down, and: up, 2: muted strum, and: up, 3: down, and: up, 4: muted strum, and: up$/ })).toBeVisible();
 });
+
+test("lead Intermediate: release, pre-bend and unison bend are drawn and described; triplet tabs count the beat", async ({ page }) => {
+  await signUpSubscribed(page);
+  await page.goto("/learn/bend-types");
+  await next(page).click();
+  await next(page).click();
+  await expect(page.getByRole("img", { name: /^Tab\. string 3 fret 7, whole-step bend; string 3 fret 7, release; string 3 fret 5; string 4 fret 7$/ })).toBeVisible();
+  await expect(page.getByRole("img", { name: /^Tab\. string 3 fret 7, pre-bend; string 3 fret 7, release/ })).toBeVisible();
+  await expect(page.getByRole("img", { name: /^Tab\. string 3 fret 7 and string 2 fret 5, unison bend/ })).toBeVisible();
+  await page.goto("/learn/sequences-for-speed");
+  await next(page).click();
+  await next(page).click();
+  const threes = page.getByRole("img", { name: /^Tab\. string 1 fret 8; string 1 fret 5; string 2 fret 8; string 1 fret 5/ }).first();
+  await expect(threes.locator("text.fill-muted-foreground.text-xs")).toHaveText(["1", "2", "3", "4"]); // one count per beat of triplets
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
+});

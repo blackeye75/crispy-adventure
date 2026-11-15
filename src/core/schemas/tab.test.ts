@@ -18,6 +18,10 @@ test("tab: a bend sounds its target, the finger stays on its fret", () => {
   expect(tabSteps([whole, half, hammer]).map((s) => s.midis[0])).toEqual([midi("E4"), midi("Eb4"), midi("D4")]);
   expect(tabFretted(whole)).toEqual([midi("D4")]);
 });
+test("tab: a release sounds the fretted note, a pre-bend its target, a unison bend two equal notes", () => {
+  const steps = tabSteps(parseTab("3:7/q^pb 3:7/q^r 3:7+2:5/h^ub"));
+  expect(steps.map((s) => s.midis)).toEqual([[midi("E4")], [midi("D4")], [midi("E4"), midi("E4")]]);
+});
 test("tab: bad input is refused", () => {
   for (const bad of ["7:5/q", "3:25/q", "3:5", "3:5/q^x", "3:5+3:7/q"]) expect(() => parseTab(bad), bad).toThrow();
 });
