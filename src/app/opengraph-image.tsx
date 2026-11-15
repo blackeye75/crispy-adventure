@@ -10,12 +10,18 @@ export default function Image() {
     (
       <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: 96, background: "#17140f", color: "#f3efe6" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-          {/* the mark, drawn with boxes: a piano key for the stem, two strings for the arms, a note on the string */}
-          <div style={{ position: "relative", width: 82, height: 96, display: "flex" }}>
-            <div style={{ position: "absolute", left: 0, top: 0, width: 28, height: 96, borderRadius: 6, background: "#f3efe6" }} />
-            <div style={{ position: "absolute", left: 14, top: 0, width: 66, height: 11, borderRadius: 6, background: "#f3efe6" }} />
-            <div style={{ position: "absolute", left: 14, top: 34, width: 50, height: 11, borderRadius: 6, background: "#f3efe6" }} />
-            <div style={{ position: "absolute", left: 55, top: 26, width: 27, height: 27, borderRadius: 14, background: "#eeb443" }} />
+          {/* the mark, drawn with boxes: a strip of piano keys for the stem, two strings for the arms, a note on the string */}
+          <div style={{ position: "relative", width: 88, height: 96, display: "flex" }}>
+            <div style={{ position: "absolute", left: 0, top: 0, width: 33, height: 96, borderRadius: 5, background: "#f3efe6" }} />
+            <div style={{ position: "absolute", left: 20, top: 0, width: 65, height: 11, borderRadius: 6, background: "#f3efe6" }} />
+            <div style={{ position: "absolute", left: 20, top: 34, width: 50, height: 11, borderRadius: 6, background: "#f3efe6" }} />
+            {[1, 2, 3, 4].map((k) => (
+              <div key={`line${k}`} style={{ position: "absolute", left: 0, top: k * 19.2 - 1, width: 33, height: 2, background: "#17140f" }} />
+            ))}
+            {[1, 2, 4].map((k) => (
+              <div key={`black${k}`} style={{ position: "absolute", left: 0, top: k * 19.2 - 5.5, width: 20, height: 11, borderRadius: 2, background: "#17140f" }} />
+            ))}
+            <div style={{ position: "absolute", left: 60, top: 26, width: 27, height: 27, borderRadius: 14, background: "#eeb443" }} />
           </div>
           <div style={{ fontSize: 44, color: "#eeb443", letterSpacing: 6 }}>FRETKEY</div>
         </div>

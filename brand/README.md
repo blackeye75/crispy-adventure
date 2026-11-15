@@ -1,6 +1,6 @@
 # Fretkey logo
 
-One mark, used everywhere: an **F** made of a piano key (the stem) and two strings (the arms), with a gold note on the string.
+One mark, used everywhere: an **F** whose stem is a strip of piano keys (five white keys, three black, in the grouping of C to G) and whose arms are guitar strings, with a gold note on the string.
 
 | File | Use |
 |---|---|
@@ -13,4 +13,4 @@ Colours: background `#17140f`, cream `#f3efe6`, gold `#eeb443`. The name is set 
 
 The website uses the same mark: `src/app/icon.svg` (favicon), `src/app/apple-icon.png`, `public/icon-192.png`, `public/icon-512.png`, the header (`src/components/ui/logo.tsx`) and the link preview (`src/app/opengraph-image.tsx`).
 
-To change the mark, edit the shapes in `render.mjs`, `src/app/icon.svg` and `src/components/ui/logo.tsx`, then run `node brand/render.mjs` from the repo root to rebuild every PNG.
+To change the mark, edit the shapes in `render.mjs` and run `node brand/render.mjs` from the repo root: it rebuilds every PNG and SVG, including the favicon. The header (`src/components/ui/logo.tsx`) and the link preview (`src/app/opengraph-image.tsx`) draw the same shapes by hand and must be updated to match.
