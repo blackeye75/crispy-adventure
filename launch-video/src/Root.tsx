@@ -1,6 +1,7 @@
 import { Composition, Folder } from "remotion";
 import { LaunchVideo } from "./LaunchVideo";
 import { Canvas } from "./scenes/Canvas";
+import { Cover } from "./scenes/Cover";
 import { Cta } from "./scenes/Cta";
 import { Habit } from "./scenes/Habit";
 import { Hook } from "./scenes/Hook";
@@ -17,6 +18,9 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="LaunchVideo" component={LaunchVideo} durationInFrames={1800} {...size} />
     {/* The same scenes in 9:16 for Reels and Shorts; each scene has its own tall layout. */}
     <Composition id="LaunchVideoVertical" component={LaunchVideo} durationInFrames={1800} width={1080} height={1920} fps={FPS} />
+    {/* Still images for the launch post: render with `npx remotion still`. */}
+    <Composition id="CoverReel" component={Cover} durationInFrames={1} width={1080} height={1920} fps={FPS} />
+    <Composition id="CoverFeed" component={Cover} durationInFrames={1} width={1080} height={1350} fps={FPS} />
     <Folder name="Scenes">
       <Composition id="Hook" component={Hook} durationInFrames={144} {...size} />
       <Composition id="Logo" component={Logo} durationInFrames={144} {...size} />
