@@ -47,6 +47,24 @@ function hat(at, gain) {
   }
 }
 
+/** A swell of noise that opens up and gets louder, to pull the ear into the next downbeat. */
+function riser(from, to, gain) {
+  const start = Math.round(from * RATE), length = Math.round((to - from) * RATE);
+  let low = 0;
+  for (let k = 0; k < length; k++) {
+    const p = k / length;
+    low += (rand() - low) * (0.01 + 0.25 * p * p); // the filter opens as it rises
+    out[start + k] += low * gain * p * p;
+  }
+}
+
+// The opening two bars: a heartbeat under the plucked notes, then a swell into the downbeat where the band comes in.
+for (let beat = 0; beat < 8; beat++) {
+  kick(beat * BEAT, 0.5);
+  kick(beat * BEAT + 0.17, 0.28);
+}
+riser(BAR, 2 * BAR, 0.5);
+
 // bass note, then the four arpeggio notes low to high
 const CHORDS = [[45, 57, 60, 64, 69], [41, 53, 57, 60, 65], [48, 55, 60, 64, 67], [43, 55, 59, 62, 67]];
 const ORDER = [0, 1, 2, 3, 2, 1, 2, 3];
