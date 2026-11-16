@@ -10,6 +10,7 @@ One mark, used everywhere: an **F** whose stem is a strip of piano keys (five wh
 | `logo-horizontal-on-dark.png`, `logo-horizontal-on-light.png` | Mark and name side by side, transparent background. |
 | `launch-cover-reel-1080x1920.png` | Cover for the launch reel. The content sits inside the 3:4 crop Instagram shows on the profile grid. |
 | `launch-cover-feed-1080x1350.png` | The same cover as a 4:5 feed post. |
+| `promo-cover-reel-1080x1920.png`, `promo-cover-feed-1080x1350.png` | Covers for the longer promo: its opening line and "Coming soon". |
 
 Colours: background `#17140f`, cream `#f3efe6`, gold `#eeb443`. The name is set in Fraunces 600.
 
@@ -17,4 +18,4 @@ The website uses the same mark: `src/app/icon.svg` (favicon), `src/app/apple-ico
 
 To change the mark, edit the shapes in `render.mjs` and run `node brand/render.mjs` from the repo root: it rebuilds every PNG and SVG, including the favicon. The header (`src/components/ui/logo.tsx`) and the link preview (`src/app/opengraph-image.tsx`) draw the same shapes by hand and must be updated to match.
 
-The two launch covers are stills from the video project: `cd launch-video && npx remotion still CoverReel ../brand/launch-cover-reel-1080x1920.png` (and `CoverFeed`). Edit them in `launch-video/src/scenes/Cover.tsx`.
+The two launch covers are stills from the video project: `cd launch-video && npx remotion still CoverReel ../brand/launch-cover-reel-1080x1920.png` (and `CoverFeed`). Edit them in `launch-video/src/scenes/Cover.tsx`. The promo covers are `PromoCoverReel` and `PromoCoverFeed`, from `launch-video/src/promo/PromoCover.tsx`.
