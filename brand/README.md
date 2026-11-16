@@ -11,6 +11,7 @@ One mark, used everywhere: an **F** whose stem is a strip of piano keys (five wh
 | `launch-cover-reel-1080x1920.png` | Cover for the launch reel. The content sits inside the 3:4 crop Instagram shows on the profile grid. |
 | `launch-cover-feed-1080x1350.png` | The same cover as a 4:5 feed post. |
 | `promo-cover-reel-1080x1920.png`, `promo-cover-feed-1080x1350.png` | Covers for the longer promo: its opening line and "Coming soon". |
+| `story-1-why-fretkey.png`, `story-2-how-a-lesson-works.png`, `story-3-your-journey.png` | Story posters (1080 × 1920): what is different, how a lesson works, and what each level gives you. From `launch-video/src/reels/Posters.tsx`. |
 
 Colours: background `#17140f`, cream `#f3efe6`, gold `#eeb443`. The name is set in Fraunces 600.
 

@@ -18,6 +18,22 @@ npx remotion render PromoVideoVertical out/fretkey-promo-vertical.mp4 --codec=h2
 
 Its scene order and lengths are the `PROMO_SCENES` list in `src/promo/PromoVideo.tsx`. The eight lessons it shows, with their captions, are the `LESSONS` list in `src/promo/Showcase.tsx`. Its music is `public/focus.wav`, from `node scripts/make-focus-music.mjs`.
 
+## Narrated reels and story posters
+
+Three 16:9 reels with an English voice-over, and three story posters (1080 × 1920 stills):
+
+```bash
+npx remotion render ReelLearn out/fretkey-reel-1-how-you-learn.mp4 --codec=h264 --crf=19
+npx remotion render ReelLesson out/fretkey-reel-2-inside-a-lesson.mp4 --codec=h264 --crf=19
+npx remotion render ReelBlues out/fretkey-reel-3-twelve-bar-blues.mp4 --codec=h264 --crf=19
+npx remotion still PosterUsp ../brand/story-1-why-fretkey.png      # also PosterLesson, PosterJourney
+```
+
+- **The words** are in `src/reels/voice.json`, one line per segment. Each line is also shown as a caption.
+- **The voice** is generated locally by [Piper](https://github.com/rhasspy/piper) with the "cori" voice (British English, female, trained on public-domain LibriVox recordings). After editing the words, run `pip install piper-tts`, download `vits-piper-en_GB-cori-medium` from the sherpa-onnx `tts-models` release on GitHub, then `PIPER_MODEL=/path/to/en_GB-cori-medium.onnx node scripts/make-voice.mjs`. It rewrites `public/vo/` and `src/reels/voice-timing.json`; every segment is as long as its recording, so the reels re-time themselves.
+- **The pictures** for each line are in `src/reels/LearnReel.tsx`, `LessonReel.tsx` and `BluesReel.tsx`. The blues reel plays `public/blues.wav` (from `node scripts/make-blues.mjs`) while its twelve bars light up.
+- **The posters** are in `src/reels/Posters.tsx`.
+
 The two launch cuts use the same scenes. Each scene checks `useTall()` and has its own 9:16 layout, kept clear of the top and bottom of the frame where Instagram draws its buttons and caption.
 
 ## What is in here

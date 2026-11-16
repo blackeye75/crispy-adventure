@@ -11,6 +11,11 @@ import { Numbers } from "./scenes/Numbers";
 import { Play } from "./scenes/Play";
 import { PromoCover } from "./promo/PromoCover";
 import { PROMO_FRAMES, PromoVideo } from "./promo/PromoVideo";
+import { BLUES_SEGMENTS, BluesReel } from "./reels/BluesReel";
+import { LEARN_SEGMENTS, LearnReel } from "./reels/LearnReel";
+import { LESSON_SEGMENTS, LessonReel } from "./reels/LessonReel";
+import { PosterJourney, PosterLesson, PosterUsp } from "./reels/Posters";
+import { reelFrames } from "./reels/Reel";
 import { FPS } from "./theme";
 
 const size = { width: 1920, height: 1080, fps: FPS };
@@ -23,6 +28,14 @@ export const RemotionRoot: React.FC = () => (
     {/* The longer promo: about 84 seconds, with its own soundtrack. */}
     <Composition id="PromoVideo" component={PromoVideo} durationInFrames={PROMO_FRAMES} {...size} />
     <Composition id="PromoVideoVertical" component={PromoVideo} durationInFrames={PROMO_FRAMES} width={1080} height={1920} fps={FPS} />
+    {/* Narrated reels. Their length follows the voice-over: see src/reels/voice.json and scripts/make-voice.mjs. */}
+    <Composition id="ReelLearn" component={LearnReel} durationInFrames={reelFrames("learn", LEARN_SEGMENTS)} {...size} />
+    <Composition id="ReelLesson" component={LessonReel} durationInFrames={reelFrames("lesson", LESSON_SEGMENTS)} {...size} />
+    <Composition id="ReelBlues" component={BluesReel} durationInFrames={reelFrames("blues", BLUES_SEGMENTS)} {...size} />
+    {/* Story posters: stills, 1080 × 1920. */}
+    <Composition id="PosterUsp" component={PosterUsp} durationInFrames={1} width={1080} height={1920} fps={FPS} />
+    <Composition id="PosterLesson" component={PosterLesson} durationInFrames={1} width={1080} height={1920} fps={FPS} />
+    <Composition id="PosterJourney" component={PosterJourney} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     {/* Still images for the launch post: render with `npx remotion still`. */}
     <Composition id="CoverReel" component={Cover} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     <Composition id="CoverFeed" component={Cover} durationInFrames={1} width={1080} height={1350} fps={FPS} />
