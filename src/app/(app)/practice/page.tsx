@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { canvasFromQuery } from "@/core/schemas/canvas";
 import { TheoryCanvas } from "@/features/canvas/TheoryCanvas";
@@ -25,6 +26,7 @@ export default function PracticePage({ searchParams }: { searchParams: Query }) 
   return (
     <main className="flex-1">
       <h1 className="sr-only">Theory Canvas</h1>
+      <p className="mx-auto w-full max-w-[1400px] px-4 pt-4 text-sm lg:px-8"><Link href="/practice/ear" className="text-muted-foreground underline underline-offset-4 hover:text-foreground">Ear trainer: intervals, chords and scales</Link></p>
       <Suspense fallback={<Skeleton />}>
         <Canvas searchParams={searchParams} />
       </Suspense>

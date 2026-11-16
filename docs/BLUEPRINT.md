@@ -242,6 +242,8 @@ Tick tasks as they complete. Each phase ends in something you can use.
 - [ ] Piano: MIDI keyboard input (Web MIDI)
 - [ ] Guitar: microphone single-note detection for "play this note" drills
 - [ ] Indian note names (Sa Re Ga) and Hindi language option
+  - [x] Sa Re Ga and Do Re Mi on the instruments: a canvas label option and an account preference (the Hindi language option is still open)
+- [x] Ear trainer in the practice room: intervals, chords and scales
 
 ### Phase 7 — Android and iOS
 - [ ] Expo (React Native) app using the same `/api/v1` and `src/core`

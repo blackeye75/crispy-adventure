@@ -18,7 +18,7 @@ export type Profile = {
   displayName: string;
   instrument: "guitar" | "piano";
   leftHanded: boolean;
-  noteNaming: "letters" | "solfege";
+  noteNaming: "letters" | "solfege" | "sargam";
   level: "beginner" | "intermediate" | "advanced";
   dailyGoalMinutes: number;
   streak: { current: number; longest: number; lastActiveDate?: string };
@@ -29,7 +29,7 @@ export const ProfileModel = appModel<Profile>("Profile", "profiles", new Schema<
   displayName: { type: String, required: true },
   instrument: { type: String, enum: ["guitar", "piano"], required: true },
   leftHanded: { type: Boolean, default: false },
-  noteNaming: { type: String, enum: ["letters", "solfege"], default: "letters" },
+  noteNaming: { type: String, enum: ["letters", "solfege", "sargam"], default: "letters" },
   level: { type: String, enum: ["beginner", "intermediate", "advanced"], required: true },
   dailyGoalMinutes: { type: Number, required: true },
   streak: { current: { type: Number, default: 0 }, longest: { type: Number, default: 0 }, lastActiveDate: String },

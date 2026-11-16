@@ -37,7 +37,8 @@ export const canvasShowSchema = z.discriminatedUnion("kind", [
 export const canvasStateSchema = z.object({
   root: z.string().regex(/^[A-G](#|b)?$/),
   show: canvasShowSchema,
-  labels: z.enum(["notes", "degrees", "intervals"]),
+  /** What is written on the markers. "solfege" (Do Re Mi) and "sargam" (Sa Re Ga) name each note relative to the root. */
+  labels: z.enum(["notes", "degrees", "intervals", "solfege", "sargam"]),
   focusPitch: pitch.optional(), // hovered or tapped
   position: z.object({ fromFret: z.number().int().min(0), toFret: z.number().int().max(24) }).optional(),
   guitar: z.object({

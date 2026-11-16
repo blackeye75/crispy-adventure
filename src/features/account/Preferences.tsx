@@ -2,14 +2,15 @@
 
 import { useState, useSyncExternalStore } from "react";
 import { DAILY_GOALS, type Instrument } from "@/core/schemas/api";
+import type { NoteNaming } from "@/core/theory/syllables";
 import { Button } from "@/components/ui/button";
 import { Segmented } from "@/components/ui/segmented";
 import { api } from "@/lib/api";
 import { Choice } from "./OnboardingFlow";
 
-type Prefs = { instrument: Instrument; dailyGoalMinutes: number; leftHanded: boolean };
+type Prefs = { instrument: Instrument; dailyGoalMinutes: number; leftHanded: boolean; noteNaming: NoteNaming };
 
-/** Instrument, daily goal and left-handed fretboard: saved to the account. */
+/** Instrument, daily goal, note names and left-handed fretboard: saved to the account. */
 export function PreferencesForm({ initial }: { initial: Prefs }) {
   const [prefs, setPrefs] = useState(initial);
   const [state, setState] = useState<"idle" | "saving" | "saved" | string>("idle");
@@ -31,6 +32,10 @@ export function PreferencesForm({ initial }: { initial: Prefs }) {
       <h2 className="text-2xl">Preferences</h2>
       <Choice legend="Instrument" value={prefs.instrument} options={[["guitar", "Guitar"], ["piano", "Piano"]]} onChange={(instrument) => change({ instrument })} />
       <Choice legend="Daily goal" value={prefs.dailyGoalMinutes} options={DAILY_GOALS.map((n) => [n, `${n} min`] as [number, string])} onChange={(dailyGoalMinutes) => change({ dailyGoalMinutes })} />
+      <div className="flex flex-col gap-2">
+        <Choice legend="Note names on the instruments" value={prefs.noteNaming} options={[["letters", "C D E"], ["solfege", "Do Re Mi"], ["sargam", "Sa Re Ga"]]} onChange={(noteNaming) => change({ noteNaming })} />
+        <p className="text-sm text-muted-foreground">Do Re Mi and Sa Re Ga name each note from the home note of the scale or chord. Lesson text still uses letters.</p>
+      </div>
       <label className="flex min-h-11 items-center gap-3 text-lg">
         <input type="checkbox" className="size-5 accent-primary" checked={prefs.leftHanded} onChange={(e) => change({ leftHanded: e.target.checked })} />
         Left-handed fretboard in lessons

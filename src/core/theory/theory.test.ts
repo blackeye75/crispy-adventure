@@ -214,3 +214,29 @@ describe("keys", () => {
     expect(relativeMajor("G")).toBe("Bb");
   });
 });
+
+import { resolveCanvas } from "../instruments/resolveCanvas";
+import { DEFAULT_CANVAS } from "../schemas/canvas";
+import { syllable } from "./syllables";
+
+describe("relative note names", () => {
+  const labels = (root: string, scale: Parameters<typeof getScale>[1], naming: "solfege" | "sargam") =>
+    resolveCanvas({ ...DEFAULT_CANVAS, root, show: { kind: "scale", scale }, labels: naming }).tones.map((t) => t.label).join(" ");
+  test("the major scale is Do Re Mi and Sa Re Ga in every key", () => {
+    for (const root of ["C", "F#", "Bb"]) {
+      expect(labels(root, "major", "solfege")).toBe("Do Re Mi Fa Sol La Ti");
+      expect(labels(root, "major", "sargam")).toBe("Sa Re Ga Ma Pa Dha Ni");
+    }
+  });
+  test("komal swar are lower case and tivra Ma is marked; these match the thaats in the curriculum", () => {
+    expect(labels("C", "lydian", "sargam")).toBe("Sa Re Ga Ma′ Pa Dha Ni"); // Kalyan
+    expect(labels("C", "dorian", "sargam")).toBe("Sa Re ga Ma Pa Dha ni"); // Kafi
+    expect(labels("C", "phrygian", "sargam")).toBe("Sa re ga Ma Pa dha ni"); // Bhairavi
+    expect(labels("A", "natural-minor", "solfege")).toBe("Do Re Me Fa Sol Le Te");
+  });
+  test("chord extensions fold back into the octave", () => {
+    expect(syllable("9", "solfege")).toBe("Re");
+    expect(syllable("#11", "sargam")).toBe("Ma′");
+    expect(syllable("b13", "solfege")).toBe("Le");
+  });
+});

@@ -1,3 +1,4 @@
+import { syllable } from "../theory/syllables";
 import { Interval } from "tonal";
 import type { CanvasShow, CanvasState } from "../schemas/canvas";
 import { chordPitches, getChord } from "../theory/chords";
@@ -51,7 +52,7 @@ function tonesFrom(root: string, intervals: string[], roleOf: (interval: string)
   return intervals.map((interval) => {
     const pitchClass = transpose(root, interval);
     const degree = intervalToDegree(interval);
-    const label = labels === "notes" ? glyphs(pitchClass) : labels === "degrees" ? glyphs(degree) : shortName(interval);
+    const label = labels === "notes" ? glyphs(pitchClass) : labels === "degrees" ? glyphs(degree) : labels === "intervals" ? shortName(interval) : syllable(degree, labels);
     return { pitchClass, chroma: chroma(pitchClass), interval, degree, role: roleOf(interval), label };
   });
 }

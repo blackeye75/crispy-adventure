@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { useContext, useMemo, useRef, useState } from "react";
 import { playbackSteps, resolveCanvas, type Marker } from "@/core/instruments/resolveCanvas";
 import { canvasToQuery } from "@/core/schemas/canvas";
 import { soundPlayback, soundSteps, type BlockOf } from "@/core/schemas/content";
 import { playNotes } from "@/features/audio/engine";
 import type { Instrument } from "@/core/schemas/api";
-import { InstrumentView, lessonState } from "./InstrumentView";
+import { InstrumentView, lessonState, Naming } from "./InstrumentView";
 import { PlayButton } from "./PlayButton";
 
 export function AudioBlock({ block }: { block: BlockOf<"audio"> }) {
@@ -29,10 +29,13 @@ function LinkedInstrument({ canvas, instrument, playLabel, bpm, loop, steps, met
   const [activeIndex, setActiveIndex] = useState(0); // which chord of a progression is showing
   const [sounding, setSounding] = useState<number[]>([]);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const naming = useContext(Naming);
   const state = useMemo(() => {
     const base = lessonState(canvas);
-    return { ...base, show: base.show.kind === "progression" ? { ...base.show, activeIndex } : base.show, focusPitch };
-  }, [canvas, focusPitch, activeIndex]);
+    // Do Re Mi and Sa Re Ga need a home note, so plain note pictures (show.kind "notes") keep their letters.
+    const labels = base.labels === "notes" && naming !== "letters" && base.show.kind !== "notes" ? naming : base.labels;
+    return { ...base, labels, show: base.show.kind === "progression" ? { ...base.show, activeIndex } : base.show, focusPitch };
+  }, [canvas, focusPitch, activeIndex, naming]);
   const resolved = useMemo(() => resolveCanvas(state), [state]);
   const play = steps ?? playbackSteps(state, "up");
   const tap = (marker: Marker) => {

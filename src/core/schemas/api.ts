@@ -1,4 +1,5 @@
 // Request contracts for /api/v1, shared with the mobile app.
+import { NOTE_NAMINGS } from "../theory/syllables";
 import { z } from "zod";
 import { isTimeZone } from "../review/streak";
 
@@ -12,7 +13,7 @@ export const profilePatchSchema = z.object({
   displayName: z.string().trim().min(1).max(60),
   instrument: z.enum(["guitar", "piano"]),
   leftHanded: z.boolean(),
-  noteNaming: z.enum(["letters", "solfege"]),
+  noteNaming: z.enum(NOTE_NAMINGS),
   level: z.enum(["beginner", "intermediate", "advanced"]),
   dailyGoalMinutes: z.union(DAILY_GOALS.map((n) => z.literal(n))),
   timezone: z.string().refine(isTimeZone, "unknown time zone"),

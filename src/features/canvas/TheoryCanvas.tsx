@@ -185,7 +185,7 @@ export function TheoryCanvas({ initial }: { initial: CanvasState }) {
           </select>
         )}
         <Segmented label="Show" value={show.kind as (typeof KINDS)[number]} options={KINDS.map((k) => [k, k[0].toUpperCase() + k.slice(1)] as const)} onChange={(kind) => changeShow(DEFAULT_SHOW[kind])} />
-        <Segmented label="Labels" value={state.labels} options={[["notes", "Notes"], ["degrees", "Degrees"], ["intervals", "Intervals"]]} onChange={(labels) => setState((s) => ({ ...s, labels }))} />
+        <Segmented label="Labels" value={state.labels} options={[["notes", "Notes"], ["degrees", "Degrees"], ["intervals", "Intervals"], ["solfege", "Do Re Mi"], ["sargam", "Sa Re Ga"]]} onChange={(labels) => setState((s) => ({ ...s, labels }))} />
         <details className="relative shrink-0">
           <summary className={cn(field, "flex cursor-pointer list-none items-center")}>View</summary>
           <div className="absolute right-0 z-20 mt-2 flex w-56 flex-col gap-3 rounded-lg border bg-card p-4 text-sm shadow-lg max-lg:fixed max-lg:right-4">

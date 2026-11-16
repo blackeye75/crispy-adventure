@@ -58,7 +58,7 @@ export type Sound = z.infer<typeof soundSchema>;
 const lessonCanvas = z.object({
   root: noteName,
   show: canvasShowSchema,
-  labels: z.enum(["notes", "degrees", "intervals"]).default("notes"),
+  labels: z.enum(["notes", "degrees", "intervals", "solfege", "sargam"]).default("notes"),
   position: z.object({ fromFret: z.number().int().min(0), toFret: z.number().int().max(24) }).optional(),
   /** Frets to show on the guitar; lessons default to 12. */
   frets: z.number().int().min(12).max(17).optional(),

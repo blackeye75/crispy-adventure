@@ -7,11 +7,12 @@ import { stopAudio } from "@/features/audio/engine";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 import type { ReviewDrill } from "@/server/services/review";
-import { LeftHanded } from "./InstrumentView";
+import type { NoteNaming } from "@/core/theory/syllables";
+import { LeftHanded, Naming } from "./InstrumentView";
 import { BlockView } from "./LessonPlayer";
 
 /** A quick mixed session of the drills that are due. Each answer reschedules its concept. */
-export function ReviewSession({ drills, instrument, leftHanded }: { drills: ReviewDrill[]; instrument: Instrument; leftHanded: boolean }) {
+export function ReviewSession({ drills, instrument, leftHanded, noteNaming = "letters" }: { drills: ReviewDrill[]; instrument: Instrument; leftHanded: boolean; noteNaming?: NoteNaming }) {
   const [index, setIndex] = useState(0);
   const [results, setResults] = useState<boolean[]>([]);
   const [error, setError] = useState<string>();
@@ -44,7 +45,7 @@ export function ReviewSession({ drills, instrument, leftHanded }: { drills: Revi
     <div className={shell}>
       <p className="text-sm text-muted-foreground" aria-live="polite">Review {index + 1} of {drills.length} · from “{drill.lessonTitle}”</p>
       <div key={index} className="step-in flex flex-col gap-8">
-        <LeftHanded value={leftHanded}><BlockView block={drill.block} instrument={instrument} onSolved={record} /></LeftHanded>
+        <LeftHanded value={leftHanded}><Naming value={noteNaming}><BlockView block={drill.block} instrument={instrument} onSolved={record} /></Naming></LeftHanded>
       </div>
       {error && <p role="alert" className="text-destructive">{error}</p>}
       <div className="flex justify-end">

@@ -110,3 +110,35 @@ test("practice tools: metronome on its own, tempo trainer speeds up the loop, a 
   await transport.getByRole("button", { name: "Stop" }).click();
   await expect(tempo).toHaveValue("65"); // stays where you got to
 });
+
+test("note names: the canvas can label a scale in Do Re Mi and in Sa Re Ga", async ({ page }) => {
+  await page.goto("/practice?root=D&scale=dorian");
+  await page.getByRole("group", { name: "Labels" }).getByText("Sa Re Ga").click();
+  expect(await labels(page, fretboard(page))).toEqual(["Dha", "Ma", "Pa", "Re", "Sa", "ga", "ni"]); // Kafi: komal Ga and Ni
+  expect(await labels(page, keyboard(page))).toEqual(["Dha", "Ma", "Pa", "Re", "Sa", "ga", "ni"]);
+  await expect(page).toHaveURL(/labels=sargam/);
+  await page.getByRole("group", { name: "Labels" }).getByText("Do Re Mi").click();
+  expect(await labels(page, fretboard(page))).toEqual(["Do", "Fa", "La", "Me", "Re", "Sol", "Te"]);
+});
+
+test("ear trainer: a question plays, a wrong answer can be retried, the right one explains itself and the score counts first tries", async ({ page }) => {
+  await page.goto("/practice");
+  await page.getByRole("link", { name: /Ear trainer/ }).click();
+  await expect(page.getByRole("heading", { name: "Ear trainer" })).toBeVisible();
+  await page.getByRole("group", { name: "What to listen for" }).getByText("Chords").click();
+  await page.getByRole("button", { name: "Start" }).click();
+  await expect(page.getByText("Which chord is this?")).toBeVisible();
+  const options = page.locator("button[aria-disabled]");
+  await expect(options).toHaveCount(4);
+  // try the options in turn until one is right; wrong ones are marked and stay wrong
+  for (let i = 0; i < 4; i++) {
+    await options.nth(i).click();
+    if (await page.getByRole("status").filter({ hasText: "Correct." }).count()) break;
+    await expect(page.getByRole("status").filter({ hasText: "Not quite." })).toBeVisible();
+  }
+  await expect(page.getByRole("status").filter({ hasText: /Correct\. .+\. Its formula is 1 / })).toBeVisible();
+  await expect(page.getByText(/^[01] of 1 right first time · streak [01]$/)).toBeVisible();
+  await page.getByRole("button", { name: "Next" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Correct." })).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
+});

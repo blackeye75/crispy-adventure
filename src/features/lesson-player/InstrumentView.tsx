@@ -9,12 +9,15 @@ import type { NoteEvents } from "@/features/canvas/NoteMarker";
 import { Fretboard } from "@/features/fretboard/Fretboard";
 import { Keyboard } from "@/features/keyboard/Keyboard";
 import type { Instrument } from "@/core/schemas/api";
+import type { NoteNaming } from "@/core/theory/syllables";
 
 // Lessons show twelve frets: one full octave per string, and less to scroll on a phone.
 const GUITAR = { tuning: STANDARD_TUNING, frets: 12, leftHanded: false };
 
 /** The learner's left-handed preference, set once by the lesson or review screen. Mirrors the fretboard only. */
 export const LeftHanded = createContext(false);
+/** The learner's note-name system. Lessons that label markers with letters use it instead. */
+export const Naming = createContext<NoteNaming>("letters");
 const KEYS = { from: "E2", to: "E6" };
 const NO_EVENTS: NoteEvents = { sounding: [], onNoteHover: () => {}, onNoteTap: () => {} };
 

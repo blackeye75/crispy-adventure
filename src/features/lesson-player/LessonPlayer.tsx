@@ -20,7 +20,8 @@ import { CircleOfFifths } from "./CircleOfFifths";
 import { StrumPattern } from "./StrumPattern";
 import { TabBlock } from "./Tab";
 import { HandsBlock } from "./Hands";
-import { LeftHanded } from "./InstrumentView";
+import type { NoteNaming } from "@/core/theory/syllables";
+import { LeftHanded, Naming } from "./InstrumentView";
 import { Markdown } from "./Markdown";
 
 const STEP_NAMES = { understand: "Understand", listen: "Listen", learn: "Learn", practice: "Practice" };
@@ -51,12 +52,13 @@ type Props = {
   /** From the learner's profile. */
   instrument: Instrument;
   leftHanded: boolean;
+  noteNaming?: NoteNaming;
   /** Screen to resume at, when the lesson was left part-way. */
   startIndex?: number;
 };
 
 /** Full-screen lesson: four steps, one action per screen, one clear next step at the end. */
-export function LessonPlayer({ lesson, next, instrument: initialInstrument, leftHanded, startIndex = 0 }: Props) {
+export function LessonPlayer({ lesson, next, instrument: initialInstrument, leftHanded, noteNaming = "letters", startIndex = 0 }: Props) {
   // Understand, Listen and Learn are one screen each; every Practice block gets its own.
   const screens = useMemo(
     () => lesson.steps.flatMap((step, s) => (step.kind === "practice" ? step.blocks.map((b) => ({ step: s, blocks: [b] })) : [{ step: s, blocks: step.blocks }])),
@@ -109,7 +111,7 @@ export function LessonPlayer({ lesson, next, instrument: initialInstrument, left
   };
 
   return (
-    <LeftHanded value={leftHanded}>
+    <LeftHanded value={leftHanded}><Naming value={noteNaming}>
     <div className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-background">
       <header className="sticky top-0 z-10 flex flex-wrap items-center gap-x-4 gap-y-2 border-b bg-background px-4 py-3 lg:px-8">
         <Button asChild variant="ghost" size="icon" className="shrink-0">
@@ -169,6 +171,6 @@ export function LessonPlayer({ lesson, next, instrument: initialInstrument, left
         </>
       )}
     </div>
-    </LeftHanded>
+    </Naming></LeftHanded>
   );
 }

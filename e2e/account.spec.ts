@@ -128,3 +128,24 @@ test("the sign-in form can never put a password in the address bar", async ({ pa
   await expect(page.getByRole("button", { name: "Sign in" })).toBeDisabled();
   await expect(page.locator("form")).toHaveAttribute("method", "post");
 });
+
+test("note names: the preference is saved and lesson instruments use it", async ({ page }) => {
+  await signUp(page);
+  await page.goto("/settings");
+  const prefs = page.getByLabel("Preferences");
+  await expect(async () => { // the first click can land before the page is interactive
+    await prefs.getByRole("button", { name: "Sa Re Ga" }).click();
+    await expect(prefs.getByRole("button", { name: "Sa Re Ga" })).toHaveAttribute("aria-pressed", "true", { timeout: 500 });
+  }).toPass();
+  await prefs.getByRole("button", { name: "Save preferences" }).click();
+  await expect(prefs.getByRole("status")).toHaveText("Saved.");
+  expect((await (await page.request.get("/api/v1/me")).json()).data.profile.noteNaming).toBe("sargam");
+
+  await page.goto("/learn/the-octave");
+  const next = page.getByRole("button", { name: /^(Continue|Finish)$/ });
+  await next.click();
+  await next.click();
+  const board = page.getByRole("group", { name: /Guitar fretboard/ }).first();
+  await board.locator(".note-marker").first().waitFor();
+  expect([...new Set(await board.locator(".note-marker text").allTextContents())]).toEqual(["Sa"]); // every C, named from the home note
+});

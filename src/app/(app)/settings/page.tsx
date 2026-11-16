@@ -12,7 +12,7 @@ async function Settings() {
   const { subscription } = await getMe(viewer);
   return (
     <>
-      <PreferencesForm initial={{ instrument: profile.instrument, dailyGoalMinutes: profile.dailyGoalMinutes, leftHanded: profile.leftHanded }} />
+      <PreferencesForm initial={{ instrument: profile.instrument, dailyGoalMinutes: profile.dailyGoalMinutes, leftHanded: profile.leftHanded, noteNaming: profile.noteNaming }} />
       <ThemeSwitch />
       <BillingSettings initial={subscription} />
     </>
