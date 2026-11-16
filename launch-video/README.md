@@ -9,7 +9,15 @@ npx remotion render LaunchVideo out/fretkey-launch.mp4 --codec=h264 --crf=18
 npx remotion render LaunchVideoVertical out/fretkey-launch-vertical.mp4 --codec=h264 --crf=18   # 1080 × 1920, for Reels and Shorts
 ```
 
-Both cuts use the same scenes. Each scene checks `useTall()` and has its own 9:16 layout, kept clear of the top and bottom of the frame where Instagram draws its buttons and caption.
+There is also a longer promo (about 84 seconds, 16:9) with a calmer soundtrack:
+
+```bash
+npx remotion render PromoVideo out/fretkey-promo.mp4 --codec=h264 --crf=18
+```
+
+Its scene order and lengths are the `PROMO_SCENES` list in `src/promo/PromoVideo.tsx`. The eight lessons it shows, with their captions, are the `LESSONS` list in `src/promo/Showcase.tsx`. Its music is `public/focus.wav`, from `node scripts/make-focus-music.mjs`.
+
+The two launch cuts use the same scenes. Each scene checks `useTall()` and has its own 9:16 layout, kept clear of the top and bottom of the frame where Instagram draws its buttons and caption.
 
 ## What is in here
 
@@ -22,4 +30,4 @@ Both cuts use the same scenes. Each scene checks `useTall()` and has its own 9:1
 
 ## Facts stated in the video
 
-Update these when they change: 236 lessons, 6 levels of theory, 4 playing tracks (`src/scenes/Numbers.tsx`), and "Level 1 is free" (`src/scenes/Cta.tsx`).
+Update these when they change (the promo states them too, in `src/promo/Showcase.tsx` and `src/promo/ComingSoon.tsx`): 236 lessons, 6 levels of theory, 4 playing tracks (`src/scenes/Numbers.tsx`), and "Level 1 is free" (`src/scenes/Cta.tsx`).
