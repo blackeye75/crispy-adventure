@@ -1,5 +1,5 @@
 import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
-import { C, LINEAR, OUT, rise, serif, Stage } from "../theme";
+import { C, LINEAR, OUT, rise, serif, Stage, useTall } from "../theme";
 
 const PLUCKS = [0, 90]; // one on each bar line
 
@@ -24,23 +24,24 @@ const String = ({ y }: { y: number }) => {
 /** The hook: what tabs gave every self-taught player, and what they left out. */
 export const PromoHook = () => {
   const frame = useCurrentFrame();
+  const tall = useTall();
   return (
     <Stage glow="50% 60%">
       <div style={{ position: "absolute", inset: 0, backgroundColor: "#000", opacity: interpolate(frame, [0, 40], [0.8, 0], LINEAR) }} />
-      <String y={150} />
-      <div style={{ position: "absolute", left: 140, right: 140, top: 270, fontFamily: serif }}>
-        <div style={{ fontSize: 104, lineHeight: 1.12, opacity: interpolate(frame, [84, 104], [1, 0.4], LINEAR) }}>
+      <String y={tall ? 330 : 150} />
+      <div style={{ position: "absolute", left: tall ? 80 : 140, right: tall ? 80 : 140, top: tall ? 520 : 270, fontFamily: serif }}>
+        <div style={{ fontSize: tall ? 82 : 104, lineHeight: 1.12, opacity: interpolate(frame, [84, 104], [1, 0.4], LINEAR) }}>
           <div style={rise(frame, 8, 50)}>
             Tabs showed you <span style={{ color: C.gold }}>where</span>
           </div>
           <div style={rise(frame, 26, 50)}>to put your fingers.</div>
         </div>
-        <div style={{ fontSize: 168, lineHeight: 1.05, marginTop: 50 }}>
+        <div style={{ fontSize: tall ? 156 : 168, lineHeight: 1.05, marginTop: tall ? 70 : 50 }}>
           <div style={rise(frame, 92, 80)}>
-            Nobody told you <span style={{ color: C.gold, fontStyle: "italic" }}>why.</span>
+            Nobody told{tall ? <br /> : " "}you <span style={{ color: C.gold, fontStyle: "italic" }}>why.</span>
           </div>
         </div>
-        <div style={{ height: 8, borderRadius: 4, marginTop: 30, backgroundColor: C.gold, width: interpolate(frame, [120, 160], [0, 1500], OUT) }} />
+        <div style={{ height: 8, borderRadius: 4, marginTop: 30, backgroundColor: C.gold, width: interpolate(frame, [120, 160], [0, tall ? 760 : 1500], OUT) }} />
       </div>
     </Stage>
   );

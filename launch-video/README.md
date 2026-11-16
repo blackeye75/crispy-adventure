@@ -13,6 +13,7 @@ There is also a longer promo (about 84 seconds, 16:9) with a calmer soundtrack:
 
 ```bash
 npx remotion render PromoVideo out/fretkey-promo.mp4 --codec=h264 --crf=18
+npx remotion render PromoVideoVertical out/fretkey-promo-vertical.mp4 --codec=h264 --crf=18   # 1080 × 1920
 ```
 
 Its scene order and lengths are the `PROMO_SCENES` list in `src/promo/PromoVideo.tsx`. The eight lessons it shows, with their captions, are the `LESSONS` list in `src/promo/Showcase.tsx`. Its music is `public/focus.wav`, from `node scripts/make-focus-music.mjs`.

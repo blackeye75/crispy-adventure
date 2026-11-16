@@ -21,6 +21,7 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="LaunchVideoVertical" component={LaunchVideo} durationInFrames={1800} width={1080} height={1920} fps={FPS} />
     {/* The longer promo: about 84 seconds, with its own soundtrack. */}
     <Composition id="PromoVideo" component={PromoVideo} durationInFrames={PROMO_FRAMES} {...size} />
+    <Composition id="PromoVideoVertical" component={PromoVideo} durationInFrames={PROMO_FRAMES} width={1080} height={1920} fps={FPS} />
     {/* Still images for the launch post: render with `npx remotion still`. */}
     <Composition id="CoverReel" component={Cover} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     <Composition id="CoverFeed" component={Cover} durationInFrames={1} width={1080} height={1350} fps={FPS} />

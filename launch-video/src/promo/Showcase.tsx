@@ -1,5 +1,5 @@
 import { interpolate, useCurrentFrame } from "remotion";
-import { C, Label, LINEAR, OUT, Phone, rise, serif, Stage } from "../theme";
+import { C, Label, LINEAR, OUT, Phone, rise, serif, Stage, useTall } from "../theme";
 
 export const EACH = 90; // one bar per lesson
 // Eight real lessons, one from each level of theory and two from the playing tracks. Titles are the lessons' own.
@@ -18,14 +18,17 @@ export const LESSONS = [
 export const Showcase = () => {
   const frame = useCurrentFrame();
   const current = Math.min(LESSONS.length - 1, Math.floor(frame / EACH));
+  const tall = useTall();
+  // Tall: the words on top, the phone under them. Wide: the phone on the left, the words beside it.
+  const text = tall ? { left: 80, top: 345, width: 920 } : { left: 760, top: 210, width: 1040 };
   return (
     <Stage glow="30% 55%">
-      <Label style={{ ...rise(frame, 4), position: "absolute", left: 760, top: 120 }}>Inside the course</Label>
-      <div style={{ position: "absolute", left: 760, top: 936, display: "flex", gap: 14, alignItems: "center" }}>
+      <Label style={{ ...rise(frame, 4), position: "absolute", left: text.left, top: tall ? 240 : 120 }}>Inside the course</Label>
+      <div style={{ position: "absolute", left: text.left, top: tall ? 296 : 936, display: "flex", gap: tall ? 10 : 14, alignItems: "center" }}>
         {LESSONS.map((lesson, i) => (
-          <div key={lesson.shot} style={{ height: 10, borderRadius: 5, width: i === current ? 70 : 22, backgroundColor: i <= current ? C.gold : C.line }} />
+          <div key={lesson.shot} style={{ height: 10, borderRadius: 5, width: i === current ? (tall ? 50 : 70) : tall ? 16 : 22, backgroundColor: i <= current ? C.gold : C.line }} />
         ))}
-        <div style={{ fontSize: 34, color: C.muted, marginLeft: 16, fontVariantNumeric: "tabular-nums" }}>
+        <div style={{ fontSize: tall ? 30 : 34, color: C.muted, marginLeft: 16, fontVariantNumeric: "tabular-nums" }}>
           {current + 1} of 236 lessons shown
         </div>
       </div>
@@ -37,23 +40,23 @@ export const Showcase = () => {
         return (
           <div key={lesson.shot} style={{ position: "absolute", inset: 0, opacity: leave }}>
             {/* the lesson's number, huge and faint behind everything */}
-            <div style={{ position: "absolute", right: 90, top: 60, fontFamily: serif, fontSize: 520, fontWeight: 600, lineHeight: 1, color: "rgba(236,178,63,0.07)", translate: `${interpolate(frame, [at, at + EACH], [60, -20], LINEAR)}px 0px` }}>{i + 1}</div>
+            <div style={{ position: "absolute", right: tall ? 50 : 90, top: tall ? 700 : 60, fontFamily: serif, fontSize: tall ? 460 : 520, fontWeight: 600, lineHeight: 1, color: "rgba(236,178,63,0.07)", translate: `${interpolate(frame, [at, at + EACH], [60, -20], LINEAR)}px 0px` }}>{i + 1}</div>
             <div
               style={{
                 position: "absolute",
-                left: 210,
-                top: 120,
+                left: tall ? 120 : 210,
+                top: tall ? 800 : 120,
                 opacity: interpolate(frame, [at, at + 10], [0, 1], LINEAR),
                 translate: `${interpolate(frame, [at, at + 22], [260, 0], OUT)}px ${interpolate(frame, [at, at + EACH], [16, -16], LINEAR)}px`,
                 rotate: `${interpolate(frame, [at, at + 22], [7, -3], OUT)}deg`,
               }}
             >
-              <Phone shot={lesson.shot} width={420} active />
+              <Phone shot={lesson.shot} width={tall ? 370 : 420} active />
             </div>
-            <div style={{ position: "absolute", left: 760, top: 210, width: 1040 }}>
-              <div style={{ ...rise(frame, at + 6, 30), display: "inline-block", fontSize: 38, fontWeight: 600, padding: "12px 30px", borderRadius: 40, border: `2px solid ${C.gold}`, color: C.gold }}>{lesson.tag}</div>
-              <div style={{ ...rise(frame, at + 12, 50), fontFamily: serif, fontSize: 104, lineHeight: 1.06, marginTop: 34 }}>{lesson.title}</div>
-              <div style={{ ...rise(frame, at + 24, 40), fontSize: 50, lineHeight: 1.25, color: C.muted, marginTop: 34 }}>{lesson.gain}</div>
+            <div style={{ position: "absolute", ...text }}>
+              <div style={{ ...rise(frame, at + 6, 30), display: "inline-block", fontSize: tall ? 34 : 38, fontWeight: 600, padding: "12px 30px", borderRadius: 40, border: `2px solid ${C.gold}`, color: C.gold }}>{lesson.tag}</div>
+              <div style={{ ...rise(frame, at + 12, 50), fontFamily: serif, fontSize: tall ? 84 : 104, lineHeight: 1.06, marginTop: tall ? 26 : 34 }}>{lesson.title}</div>
+              <div style={{ ...rise(frame, at + 24, 40), fontSize: tall ? 42 : 50, lineHeight: 1.25, color: C.muted, marginTop: tall ? 22 : 34 }}>{lesson.gain}</div>
             </div>
           </div>
         );
