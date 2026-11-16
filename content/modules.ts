@@ -7,6 +7,9 @@ export const tracks: Track[] = [
   { slug: "guitar-lead", title: "Lead guitar and solos", order: 3, description: "From your first picked notes to a twelve-bar blues solo." },
   { slug: "guitar-fingerstyle", title: "Fingerstyle guitar", order: 4, description: "From thumb and three fingers to a full arpeggiated piece." },
   { slug: "piano-accompaniment", title: "Piano accompaniment", order: 5, description: "From your first block chord to backing a melody with both hands." },
+  { slug: "piano-melody", title: "Piano melody and solos", order: 6, description: "From five fingers on five keys to making up your own tunes." },
+  { slug: "piano-solo", title: "Solo piano", order: 7, description: "Melody and harmony together, from a lead sheet." },
+  { slug: "musicianship", title: "Playing music", order: 8, description: "Charts, time, playing with others, and how to practise. For both instruments." },
 ];
 
 // The whole theory path from docs/CURRICULUM.md. Modules without lessons yet show as "coming soon".
@@ -63,5 +66,8 @@ export const modules: Module[] = [
   { slug: "fingerstyle-basic", trackSlug: "guitar-fingerstyle", level: 1, title: "Basic", order: 120, summary: "Finger names, thumb on the bass, arpeggio patterns, pinches and the alternating thumb.", isFree: false },
   { slug: "accompaniment-basic", trackSlug: "piano-accompaniment", level: 1, title: "Basic", order: 130, summary: "Block chords, left-hand roots, changing in time, broken chords and a first pop pattern.", isFree: false },
   { slug: "strumming-intermediate", trackSlug: "guitar-strumming", level: 1, title: "Intermediate", order: 101, summary: "Sixteenth notes, accents, syncopation, muting, 3/4 and 6/8, power chords, barre chords, shuffle and off-beats.", isFree: false },
+  { slug: "melody-basic", trackSlug: "piano-melody", level: 1, title: "Basic", order: 140, summary: "Five-finger position, first melodies, crossing the thumb, playing by ear and improvising.", isFree: false },
+  { slug: "solo-piano-basic", trackSlug: "piano-solo", level: 1, title: "Basic", order: 150, summary: "A melody over single bass notes, reading a lead sheet, and left-hand chords.", isFree: false },
+  { slug: "musicianship-basic", trackSlug: "musicianship", level: 1, title: "Basic", order: 160, summary: "Reading a chord chart, playing with a click, starting and ending together, and a daily routine.", isFree: false },
   { slug: "lead-basic", trackSlug: "guitar-lead", level: 1, title: "Basic", order: 110, summary: "Alternate picking, the minor pentatonic box, hammer-ons, slides, bends, and a first blues solo.", isFree: false },
 ];

@@ -237,6 +237,7 @@ Tick tasks as they complete. Each phase ends in something you can use.
   - [x] `hands` block and piano accompaniment Basic (6 lessons; same caveats)
   - [x] Strum patterns with sixteenths, accents, mutes, 3/4, 6/8 and swing; guitar strumming Intermediate (11 lessons; same caveats)
   - [x] Tab release, pre-bend and unison-bend marks; guitar lead Intermediate (13 lessons; same caveats)
+  - [x] Piano melody Basic (6), solo piano Basic (3) and musicianship Basic (4, both instruments); same caveats
 - [x] Tempo trainer and section looping (practice room: metronome, trainer, loop a range of chords; looping bars of written music in lessons is still open)
 - [x] Play-along backing tracks (synth chords over a click, with chord display; real recorded tracks are still open)
 - [ ] Piano: MIDI keyboard input (Web MIDI)
