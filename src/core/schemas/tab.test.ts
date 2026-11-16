@@ -22,6 +22,15 @@ test("tab: a release sounds the fretted note, a pre-bend its target, a unison be
   const steps = tabSteps(parseTab("3:7/q^pb 3:7/q^r 3:7+2:5/h^ub"));
   expect(steps.map((s) => s.midis)).toEqual([[midi("E4")], [midi("D4")], [midi("E4"), midi("E4")]]);
 });
+test("tab: natural harmonics sound an octave, an octave and a fifth, and two octaves above the open string", () => {
+  expect(tabSteps(parseTab("3:12/q^n 3:7/q^n 3:5/q^n")).map((s) => s.midis[0])).toEqual([midi("G4"), midi("D5"), midi("G5")]);
+  expect(() => parseTab("3:9/q^n")).toThrow();
+});
+test("tab: another tuning moves every note on the retuned strings", () => {
+  const dropD = ["D2", "A2", "D3", "G3", "B3", "E4"];
+  expect(tabSteps(parseTab("6:0+5:0+4:0/h"), dropD)[0].midis).toEqual([midi("D2"), midi("A2"), midi("D3")]);
+  expect(tabSteps(parseTab("6:0/q 1:0/q"))[0].midis).toEqual([midi("E2")]);
+});
 test("tab: bad input is refused", () => {
   for (const bad of ["7:5/q", "3:25/q", "3:5", "3:5/q^x", "3:5+3:7/q"]) expect(() => parseTab(bad), bad).toThrow();
 });

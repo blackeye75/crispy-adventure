@@ -69,5 +69,6 @@ export const modules: Module[] = [
   { slug: "melody-basic", trackSlug: "piano-melody", level: 1, title: "Basic", order: 140, summary: "Five-finger position, first melodies, crossing the thumb, playing by ear and improvising.", isFree: false },
   { slug: "solo-piano-basic", trackSlug: "piano-solo", level: 1, title: "Basic", order: 150, summary: "A melody over single bass notes, reading a lead sheet, and left-hand chords.", isFree: false },
   { slug: "musicianship-basic", trackSlug: "musicianship", level: 1, title: "Basic", order: 160, summary: "Reading a chord chart, playing with a click, starting and ending together, and a daily routine.", isFree: false },
+  { slug: "fingerstyle-intermediate", trackSlug: "guitar-fingerstyle", level: 1, title: "Intermediate", order: 121, summary: "Travis picking, melody over a bass, 6/8, classical strokes, walking bass, harmonics and alternate tunings.", isFree: false },
   { slug: "lead-basic", trackSlug: "guitar-lead", level: 1, title: "Basic", order: 110, summary: "Alternate picking, the minor pentatonic box, hammer-ons, slides, bends, and a first blues solo.", isFree: false },
 ];

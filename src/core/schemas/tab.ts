@@ -5,18 +5,22 @@
 // "^" adds how the note is played: h = hammer-on, p = pull-off, s = slide into it (all from the note before),
 // b = bend up a whole step, bh = bend up a half step, v = vibrato,
 // r = release the bend just played, pb = pre-bend (bend a whole step before picking),
-// ub = unison bend (two strings together; the lower string is bent a whole step to match the higher).
+// ub = unison bend (two strings together; the lower string is bent a whole step to match the higher),
+// n = natural harmonic (the string touched lightly over fret 12, 7 or 5, not pressed).
 import { fretMidi, STANDARD_TUNING } from "../instruments/fretboard";
 import type { PlaybackStep } from "../instruments/resolveCanvas";
 import { itemBeats, type NoteValue } from "./notation";
 
-export const TAB_MARKS = { h: "hammer-on", p: "pull-off", s: "slide", b: "whole-step bend", bh: "half-step bend", v: "vibrato", r: "release", pb: "pre-bend", ub: "unison bend" } as const;
+export const TAB_MARKS = { h: "hammer-on", p: "pull-off", s: "slide", b: "whole-step bend", bh: "half-step bend", v: "vibrato", r: "release", pb: "pre-bend", ub: "unison bend", n: "natural harmonic" } as const;
 export type TabMark = keyof typeof TAB_MARKS;
 export type TabItem =
   | { bar: true }
   | { bar: false; notes: { string: number; fret: number }[]; duration: NoteValue; dotted: boolean; mark?: TabMark };
 
-const TOKEN = /^(r|[1-6]:\d{1,2}(?:\+[1-6]:\d{1,2})*)\/(w|h|qt|q|8t|8|16)(\.)?(?:\^(bh|pb|ub|h|p|s|b|r|v))?$/;
+/** How far above the open string a natural harmonic sounds, in half steps, by the fret it is touched at. */
+const HARMONICS: Record<number, number> = { 12: 12, 7: 19, 5: 24 };
+
+const TOKEN = /^(r|[1-6]:\d{1,2}(?:\+[1-6]:\d{1,2})*)\/(w|h|qt|q|8t|8|16)(\.)?(?:\^(bh|pb|ub|h|p|s|b|r|v|n))?$/;
 
 /** Parse the text form. Throws on anything it does not understand. A rest has no notes. */
 export function parseTab(source: string): TabItem[] {
@@ -27,6 +31,7 @@ export function parseTab(source: string): TabItem[] {
     const notes = m[1] === "r" ? [] : m[1].split("+").map((n) => { const [string, fret] = n.split(":").map(Number); return { string, fret }; });
     if (notes.some((n) => n.fret > 24)) throw new Error(`No such fret: "${token}"`);
     if (new Set(notes.map((n) => n.string)).size !== notes.length) throw new Error(`Two notes on one string: "${token}"`);
+    if (m[4] === "n" && notes.some((n) => !(n.fret in HARMONICS))) throw new Error(`No natural harmonic taught at that fret: "${token}"`);
     return { bar: false, notes, duration: m[2] as NoteValue, dotted: Boolean(m[3]), mark: m[4] as TabMark | undefined };
   });
 }
@@ -42,7 +47,10 @@ export function tabSteps(items: TabItem[], tuning: readonly string[] = STANDARD_
     const bend = item.mark === "b" || item.mark === "pb" ? 2 : item.mark === "bh" ? 1 : 0;
     const fretted = tabFretted(item, tuning);
     // in a unison bend only the lower of the two notes is bent
-    const midis = item.mark === "ub" ? fretted.map((m) => (m === Math.min(...fretted) ? m + 2 : m)) : fretted.map((m) => m + bend);
+    const midis =
+      item.mark === "ub" ? fretted.map((m) => (m === Math.min(...fretted) ? m + 2 : m))
+      : item.mark === "n" ? item.notes.map((n) => fretMidi(tuning, tuning.length - n.string, 0) + HARMONICS[n.fret])
+      : fretted.map((m) => m + bend);
     return [{ midis, beats: itemBeats(item) }];
   });
 }

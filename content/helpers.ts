@@ -54,9 +54,11 @@ export const strumBars = (pattern: string, bars: [name: string, notes: string][]
 /** Guitar tab with rhythm, in the text form of src/core/schemas/tab.ts: tab("6:5/8 6:8/8 5:5/q", caption). */
 export const tab = (notes: string, caption: string, bpm = 70): BlockInput => ({ type: "tab", notes, caption, bpm });
 /** A fingerstyle pattern: tab with the plucking finger under each note. picking("5:0/8 3:2/8", "p i", caption). */
-export const picking = (notes: string, fingers: string, caption: string, bpm = 60, beatsPerBar = 4): BlockInput => ({ type: "tab", notes, fingers, caption, bpm, beatsPerBar });
+export const picking = (notes: string, fingers: string, caption: string, bpm = 60, beatsPerBar = 4, pulse = 1): BlockInput => ({ type: "tab", notes, fingers, caption, bpm, beatsPerBar, pulse });
+/** Tab in another tuning: tuned("6:0+5:0+4:0/h", "D2 A2 D3 G3 B3 E4", caption). */
+export const tuned = (notes: string, tuning: string, caption: string, bpm = 70): BlockInput => ({ type: "tab", notes, tuning: tuning.split(" "), caption, bpm });
 /** The same tab as a sound over a click, for Listen steps and ear drills. */
-export const tabSound = (notes: string, bpm = 70, beatsPerBar = 4): Sound => rhythm(parseTab(notes).map((item) => (item.bar ? "|" : `${item.notes.length ? tabSteps([item])[0].midis.map((m) => nameMidi(m)).join("+") : "r"}/${item.duration}${item.dotted ? "." : ""}`)).join(" "), bpm, beatsPerBar);
+export const tabSound = (notes: string, bpm = 70, beatsPerBar = 4, tuning?: string, click = 1): Sound => rhythm(parseTab(notes).map((item) => (item.bar ? "|" : `${item.notes.length ? tabSteps([item], tuning?.split(" "))[0].midis.map((m) => nameMidi(m)).join("+") : "r"}/${item.duration}${item.dotted ? "." : ""}`)).join(" "), bpm, beatsPerBar, click);
 
 /**
  * A backing track to play over: a chord per bar, struck on beats 1 and 3 over a click, looping, with a tempo control.

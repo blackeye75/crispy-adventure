@@ -19,7 +19,8 @@ describe("content/", () => {
     for (const lesson of valid.lessons) {
       for (const block of lesson.steps.flatMap((s) => s.blocks)) {
         if (!("sound" in block) || !block.sound) continue;
-        for (const m of soundSteps(block.sound).flatMap((s) => s.midis)) expect(m >= 40 && m <= 88, `${lesson.slug}: ${m}`).toBe(true);
+        // down to D2: a guitar tuned down a whole step on its sixth string still has to be heard
+        for (const m of soundSteps(block.sound).flatMap((s) => s.midis)) expect(m >= 38 && m <= 88, `${lesson.slug}: ${m}`).toBe(true);
       }
     }
   });
@@ -61,7 +62,8 @@ describe("content/", () => {
               && (item.mark === "h" ? item.notes[0].fret > before.notes[0].fret : item.mark === "p" ? item.notes[0].fret < before.notes[0].fret : item.notes[0].fret !== before.notes[0].fret);
             expect(ok, `${lesson.slug}: ^${item.mark} at note ${k + 1} of "${block.notes}"`).toBe(true);
           });
-          for (const step of tabSteps(parseTab(block.notes))) for (const m of step.midis) expect(m >= 40 && m <= 88, `${lesson.slug}: tab pitch`).toBe(true);
+          // a lowered sixth string may go down to D2; the tab block draws its own fretboard, so the keyboard range does not apply
+          for (const step of tabSteps(parseTab(block.notes), block.tuning)) for (const m of step.midis) expect(m >= (block.tuning ? 38 : 40) && m <= 88, `${lesson.slug}: tab pitch`).toBe(true);
         }
         if (block.type === "hands") for (const m of handsPlayback(block.right, block.left).steps.flatMap((s) => s.midis)) expect(m >= 40 && m <= 88, `${lesson.slug}: hands pitch`).toBe(true);
         if (block.type === "strum-pattern") for (const pitch of [...block.chord, ...(block.bars ?? []).flatMap((b) => b.chord)]) expect(midi(pitch) >= 40 && midi(pitch) <= 88, `${lesson.slug}: ${pitch}`).toBe(true);

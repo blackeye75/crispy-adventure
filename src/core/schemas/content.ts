@@ -124,6 +124,10 @@ export const blockSchema = z.discriminatedUnion("type", [
     fingers: z.string().regex(/^(-|[pima]{1,4})( (-|[pima]{1,4}))*$/).optional(),
     /** Beats in a bar, for the count and the click: 3 for 3/4. */
     beatsPerBar: z.number().int().min(2).max(7).default(4),
+    /** How long one count is, in quarter notes. 0.5 with beatsPerBar 6 counts the six eighth notes of 6/8. */
+    pulse: z.number().min(0.5).max(1).default(1),
+    /** The six open strings, lowest first, when the piece is not in standard tuning. */
+    tuning: z.array(pitchSchema).length(6).optional(),
     bpm: bpm.default(70),
     caption: z.string().optional(),
   }).refine((b) => {
