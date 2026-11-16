@@ -38,7 +38,7 @@ export const CanvasWindow = ({ shot = "canvas", left = 960, top = 150, width = 9
 };
 
 /** The opening card of a reel. */
-export const Opening = ({ label, headline }: { label: string; headline: ReactNode }) => {
+export const Opening = ({ label, headline, note }: { label: string; headline: ReactNode; note?: ReactNode }) => {
   const frame = useCurrentFrame();
   return (
     <Stage glow="50% 42%">
@@ -46,6 +46,7 @@ export const Opening = ({ label, headline }: { label: string; headline: ReactNod
         <Mark height={150} at={2} />
         <Label style={{ ...rise(frame, 18), marginTop: 44 }}>{label}</Label>
         <div style={{ ...rise(frame, 26, 50), fontFamily: serif, fontSize: 132, lineHeight: 1.08, textAlign: "center", marginTop: 22, width: 1500 }}>{headline}</div>
+        {note && <div style={{ ...rise(frame, 44, 30), fontSize: 52, color: C.muted, marginTop: 34 }}>{note}</div>}
       </div>
     </Stage>
   );

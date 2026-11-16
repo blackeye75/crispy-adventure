@@ -32,7 +32,7 @@ const Step = ({ n, name, shot, points }: { n: number; name: string; shot: string
 };
 
 const SEGMENTS: Segment[] = [
-  { Visual: () => <Opening label="Inside one lesson" headline={<>The seven <span style={{ color: C.gold }}>modes</span>, in four steps</>} /> },
+  { Visual: () => <Opening label="Inside one lesson" headline={<>How a Fretkey lesson works, in <span style={{ color: C.gold }}>four steps</span></>} note={<>Example lesson: <span style={{ color: C.text, fontWeight: 600 }}>“The seven modes”</span></>} /> },
   { Visual: () => <Step n={1} name="Understand" shot="step-understand" points={["Short and plain", "No jargon before it is taught"]} /> },
   { Visual: () => <Step n={2} name="Listen" shot="step-listen" points={["Hear it first", "Tap to play each example"]} /> },
   { Visual: () => <Step n={3} name="Learn" shot="step-learn" points={["On your own instrument", "Tap any note to hear it"]} /> },
