@@ -1,0 +1,31 @@
+# Runs on every push and pull request. A passing run puts the green tick next to the commit on GitHub.
+name: CI
+
+on:
+  push:
+    branches: [main, "claude/**"]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      mongo:
+        image: mongo:7
+        ports: ["27017:27017"]
+    env:
+      MONGODB_TEST_URI: mongodb://127.0.0.1:27017/fretkey_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - name: Validate lesson content
+        run: npm run seed -- --check
+      - run: npm run test
+      - run: npm run build
