@@ -20,3 +20,11 @@ The website uses the same mark: `src/app/icon.svg` (favicon), `src/app/apple-ico
 To change the mark, edit the shapes in `render.mjs` and run `node brand/render.mjs` from the repo root: it rebuilds every PNG and SVG, including the favicon. The header (`src/components/ui/logo.tsx`) and the link preview (`src/app/opengraph-image.tsx`) draw the same shapes by hand and must be updated to match.
 
 The two launch covers are stills from the video project: `cd launch-video && npx remotion still CoverReel ../brand/launch-cover-reel-1080x1920.png` (and `CoverFeed`). Edit them in `launch-video/src/scenes/Cover.tsx`. The promo covers are `PromoCoverReel` and `PromoCoverFeed`, from `launch-video/src/promo/PromoCover.tsx`.
+
+## Reel covers (9:16, 1080 × 1920)
+
+Covers for the vertical lesson reels. Content stays inside the 3:4 profile-grid crop. Source: `launch-video/src/vertical/Covers.tsx`.
+
+- `reel-4-cover-twelve-notes.png`: Beginner, "All twelve notes"
+- `reel-5-cover-major-minor.png`: Easy, "Major and minor"
+- `reel-6-cover-four-chords.png`: Moderate, "The four chords"
