@@ -1,0 +1,89 @@
+[
+  {
+    "say": "Almost every song you know is built from just twelve notes.",
+    "show": "Almost every song you know is built from just *twelve notes*."
+  },
+  {
+    "say": "Not hundreds. Not thousands. Just twelve. And in one minute, you will know them all.",
+    "show": "Not hundreds. Not thousands. Just twelve. In one minute, you will *know them all*."
+  },
+  {
+    "say": "Music uses only seven letters.",
+    "show": "Music uses only *seven letters*."
+  },
+  {
+    "items": [
+      "A.",
+      "B.",
+      "C.",
+      "D.",
+      "E.",
+      "F.",
+      "G."
+    ],
+    "beat": 0.55,
+    "show": "A  ·  B  ·  C  ·  D  ·  E  ·  F  ·  G"
+  },
+  {
+    "say": "On a piano, these are the white keys. And after G, the alphabet simply starts again, at A.",
+    "show": "On a piano, these are the *white keys*. After G, the alphabet *starts again* at A."
+  },
+  {
+    "say": "But between most of the white keys, there is one more note. The black key.",
+    "show": "Between most of the white keys, there is *one more note*: the black key."
+  },
+  {
+    "say": "Just above C, it is C sharp. Just below D, it is D flat. One note, two names.",
+    "show": "Just above C, it is *C♯*. Just below D, it is *D♭*. One note, two names."
+  },
+  {
+    "say": "Now look closely. B to C, and E to F. No black key, because there is no note between them.",
+    "show": "B to C, and E to F: no black key, because there is *no note between them*."
+  },
+  {
+    "say": "So, let us count every note, starting from A.",
+    "show": "So, let us count *every note*, starting from A."
+  },
+  {
+    "items": [
+      "One.",
+      "Two.",
+      "Three.",
+      "Four.",
+      "Five.",
+      "Six.",
+      "Seven.",
+      "Eight.",
+      "Nine.",
+      "Ten.",
+      "Eleven.",
+      "Twelve."
+    ],
+    "beat": 0.5,
+    "show": "1 · 2 · 3 · 4 · 5 · 6 · 7 · 8 · 9 · 10 · 11 · 12"
+  },
+  {
+    "say": "Twelve notes. And the thirteenth? It is A again, just higher. That is called an octave.",
+    "show": "The thirteenth note is A again, just higher. That is an *octave*."
+  },
+  {
+    "say": "On guitar, it is exactly the same. Every fret is one note. Twelve frets up, and you are back where you started.",
+    "show": "On guitar, *every fret is one note*. Twelve frets up, and you are back where you started."
+  },
+  {
+    "say": "Most self taught players never learn this. You just did, in one minute.",
+    "show": "Most self-taught players never learn this. *You just did.*"
+  },
+  {
+    "say": "That was one complete Fret key lesson. Understand it. Hear it. See it on your instrument. Then, practise it.",
+    "show": "One complete *Fretkey* lesson: understand it, hear it, see it on your instrument, practise it."
+  },
+  {
+    "say": "And there are more than two hundred and fifty of them, from your first note, all the way to jazz.",
+    "show": "More than *250 lessons*, from your first note all the way to jazz."
+  },
+  {
+    "say": "Fret key is almost here. Follow at fret dot key, and be among the first to play.",
+    "show": "Fretkey is almost here. Follow *@fret.key* and be among the first to play."
+  }
+]

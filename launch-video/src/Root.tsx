@@ -16,6 +16,7 @@ import { LEARN_SEGMENTS, LearnReel } from "./reels/LearnReel";
 import { LESSON_SEGMENTS, LessonReel } from "./reels/LessonReel";
 import { PosterJourney, PosterLesson, PosterUsp } from "./reels/Posters";
 import { reelFrames } from "./reels/Reel";
+import { BEGINNER_FRAMES, BeginnerReel } from "./beginner/BeginnerReel";
 import { FPS } from "./theme";
 
 const size = { width: 1920, height: 1080, fps: FPS };
@@ -32,6 +33,8 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="ReelLearn" component={LearnReel} durationInFrames={reelFrames("learn", LEARN_SEGMENTS)} {...size} />
     <Composition id="ReelLesson" component={LessonReel} durationInFrames={reelFrames("lesson", LESSON_SEGMENTS)} {...size} />
     <Composition id="ReelBlues" component={BluesReel} durationInFrames={reelFrames("blues", BLUES_SEGMENTS)} {...size} />
+    {/* A beginner lesson taught in full, 9:16 for Reels, narrated with Kokoro: see scripts/make-beginner-voice.py. */}
+    <Composition id="ReelBeginner" component={BeginnerReel} durationInFrames={BEGINNER_FRAMES} width={1080} height={1920} fps={FPS} />
     {/* Story posters: stills, 1080 × 1920. */}
     <Composition id="PosterUsp" component={PosterUsp} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     <Composition id="PosterLesson" component={PosterLesson} durationInFrames={1} width={1080} height={1920} fps={FPS} />
