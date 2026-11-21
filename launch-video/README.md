@@ -53,6 +53,7 @@ Built from the shared pieces in `src/vertical/kit.tsx` (timeline, captions, pian
 
 ```bash
 npx remotion render ReelMajorMinor out/fretkey-reel-5-major-minor-vertical.mp4 --codec=h264 --crf=18   # easy
+npx remotion render ReelEarTest out/fretkey-reel-7-ear-test-vertical.mp4 --codec=h264 --crf=18   # challenge: three ear-test rounds
 npx remotion render ReelFourChords out/fretkey-reel-6-four-chords-vertical.mp4 --codec=h264 --crf=18   # moderate
 ```
 

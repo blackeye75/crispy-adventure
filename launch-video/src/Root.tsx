@@ -19,7 +19,8 @@ import { reelFrames } from "./reels/Reel";
 import { BEGINNER_FRAMES, BeginnerReel } from "./beginner/BeginnerReel";
 import { FOUR_CHORDS_FRAMES, FourChordsReel } from "./vertical/four-chords/FourChordsReel";
 import { MAJOR_MINOR_FRAMES, MajorMinorReel } from "./vertical/major-minor/MajorMinorReel";
-import { CoverFourChords, CoverMajorMinor, CoverTwelve } from "./vertical/Covers";
+import { EAR_TEST_FRAMES, EarTestReel } from "./vertical/ear-test/EarTestReel";
+import { CoverEarTest, CoverFourChords, CoverMajorMinor, CoverTwelve } from "./vertical/Covers";
 import { FPS } from "./theme";
 
 const size = { width: 1920, height: 1080, fps: FPS };
@@ -38,11 +39,13 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="ReelBlues" component={BluesReel} durationInFrames={reelFrames("blues", BLUES_SEGMENTS)} {...size} />
     {/* A beginner lesson taught in full, 9:16 for Reels, narrated with Kokoro: see scripts/make-beginner-voice.py. */}
     <Composition id="ReelBeginner" component={BeginnerReel} durationInFrames={BEGINNER_FRAMES} width={1080} height={1920} fps={FPS} />
+    <Composition id="ReelEarTest" component={EarTestReel} durationInFrames={EAR_TEST_FRAMES} width={1080} height={1920} fps={FPS} />
     <Composition id="ReelMajorMinor" component={MajorMinorReel} durationInFrames={MAJOR_MINOR_FRAMES} width={1080} height={1920} fps={FPS} />
     <Composition id="ReelFourChords" component={FourChordsReel} durationInFrames={FOUR_CHORDS_FRAMES} width={1080} height={1920} fps={FPS} />
     {/* Covers for the 9:16 lesson reels. */}
     <Composition id="CoverTwelve" component={CoverTwelve} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     <Composition id="CoverMajorMinor" component={CoverMajorMinor} durationInFrames={1} width={1080} height={1920} fps={FPS} />
+    <Composition id="CoverEarTest" component={CoverEarTest} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     <Composition id="CoverFourChords" component={CoverFourChords} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     {/* Story posters: stills, 1080 × 1920. */}
     <Composition id="PosterUsp" component={PosterUsp} durationInFrames={1} width={1080} height={1920} fps={FPS} />

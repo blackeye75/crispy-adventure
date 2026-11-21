@@ -28,3 +28,4 @@ Covers for the vertical lesson reels. Content stays inside the 3:4 profile-grid 
 - `reel-4-cover-twelve-notes.png`: Beginner, "All twelve notes"
 - `reel-5-cover-major-minor.png`: Easy, "Major and minor"
 - `reel-6-cover-four-chords.png`: Moderate, "The four chords"
+- `reel-7-cover-ear-test.png`: Challenge, "Ear test"

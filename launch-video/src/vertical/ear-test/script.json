@@ -1,0 +1,11 @@
+[
+  { "id": "hook", "say": ["Your ears already know music theory.", "Prove it.", "Three sounds. Three seconds each."], "show": "Your ears already know music theory. *Prove it.*" },
+  { "id": "q1", "say": ["Round one.", "Is this chord happy, or sad?"], "show": "Round 1: is this chord *happy* or *sad*?" },
+  { "id": "a1", "say": ["Sad.", "It is A minor.", "Minor chords have a darker sound."], "show": "*Sad.* It is A minor. Minor chords sound darker." },
+  { "id": "q2", "say": ["Round two.", "Same note, or two different notes?"], "show": "Round 2: *same* note, or *different* notes?" },
+  { "id": "a2", "say": ["Trick question.", "Both are C.", "The second is one octave higher.", "Same note, just higher up."], "show": "Trick question. Both are *C*, one octave apart." },
+  { "id": "q3", "say": ["Round three.", "The hard one.", "Does this sound finished?"], "show": "Round 3, the hard one: does this sound *finished*?" },
+  { "id": "a3", "say": ["Not yet.", "It stops on G seven,", "a chord that pulls back home.", "Here is home."], "show": "*Not yet.* It stops on G7, a chord that pulls back home." },
+  { "id": "score", "say": ["Three out of three?", "Your ears are ready.", "Comment your score."], "show": "3 out of 3? Your ears are ready. *Comment your score.*" },
+  { "id": "close", "say": ["Fret key teaches the theory behind what you just heard.", "Follow at fret dot key."], "show": "Fretkey teaches the theory behind what you just heard. Follow *@fret.key*." }
+]

@@ -61,3 +61,17 @@ export const CoverFourChords = () => (
     </div>
   </Cover>
 );
+
+/** Reel 7: the ear test. */
+export const CoverEarTest = () => (
+  <Cover tag="Ear test · 3 rounds" line={<>3 sounds. 3 seconds each. {gold("Comment your score.")}</>}>
+    <div style={{ ...big, top: 20, fontSize: 210 }}>Can you</div>
+    <div style={{ ...big, top: 230, fontSize: 250, color: C.gold, textShadow: "0 0 120px rgba(236,178,63,0.45)" }}>pass?</div>
+    <div style={{ position: "absolute", left: 0, right: 0, top: 530, height: 160, display: "flex", alignItems: "center", justifyContent: "center", gap: 18 }}>
+      {[40, 80, 120, 70, 150, 100, 150, 70, 120, 80, 40].map((h, k) => <div key={k} style={{ width: 34, height: h, borderRadius: 17, backgroundColor: C.gold }} />)}
+    </div>
+    <div style={{ position: "absolute", left: 0, right: 0, top: 730, display: "flex", justifyContent: "center", gap: 40 }}>
+      {["Happy", "Sad"].map((label) => <div key={label} style={{ width: 340, height: 120, borderRadius: 70, border: `4px solid ${C.line}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 54, fontWeight: 700 }}>{label}</div>)}
+    </div>
+  </Cover>
+);
