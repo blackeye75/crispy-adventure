@@ -196,8 +196,8 @@ export const HarmonyReel = () => {
         {id === "rule" && (
           <>
             <Layer>
-              <Glow d={lissajous(2, 3, f * 0.03, 1, 170, 290, 800)} stroke="url(#cool)" width={5} progress={trace(0, 30)} opacity={f >= cue(2) ? 0.35 : 1} />
-              <Glow d={lissajous(1, Math.SQRT2, f * 0.06, 9, 170, 790, 800)} stroke="url(#hot)" width={3} progress={trace(cue(1), 40)} opacity={f >= cue(2) ? 0.35 : 1} />
+              <Glow d={lissajous(2, 3, f * 0.03, 1, 170, 290, 800)} stroke="url(#cool)" width={5} progress={trace(0, 30)} opacity={f >= cue(2) ? 0.15 : 1} />
+              <Glow d={lissajous(1, Math.SQRT2, f * 0.06, 9, 170, 790, 800)} stroke="url(#hot)" width={3} progress={trace(cue(1), 40)} opacity={f >= cue(2) ? 0.15 : 1} />
             </Layer>
             <div style={{ position: "absolute", left: 120, width: 340, top: 1000, textAlign: "center", fontSize: 40, fontWeight: 600, letterSpacing: 8, color: N.cyan, ...lift(f, 4, 20) }}>SMOOTH</div>
             <div style={{ position: "absolute", left: 620, width: 340, top: 1000, textAlign: "center", fontSize: 40, fontWeight: 600, letterSpacing: 8, color: N.hot, ...lift(f, cue(1), 20) }}>TENSE</div>
