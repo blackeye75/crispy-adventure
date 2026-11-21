@@ -19,6 +19,7 @@ import { reelFrames } from "./reels/Reel";
 import { BEGINNER_FRAMES, BeginnerReel } from "./beginner/BeginnerReel";
 import { FOUR_CHORDS_FRAMES, FourChordsReel } from "./vertical/four-chords/FourChordsReel";
 import { MAJOR_MINOR_FRAMES, MajorMinorReel } from "./vertical/major-minor/MajorMinorReel";
+import { HARMONY_FRAMES, HarmonyReel } from "./vertical/harmony/HarmonyReel";
 import { EAR_TEST_FRAMES, EarTestReel } from "./vertical/ear-test/EarTestReel";
 import { CoverEarTest, CoverFourChords, CoverMajorMinor, CoverTwelve } from "./vertical/Covers";
 import { FPS } from "./theme";
@@ -39,6 +40,7 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="ReelBlues" component={BluesReel} durationInFrames={reelFrames("blues", BLUES_SEGMENTS)} {...size} />
     {/* A beginner lesson taught in full, 9:16 for Reels, narrated with Kokoro: see scripts/make-beginner-voice.py. */}
     <Composition id="ReelBeginner" component={BeginnerReel} durationInFrames={BEGINNER_FRAMES} width={1080} height={1920} fps={FPS} />
+    <Composition id="ReelHarmony" component={HarmonyReel} durationInFrames={HARMONY_FRAMES} width={1080} height={1920} fps={FPS} />
     <Composition id="ReelEarTest" component={EarTestReel} durationInFrames={EAR_TEST_FRAMES} width={1080} height={1920} fps={FPS} />
     <Composition id="ReelMajorMinor" component={MajorMinorReel} durationInFrames={MAJOR_MINOR_FRAMES} width={1080} height={1920} fps={FPS} />
     <Composition id="ReelFourChords" component={FourChordsReel} durationInFrames={FOUR_CHORDS_FRAMES} width={1080} height={1920} fps={FPS} />

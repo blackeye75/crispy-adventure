@@ -1,0 +1,11 @@
+[
+  { "id": "hook", "say": ["This is what harmony looks like."], "show": "This is what *harmony* looks like." },
+  { "id": "wave", "say": ["Every note is a vibration.", "This A vibrates four hundred and forty times a second."], "show": "Every note is a vibration. This A: *440 times a second.*" },
+  { "id": "combine", "say": ["Play two notes together,", "and their vibrations combine into one pattern."], "show": "Play two notes together, and they combine into *one pattern*." },
+  { "id": "octave", "say": ["An octave.", "The top note vibrates exactly twice as fast.", "Two to one.", "A simple pattern, and a pure sound."], "show": "Octave: exactly *2 to 1*. A simple pattern, a pure sound." },
+  { "id": "fifth", "say": ["A fifth.", "Almost exactly three to two.", "Still simple. Still sweet."], "show": "Fifth: almost exactly *3 to 2*. Still simple, still sweet." },
+  { "id": "tritone", "say": ["Now, a tritone.", "No simple ratio at all.", "The pattern never settles,", "and you hear tension."], "show": "Tritone: *no simple ratio*. The pattern never settles: tension." },
+  { "id": "rule", "say": ["Simple ratios sound smooth.", "Complex ones sound tense.", "Music is maths you can feel."], "show": "Simple ratios sound smooth. Complex ones, tense. *Music is maths you can feel.*" },
+  { "id": "guitar", "say": ["Guitarists use this every day.", "A power chord is just a root, a fifth, and an octave.", "Nothing but simple ratios."], "show": "A power chord: *root, fifth, octave*. Nothing but simple ratios." },
+  { "id": "close", "say": ["Fret key teaches the why behind every sound.", "Follow at fret dot key."], "show": "Fretkey teaches the *why* behind every sound. Follow *@fret.key*." }
+]
