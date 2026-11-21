@@ -43,9 +43,20 @@ npx remotion render ReelBeginner out/fretkey-reel-4-twelve-notes-vertical.mp4 --
 ```
 
 - **Words and captions:** `src/beginner/script.json`. `say` is spoken, `show` is the caption (`*word*` turns gold). Lists such as the letters and the count use `items` and are spoken one item per `beat`, so they are never rushed and the keys light exactly on each word. The brand is written "Fret key" in `say` so the voice stresses it as two words.
-- **Voice:** [Kokoro](https://huggingface.co/hexgrad/Kokoro-82M) (Apache-2.0), voice `af_heart`, run locally. Install with `pip install kokoro-onnx`, download `kokoro-v1.0.onnx` and `voices-v1.0.bin` from the `model-files-v1.0` release of thewh1teagle/kokoro-onnx on GitHub, then `python3 scripts/make-beginner-voice.py /folder/with/those/files`. It rewrites `public/beginner/` and `src/beginner/timing.json`, and the reel re-times itself.
+- **Voice:** [Kokoro](https://huggingface.co/hexgrad/Kokoro-82M) (Apache-2.0), voice `af_heart`, run locally. Install with `pip install kokoro-onnx`, download `kokoro-v1.0.onnx` and `voices-v1.0.bin` from the `model-files-v1.0` release of thewh1teagle/kokoro-onnx on GitHub, then `python3 scripts/make-reel-voice.py src/beginner public/beginner /folder/with/those/files`. It rewrites `public/beginner/` and `src/beginner/timing.json`, and the reel re-times itself.
 - **Notes:** `public/notes/45.wav` to `69.wav`, from `node scripts/make-notes.mjs`.
 - **Picture:** `src/beginner/BeginnerReel.tsx`, one continuous scene; what the keyboard shows at each moment is in `keysAt`.
+
+## More lesson reels (9:16)
+
+Built from the shared pieces in `src/vertical/kit.tsx` (timeline, captions, piano, chord box, closing cards):
+
+```bash
+npx remotion render ReelMajorMinor out/fretkey-reel-5-major-minor-vertical.mp4 --codec=h264 --crf=18   # easy
+npx remotion render ReelFourChords out/fretkey-reel-6-four-chords-vertical.mp4 --codec=h264 --crf=18   # moderate
+```
+
+Each lives in its own folder under `src/vertical/` with a `script.json`. Every line has an `id`, and the reel finds lines by id, so lines can be added or reordered without breaking the picture. Voice: `python3 scripts/make-reel-voice.py src/vertical/major-minor public/vertical/major-minor /folder/with/kokoro/files` (and the same for `four-chords`).
 
 The two launch cuts use the same scenes. Each scene checks `useTall()` and has its own 9:16 layout, kept clear of the top and bottom of the frame where Instagram draws its buttons and caption.
 

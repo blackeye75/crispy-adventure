@@ -1,0 +1,135 @@
+[
+  {
+    "id": "hook",
+    "say": [
+      "Thousands of songs use the same four chords.",
+      "Here is why, in one minute."
+    ],
+    "show": "Thousands of songs use *the same four chords*. Here is why."
+  },
+  {
+    "id": "scale",
+    "say": [
+      "Start with the C major scale.",
+      "Seven notes."
+    ],
+    "show": "Start with the *C major scale*: seven notes."
+  },
+  {
+    "id": "scale-notes",
+    "items": [
+      "C.",
+      "D.",
+      "E.",
+      "F.",
+      "G.",
+      "A.",
+      "B."
+    ],
+    "beat": 0.5,
+    "show": "C · D · E · F · G · A · B"
+  },
+  {
+    "id": "stack",
+    "say": [
+      "Now build a chord on every note.",
+      "Take a note,",
+      "skip one,",
+      "take one,",
+      "skip one,",
+      "take one."
+    ],
+    "show": "Build a chord on every note: *take one, skip one*."
+  },
+  {
+    "id": "seven",
+    "items": [
+      "C major.",
+      "D minor.",
+      "E minor.",
+      "F major.",
+      "G major.",
+      "A minor.",
+      "B diminished."
+    ],
+    "beat": 1.05,
+    "show": "Seven chords, all from the same seven notes."
+  },
+  {
+    "id": "numbers",
+    "say": [
+      "Musicians number these chords, one to seven.",
+      "Capital numerals for major.",
+      "Small ones for minor."
+    ],
+    "show": "Number them *one to seven*: capitals for major, small for minor."
+  },
+  {
+    "id": "strong",
+    "say": [
+      "Three of them are the strongest.",
+      "One, four, and five.",
+      "Together, they hold every note of the scale."
+    ],
+    "show": "*I, IV and V* hold every note of the scale between them."
+  },
+  {
+    "id": "four",
+    "say": [
+      "Add six, the minor one,",
+      "and play them in this order.",
+      "One, five, six, four."
+    ],
+    "show": "Add vi, the minor one, and play: *I, V, vi, IV*."
+  },
+  {
+    "id": "play",
+    "say": "In C, that is C, G, A minor, and F.",
+    "show": "In C: *C, G, Am, F*."
+  },
+  {
+    "id": "feel",
+    "say": [
+      "Home.",
+      "Lift.",
+      "A touch of sadness.",
+      "A step toward home,",
+      "and back again.",
+      "That shape is why it works."
+    ],
+    "show": "Home, lift, a touch of sadness, and back home. *That shape is why it works.*"
+  },
+  {
+    "id": "keys",
+    "say": [
+      "And it moves to any key.",
+      "In G, it is G, D, E minor, C."
+    ],
+    "show": "It moves to any key. In G: *G, D, Em, C*."
+  },
+  {
+    "id": "fomo",
+    "say": [
+      "Learn the numbers once,",
+      "and you can play thousands of songs, in any key."
+    ],
+    "show": "Learn the numbers once, and play *thousands of songs* in any key."
+  },
+  {
+    "id": "lesson",
+    "say": [
+      "That was one Fret key lesson.",
+      "There are more than two hundred and fifty, from your first note, all the way to jazz."
+    ],
+    "show": "One *Fretkey* lesson. More than 250, from your first note to jazz."
+  },
+  {
+    "id": "close",
+    "say": [
+      "Fret key is almost here.",
+      "Follow at fret dot key,",
+      "and be among the first to play."
+    ],
+    "show": "Fretkey is almost here. Follow *@fret.key* and be among the first to play."
+  }
+]

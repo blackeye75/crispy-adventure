@@ -1,9 +1,9 @@
-// Writes public/notes/<midi>.wav: one soft piano-like note for every key from A2 (45) to A4 (69).
+// Writes public/notes/<midi>.wav: one soft piano-like note for every key from E2 (40) to G5 (79).
 // Run: node scripts/make-notes.mjs
 import { writeFileSync } from "node:fs";
 
 const RATE = 44100, SECONDS = 1.6;
-for (let midi = 45; midi <= 69; midi++) {
+for (let midi = 40; midi <= 79; midi++) {
   const f = 440 * 2 ** ((midi - 69) / 12);
   const out = new Float32Array(RATE * SECONDS);
   // a few harmonics, each slightly stretched and dying away faster than the one below: a struck string
@@ -22,4 +22,4 @@ for (let midi = 45; midi <= 69; midi++) {
   out.forEach((v, i) => pcm.writeInt16LE(Math.round((v / peak) * 0.6 * Math.min(1, (out.length - i) / 2000) * 32767), 44 + i * 2));
   writeFileSync(new URL(`../public/notes/${midi}.wav`, import.meta.url), pcm);
 }
-console.log("notes 45-69 written");
+console.log("notes 40-79 written");

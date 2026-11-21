@@ -37,10 +37,11 @@ function keysAt(seg: number, f: number): Keys {
   if (seg >= 5) { labelAll(8); k.black = 1; }
   if (seg === 5) { k.black = interpolate(f, [at(0.2), at(0.45)], [0, 1], OUT); k.blackLit = k.blackLit.map(() => pulse(at(0.5)) * 0.8); }
   if (seg === 6) {
-    k.blackLit[1] = f >= at(0.05) ? 1 : 0;
-    k.lit[2] = f >= at(0.05) && f < at(0.45) ? 0.6 : 0;
-    k.lit[3] = f >= at(0.45) && f < at(0.8) ? 0.6 : 0;
-    k.blackLabel[1] = f >= at(0.45) ? "C♯ D♭" : f >= at(0.05) ? "C♯" : null;
+    // measured from the recording: "C sharp" is said at about 26% of the line, "D flat" at about 56%
+    k.blackLit[1] = f >= at(0.26) ? 1 : 0;
+    k.lit[2] = f >= at(0.1) && f < at(0.4) ? 0.6 : 0;
+    k.lit[3] = f >= at(0.4) && f < at(0.7) ? 0.6 : 0;
+    k.blackLabel[1] = f >= at(0.56) ? "C♯ D♭" : f >= at(0.26) ? "C♯" : null;
   }
   if (seg === 7) k.gaps = [interpolate(f, [at(0.12), at(0.12) + 8], [0, 1], LINEAR), interpolate(f, [at(0.3), at(0.3) + 8], [0, 1], LINEAR)];
   if (seg === 9) {
@@ -53,7 +54,7 @@ function keysAt(seg: number, f: number): Keys {
     const done = onsets.filter((o) => f >= o).length;
     k.counter = done || null;
   }
-  if (seg === 10) { k.blackLabel = [...SHARP]; k.lit[0] = pulse(0); k.lit[7] = pulse(at(0.28)); k.arc = interpolate(f, [at(0.28), at(0.28) + 16], [0, 1], OUT); }
+  if (seg === 10) { k.blackLabel = [...SHARP]; k.lit[0] = pulse(0); k.lit[7] = pulse(at(0.42)); k.arc = interpolate(f, [at(0.42), at(0.42) + 16], [0, 1], OUT); } // "It is A again" starts at about 42%
   return k;
 }
 
@@ -276,7 +277,7 @@ export const BeginnerReel = () => {
           <Audio src={staticFile(`notes/${45 + n}.wav`)} volume={0.42} />
         </Sequence>
       ))}
-      {[0, Math.round(0.28 * voiceFrames(10))].map((o, n) => (
+      {[0, Math.round(0.42 * voiceFrames(10))].map((o, n) => (
         <Sequence key={`o${n}`} from={starts[10] + o} durationInFrames={45} layout="none">
           <Audio src={staticFile(`notes/${n ? 57 : 45}.wav`)} volume={0.5} />
         </Sequence>

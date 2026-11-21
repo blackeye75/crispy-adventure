@@ -1,0 +1,16 @@
+[
+  { "id": "hook", "say": ["Why does some music sound happy,", "and some sound sad?", "The answer is just one note."], "show": "Why does some music sound happy, and some sad? The answer is *one note*." },
+  { "id": "major", "say": ["This is a C major chord.", "Three notes, played together."], "show": "This is a *C major* chord: three notes, played together." },
+  { "id": "notes", "items": ["C.", "E.", "And G."], "beat": 0.7, "show": "C  ·  E  ·  G" },
+  { "id": "bright", "say": "Hear how bright it sounds.", "show": "Hear how *bright* it sounds." },
+  { "id": "move", "say": ["Now, move only the middle note,", "one key down.", "E becomes E flat."], "show": "Move only the middle note one key down: *E becomes E♭*." },
+  { "id": "listen", "say": "Listen again.", "show": "Listen again." },
+  { "id": "sad", "say": ["Same bottom note.", "Same top note.", "But now, it sounds sad.", "That is a minor chord."], "show": "Same bottom note, same top note. Now it sounds sad: a *minor* chord." },
+  { "id": "swap", "items": ["Major.", "Minor.", "Major.", "Minor."], "beat": 1.3, "show": "Major · Minor · Major · Minor" },
+  { "id": "rule", "say": ["Here is the rule.", "In a major chord, the middle note is four keys above the bottom one.", "In a minor chord, just three."], "show": "Major: the middle note is *four keys* up. Minor: *three*." },
+  { "id": "any", "say": ["It works from any note.", "A major.", "A minor."], "show": "It works from any note: *A major*, *A minor*." },
+  { "id": "guitar", "say": ["On guitar, it is the same idea.", "Play E major.", "Now lift one finger.", "E minor."], "show": "On guitar: E major. Lift *one finger*: E minor." },
+  { "id": "fomo", "say": ["Now you will hear major and minor in every song you know."], "show": "Now you will hear major and minor in *every song you know*." },
+  { "id": "lesson", "say": ["That was one Fret key lesson.", "There are more than two hundred and fifty, each about five minutes."], "show": "One *Fretkey* lesson. More than 250, each about five minutes." },
+  { "id": "close", "say": ["Fret key is almost here.", "Follow at fret dot key,", "and be among the first to play."], "show": "Fretkey is almost here. Follow *@fret.key* and be among the first to play." }
+]
