@@ -6,7 +6,7 @@ import script from "./script.json";
 import timing from "./timing.json";
 
 // "This is what harmony looks like": two notes drawn as a Lissajous figure. Its own neon look, apart from the warm brand reels.
-const tl = timeline(script, timing, { hook: 45, octave: 24, fifth: 24, tritone: 24, guitar: 20, close: 50 });
+export const tl = timeline(script, timing, { hook: 45, octave: 24, fifth: 24, tritone: 24, guitar: 20, close: 50 });
 export const HARMONY_FRAMES = tl.total;
 
 const N = { bg: "#05060c", cyan: "#35e6ff", violet: "#7c5cff", magenta: "#ff3dc8", hot: "#ff4d5e", text: "#eef3ff", muted: "#8a90b0", line: "#1d2140" };
@@ -19,7 +19,7 @@ const CHAPTERS: Record<string, [string, string]> = {
 };
 
 /** Path of a Lissajous figure: x moves at speed a, y at speed b. Whole-number ratios close into a clean shape; others tangle. */
-function lissajous(a: number, b: number, delta: number, turns: number, r: number, cx: number, cy: number) {
+export function lissajous(a: number, b: number, delta: number, turns: number, r: number, cx: number, cy: number) {
   const pts = Math.round(500 * turns);
   let d = "";
   for (let i = 0; i <= pts; i++) {
@@ -235,20 +235,27 @@ export const HarmonyReel = () => {
       <AbsoluteFill style={{ backgroundColor: "#ffffff", opacity: interpolate(f, [0, 5], [frame > 2 ? 0.22 : 0, 0], LINEAR), pointerEvents: "none" }} />
       <Caption text={script[tl.index(id)].show} f={f} len={len} />
 
-      <Bed total={tl.total} quiet={[[tl.start("wave"), tl.start("guitar") + tl.lengths[tl.index("guitar")]]]} />
-      <Voices tl={tl} dir="vertical/harmony" />
-      <Hit at={10} midis={[48, 55, 60]} volume={0.3} />
-      <Hit at={tl.start("wave") + tl.cue("wave", 1)} midis={[69]} volume={0.4} />
-      <Hit at={tl.start("combine") + tl.cue("combine", 1)} midis={[60, 67]} volume={0.4} />
-      <Hit at={tl.start("octave") + tl.cue("octave", 1)} midis={[48, 60]} volume={0.4} />
-      <Hit at={tl.start("octave") + tl.cue("octave", 3)} midis={[48, 60]} volume={0.35} />
-      <Hit at={tl.start("fifth") + tl.cue("fifth", 1)} midis={[60, 67]} volume={0.4} />
-      <Hit at={tl.start("fifth") + tl.cue("fifth", 2)} midis={[60, 67]} volume={0.35} />
-      <Hit at={tl.start("tritone") + tl.cue("tritone", 1)} midis={[60, 66]} volume={0.4} />
-      <Hit at={tl.start("tritone") + tl.cue("tritone", 3)} midis={[60, 66]} volume={0.35} />
-      <Hit at={tl.start("rule") + 4} midis={[60, 67]} volume={0.35} />
-      <Hit at={tl.start("rule") + tl.cue("rule", 1)} midis={[60, 66]} volume={0.35} />
-      <Hit at={tl.start("guitar") + tl.cue("guitar", 1)} midis={[40, 47, 52]} volume={0.45} />
+      <HarmonySound />
     </AbsoluteFill>
   );
 };
+
+/** The reel's voice, bed and notes, shared by every visual version. */
+export const HarmonySound = () => (
+  <>
+    <Bed total={tl.total} quiet={[[tl.start("wave"), tl.start("guitar") + tl.lengths[tl.index("guitar")]]]} />
+    <Voices tl={tl} dir="vertical/harmony" />
+    <Hit at={10} midis={[48, 55, 60]} volume={0.3} />
+    <Hit at={tl.start("wave") + tl.cue("wave", 1)} midis={[69]} volume={0.4} />
+    <Hit at={tl.start("combine") + tl.cue("combine", 1)} midis={[60, 67]} volume={0.4} />
+    <Hit at={tl.start("octave") + tl.cue("octave", 1)} midis={[48, 60]} volume={0.4} />
+    <Hit at={tl.start("octave") + tl.cue("octave", 3)} midis={[48, 60]} volume={0.35} />
+    <Hit at={tl.start("fifth") + tl.cue("fifth", 1)} midis={[60, 67]} volume={0.4} />
+    <Hit at={tl.start("fifth") + tl.cue("fifth", 2)} midis={[60, 67]} volume={0.35} />
+    <Hit at={tl.start("tritone") + tl.cue("tritone", 1)} midis={[60, 66]} volume={0.4} />
+    <Hit at={tl.start("tritone") + tl.cue("tritone", 3)} midis={[60, 66]} volume={0.35} />
+    <Hit at={tl.start("rule") + 4} midis={[60, 67]} volume={0.35} />
+    <Hit at={tl.start("rule") + tl.cue("rule", 1)} midis={[60, 66]} volume={0.35} />
+    <Hit at={tl.start("guitar") + tl.cue("guitar", 1)} midis={[40, 47, 52]} volume={0.45} />
+  </>
+);

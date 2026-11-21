@@ -55,6 +55,7 @@ Built from the shared pieces in `src/vertical/kit.tsx` (timeline, captions, pian
 npx remotion render ReelMajorMinor out/fretkey-reel-5-major-minor-vertical.mp4 --codec=h264 --crf=18   # easy
 npx remotion render ReelEarTest out/fretkey-reel-7-ear-test-vertical.mp4 --codec=h264 --crf=18   # challenge: three ear-test rounds
 npx remotion render ReelHarmony out/fretkey-reel-8-harmony-vertical.mp4 --codec=h264 --crf=18   # neon look: intervals drawn as Lissajous figures (slow: about 10 min)
+npx remotion render ReelHarmonyPlate out/fretkey-reel-8b-harmony-plates-vertical.mp4 --codec=h264 --crf=18   # same reel as printed plates: paper, ink, one vermilion accent
 npx remotion render ReelFourChords out/fretkey-reel-6-four-chords-vertical.mp4 --codec=h264 --crf=18   # moderate
 ```
 
