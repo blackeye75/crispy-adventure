@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { LessonPlayer } from "@/features/lesson-player/LessonPlayer";
 import { Button } from "@/components/ui/button";
 import { requireLearner } from "@/server/auth/session";
-import { getLesson } from "@/server/services/content";
+import { getLesson, lessonsBefore } from "@/server/services/content";
 import { getProgress } from "@/server/services/progress";
 
 type Params = PageProps<"/learn/[slug]">["params"];
@@ -28,8 +28,22 @@ async function Lesson({ params }: { params: Params }) {
       </div>
     );
   }
-  const progress = await getProgress(viewer.userId, slug);
-  return <LessonPlayer key={slug} lesson={result.lesson} next={result.next} instrument={profile.instrument} leftHanded={profile.leftHanded} noteNaming={profile.noteNaming} startIndex={progress?.status === "started" ? progress.stepIndex : 0} />;
+  const [progress, before] = await Promise.all([getProgress(viewer.userId, slug), lessonsBefore(result.lesson, viewer)]);
+  return (
+    <>
+      {before.length > 0 && (
+        // A soft gate: experienced players may carry on, but they are told what this lesson assumes.
+        <aside className="mx-auto mt-6 w-full max-w-4xl rounded-xl border border-primary/40 bg-card px-5 py-4 text-sm" aria-label="Lessons this one builds on">
+          <p className="font-medium">This lesson builds on {before.length === 1 ? "a lesson" : `${before.length} lessons`} you have not done yet:</p>
+          <ul className="mt-2 flex flex-wrap gap-2">
+            {before.map((b) => <li key={b.slug}><Link href={`/learn/${b.slug}`} className="inline-flex min-h-11 items-center rounded-full border px-4 underline-offset-4 hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50 outline-none">{b.title}</Link></li>)}
+          </ul>
+          <p className="mt-2 text-muted-foreground">You can carry on, but those first will make this one easier.</p>
+        </aside>
+      )}
+      <LessonPlayer key={slug} lesson={result.lesson} next={result.next} instrument={profile.instrument} leftHanded={profile.leftHanded} noteNaming={profile.noteNaming} startIndex={progress?.status === "started" ? progress.stepIndex : 0} />
+    </>
+  );
 }
 
 export default function LessonPage({ params }: { params: Params }) {

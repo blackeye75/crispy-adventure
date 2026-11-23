@@ -8,7 +8,7 @@ import { resolveCanvas } from "@/core/instruments/resolveCanvas";
 import { DEFAULT_CANVAS, type CanvasState } from "@/core/schemas/canvas";
 import { isQuiz, soundSteps, validateContent } from "@/core/schemas/content";
 import { chroma, midi } from "@/core/theory/notes";
-import { getLesson, getPath } from "./content";
+import { getLesson, getPath, missingNeeds } from "./content";
 
 describe("content/", () => {
   const valid = validateContent(content);
@@ -95,8 +95,15 @@ describe("content service", () => {
   test("the path lists every level without lesson content", async () => {
     const [theory] = await getPath();
     expect(theory.levels.map((l) => l.level)).toEqual([1, 2, 3, 4, 5, 6]);
-    expect(theory.levels[0].modules[0].lessons[0]).toEqual({ slug: "what-is-a-note", title: "What a note is", minutes: 5, strand: "core", locked: false, completed: false });
+    expect(theory.levels[0].modules[0].lessons[0]).toEqual({ slug: "what-is-a-note", title: "What a note is", minutes: 5, strand: "core", locked: false, completed: false, before: 0 });
     expect(JSON.stringify(theory)).not.toContain("blocks");
+  });
+  test("a playing stage lists the theory it builds on until it is done, ignoring lessons in its own module", () => {
+    const valid = validateContent(content);
+    const stage = valid.lessons.find((l) => l.slug === "left-hand-chords-under-a-melody")!; // needs "reading-a-lead-sheet" (same module) and "major-and-minor-triads" (theory)
+    expect(missingNeeds(stage, valid.lessons, new Set(), true).map((l) => l.slug)).toEqual(["major-and-minor-triads"]);
+    expect(missingNeeds(stage, valid.lessons, new Set(["major-and-minor-triads"]), true)).toEqual([]);
+    expect(missingNeeds(stage, valid.lessons, new Set(), false)).toEqual([]); // signed out: no progress to compare
   });
   test("a lesson comes with the next one in path order, across modules", async () => {
     const first = await getLesson("what-is-a-note");

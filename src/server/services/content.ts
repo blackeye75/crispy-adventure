@@ -23,7 +23,15 @@ export const ANONYMOUS: Viewer = { subscriber: false };
 
 const canOpen = (lesson: { isFree: boolean }, viewer: Viewer) => lesson.isFree || viewer.subscriber;
 
-export type LessonSummary = Pick<Lesson, "slug" | "title" | "minutes" | "strand"> & { locked: boolean; completed: boolean };
+/** `before`: how many lessons from other modules this one builds on that the viewer has not completed. */
+export type LessonSummary = Pick<Lesson, "slug" | "title" | "minutes" | "strand"> & { locked: boolean; completed: boolean; before: number };
+
+const completedBy = async (viewer: Viewer) =>
+  new Set<string>(viewer.userId ? await LessonProgressModel.distinct("lessonSlug", { userId: viewer.userId, status: "completed" }) : []);
+
+/** Lessons from other modules that `lesson` builds on and the viewer has not completed. A playing stage unlocks when this is empty. */
+export const missingNeeds = (lesson: Lesson, lessons: Lesson[], completed: Set<string>, signedIn: boolean) =>
+  signedIn ? lessons.filter((l) => lesson.needs.includes(l.slug) && l.moduleSlug !== lesson.moduleSlug && !completed.has(l.slug)) : [];
 export type Path = {
   slug: string;
   title: string;
@@ -40,7 +48,7 @@ export async function accessibleLessons(viewer: Viewer): Promise<Lesson[]> {
 /** The whole curriculum as a map, with the viewer's progress: titles only, never lesson content. */
 export async function getPath(viewer: Viewer = ANONYMOUS): Promise<Path> {
   const { tracks, modules, lessons } = await load();
-  const completed = new Set(viewer.userId ? await LessonProgressModel.distinct("lessonSlug", { userId: viewer.userId, status: "completed" }) : []);
+  const completed = await completedBy(viewer);
   return byOrder(tracks).map((track) => {
     const mine = byOrder(modules.filter((m) => m.trackSlug === track.slug));
     return {
@@ -55,6 +63,7 @@ export async function getPath(viewer: Viewer = ANONYMOUS): Promise<Path> {
           summary: m.summary,
           lessons: byOrder(lessons.filter((l) => l.moduleSlug === m.slug)).map((l) => ({
             slug: l.slug, title: l.title, minutes: l.minutes, strand: l.strand, locked: !canOpen(l, viewer), completed: completed.has(l.slug),
+            before: missingNeeds(l, lessons, completed, !!viewer.userId).length,
           })),
         })),
       })),
@@ -77,4 +86,11 @@ export async function getLesson(slug: string, viewer: Viewer = ANONYMOUS): Promi
   const ordered = [...lessons].sort((a, b) => moduleOrder.get(a.moduleSlug)! - moduleOrder.get(b.moduleSlug)! || a.order - b.order);
   const next = ordered[ordered.indexOf(lesson) + 1];
   return { status: "ok", lesson, next: next && { slug: next.slug, title: next.title } };
+}
+
+/** The earlier lessons, in other modules, that this lesson builds on and the viewer has not done yet. */
+export async function lessonsBefore(lesson: Lesson, viewer: Viewer): Promise<{ slug: string; title: string }[]> {
+  if (!viewer.userId) return [];
+  const { lessons } = await load();
+  return missingNeeds(lesson, lessons, await completedBy(viewer), true).map((l) => ({ slug: l.slug, title: l.title }));
 }

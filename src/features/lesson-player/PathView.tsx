@@ -117,7 +117,7 @@ export function PathView({ path }: { path: Path }) {
                       <li key={lesson.slug}>
                         <Link href={`/learn/${lesson.slug}`} className="-mx-2 flex min-h-12 items-center gap-3 rounded-md px-2 outline-none transition-colors duration-150 hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50">
                           {state === "Locked" ? <Lock className="size-5 text-muted-foreground" aria-hidden /> : state === "Completed" ? <Check className="size-5 text-success" aria-hidden /> : <Circle className="size-5 text-muted-foreground" aria-hidden />}
-                          <span className="flex-1">{lesson.title}<span className="sr-only">, {state}</span></span>
+                          <span className="flex-1">{lesson.title}<span className="sr-only">, {state}</span>{!lesson.completed && lesson.before > 0 && <span className="block text-xs text-muted-foreground">Builds on {lesson.before} earlier {lesson.before === 1 ? "lesson" : "lessons"}</span>}</span>
                           {STRAND_NAMES[lesson.strand] && <span className="rounded-full border px-2.5 py-0.5 text-xs text-muted-foreground">{STRAND_NAMES[lesson.strand]}</span>}
                           <span className="text-sm text-muted-foreground tabular-nums">{lesson.minutes} min</span>
                         </Link>
