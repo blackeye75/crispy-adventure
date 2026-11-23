@@ -195,9 +195,9 @@ Tick tasks as they complete. Each phase ends in something you can use.
 - [x] `src/core/instruments`: fretboard mapping (any tuning, left-handed) and keyboard mapping, with tests
 - [x] `Fretboard` SVG component: highlight, label, tap, responsive
 - [x] `Keyboard` SVG component with the same props
-- [ ] Audio engine: load samples, play note, chord, sequence, metronome
+- [x] Audio engine: load samples, play note, chord, sequence, metronome
 - [x] `resolveCanvas` in `src/core/instruments`: one `CanvasState` in, markers for both instruments out, with tests
-- [ ] Theory Canvas page per `docs/CANVAS.md`: control bar, linked fretboard and keyboard, theory panel, transport; passes its acceptance checklist
+- [x] Theory Canvas page per `docs/CANVAS.md`: control bar, linked fretboard and keyboard, theory panel, transport; passes its acceptance checklist
 
 *Milestone: a free tool worth sharing publicly to test interest.*
 
@@ -230,7 +230,9 @@ Tick tasks as they complete. Each phase ends in something you can use.
 ### Phase 6 — After launch
 - [x] Rest of Levels 2–6, released module by module
 - [ ] Technique lane and blocks: `strum-pattern`, `tab`, `picking-pattern`, `hands`, `video` (see `docs/PLAYING.md`)
-- [ ] Guitar strumming Basic and lead Basic stages, then fingerstyle Basic; piano tracks after
+  - [x] All data blocks: `strum-pattern`, `tab` (with picking fingers), `hands`, play-along backing; bars of a tab or piano part can be looped
+  - [ ] `video`: waits for the owner's recorded demos
+- [x] Guitar strumming Basic and lead Basic stages, then fingerstyle Basic; piano tracks after
   - [x] Guitar strumming Basic (7 lessons; technique wording and demo videos await the owner)
   - [x] `tab` block and guitar lead Basic (9 lessons; same caveats)
   - [x] Picking patterns (tab with p i m a and 3/4) and guitar fingerstyle Basic (7 lessons; same caveats)
@@ -239,7 +241,11 @@ Tick tasks as they complete. Each phase ends in something you can use.
   - [x] Tab release, pre-bend and unison-bend marks; guitar lead Intermediate (13 lessons; same caveats)
   - [x] Piano melody Basic (6), solo piano Basic (3) and musicianship Basic (4, both instruments); same caveats
   - [x] Tab tunings, natural harmonics and a 6/8 count; guitar fingerstyle Intermediate (9 lessons; same caveats)
-- [x] Tempo trainer and section looping (practice room: metronome, trainer, loop a range of chords; looping bars of written music in lessons is still open)
+  - [x] Piano accompaniment Intermediate (6) and Advanced (7), melody Intermediate (6) and Advanced (7), solo piano Intermediate (5) and Advanced (6); same caveats
+  - [x] Musicianship Intermediate (5) and Advanced (5)
+  - [x] Guitar strumming Advanced (8), lead Advanced (10) and fingerstyle Advanced (8); same caveats
+  - [x] Stages show the earlier lessons they build on (a soft gate: a notice with links, not a lock)
+- [x] Tempo trainer and section looping (practice room: metronome, trainer, loop a range of chords; in lessons, loop a bar or a range of bars of a tab or piano part)
 - [x] Play-along backing tracks (synth chords over a click, with chord display; real recorded tracks are still open)
 - [ ] Piano: MIDI keyboard input (Web MIDI)
 - [ ] Guitar: microphone single-note detection for "play this note" drills
