@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { notationSteps, parseNotation, togetherSteps } from "./notation";
+import { notationSteps, parseNotation, stepBars, togetherSteps } from "./notation";
 
 test("notes, chords, rests and bar lines", () => {
   const items = parseNotation("C4/q r/q E4+G4/h | Bb3/8 F#4/8 A4/w");
@@ -51,4 +51,10 @@ test("triplets: three to a beat, and the long-short pair of swing", () => {
   expect(beats("B4/qt B4/8t")).toBeCloseTo(1);
   expect(beats("B4/qt B4/qt B4/qt")).toBeCloseTo(2);
   expect(parseNotation("B4/8t")[0]).toMatchObject({ duration: "8t" });
+});
+
+test("each step knows its bar, in 4/4, 6/8 and with triplets", () => {
+  expect(stepBars(notationSteps(parseNotation("C4/h D4/h | E4/w | F4/q G4/q A4/h")), 4)).toEqual([0, 0, 1, 2, 2, 2]);
+  expect(stepBars(notationSteps(parseNotation("C4/8 D4/8 E4/8 F4/8 G4/8 A4/8 | B4/q.")), 3)).toEqual([0, 0, 0, 0, 0, 0, 1]); // 6/8: three quarters a bar
+  expect(stepBars(notationSteps(parseNotation("C4/8t D4/8t E4/8t C4/8t D4/8t E4/8t C4/h | G4/w")), 4)).toEqual([0, 0, 0, 0, 0, 0, 0, 1]);
 });

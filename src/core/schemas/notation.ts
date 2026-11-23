@@ -60,3 +60,13 @@ export function notationSteps(items: NotationItem[]): PlaybackStep[] {
   }
   return steps;
 }
+
+/** The bar each step starts in, counting from 0, for bars `barBeats` quarter notes long (no pickup bar). */
+export function stepBars(steps: PlaybackStep[], barBeats: number): number[] {
+  let at = 0;
+  return steps.map((step) => {
+    const bar = Math.floor(at / barBeats + 1e-6); // thirds of a beat never sum exactly
+    at += step.beats;
+    return bar;
+  });
+}

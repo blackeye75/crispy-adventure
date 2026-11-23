@@ -8,7 +8,7 @@ import { itemBeats } from "@/core/schemas/notation";
 import { glyphs, midi } from "@/core/theory/notes";
 import { cn } from "@/lib/utils";
 import { InstrumentView, lessonState } from "./InstrumentView";
-import { PlayButton } from "./PlayButton";
+import { BarPlayer } from "./BarPlayer";
 
 const BEAT = 56; // width of one beat in the lane
 
@@ -50,7 +50,7 @@ export function HandsBlock({ block }: { block: BlockOf<"hands"> }) {
           </div>
         </div>
       </div>
-      <div><PlayButton steps={steps} label="Play both hands" bpm={block.bpm} metronome={{ every: 1, accent: block.beatsPerBar }} onStep={setStep} /></div>
+      <BarPlayer steps={steps} barBeats={block.beatsPerBar} label="Play both hands" bpm={block.bpm} metronome={{ every: 1, accent: block.beatsPerBar }} onStep={setStep} />
     </figure>
   );
 }

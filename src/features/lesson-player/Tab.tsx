@@ -9,7 +9,7 @@ import { STANDARD_TUNING } from "@/core/instruments/fretboard";
 import { nameMidi } from "@/core/theory/notes";
 import { cn } from "@/lib/utils";
 import { InstrumentView, lessonState } from "./InstrumentView";
-import { PlayButton } from "./PlayButton";
+import { BarPlayer } from "./BarPlayer";
 
 const LINE = 22; // gap between string lines
 const TOP = 30;
@@ -45,6 +45,7 @@ export function TabBlock({ block }: { block: BlockOf<"tab"> }) {
 
   const layout = useMemo(() => layoutOf(items, block.pulse), [items, block.pulse]);
   const tuning = block.tuning ?? STANDARD_TUNING;
+  const steps = useMemo(() => tabSteps(items, tuning), [items, tuning]);
   const width = Math.max(260, layout.length ? layout[layout.length - 1].x + 60 : 260);
   const fingers = block.fingers?.split(" ");
   const height = TOP + 5 * LINE + (fingers ? 56 : 34);
@@ -93,7 +94,7 @@ export function TabBlock({ block }: { block: BlockOf<"tab"> }) {
           })}
         </svg>
       </div>
-      <div><PlayButton steps={tabSteps(items, tuning)} label="Play the tab" bpm={block.bpm} metronome={{ every: block.pulse, accent: block.pulse < 1 ? 3 : block.beatsPerBar }} onStep={setActive} /></div>
+      <BarPlayer steps={steps} barBeats={block.beatsPerBar * block.pulse} label="Play the tab" bpm={block.bpm} metronome={{ every: block.pulse, accent: block.pulse < 1 ? 3 : block.beatsPerBar }} onStep={setActive} />
     </figure>
   );
 }
