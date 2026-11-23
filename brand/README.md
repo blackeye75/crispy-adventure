@@ -23,9 +23,11 @@ The two launch covers are stills from the video project: `cd launch-video && npx
 
 ## Reel covers (9:16, 1080 × 1920)
 
-Covers for the vertical lesson reels. Content stays inside the 3:4 profile-grid crop. Source: `launch-video/src/vertical/Covers.tsx`.
+Covers for the vertical lesson reels. Content stays inside the 3:4 profile-grid crop. Source: `launch-video/src/vertical/Covers.tsx` (reels 4–7) and `launch-video/src/vertical/harmony/` (reels 8 and 8b).
 
 - `reel-4-cover-twelve-notes.png`: Beginner, "All twelve notes"
 - `reel-5-cover-major-minor.png`: Easy, "Major and minor"
 - `reel-6-cover-four-chords.png`: Moderate, "The four chords"
 - `reel-7-cover-ear-test.png`: Challenge, "Ear test"
+- `reel-8-cover-harmony.png`: "This is what harmony looks like", neon
+- `reel-8b-cover-harmony-plates.png`: the same reel as printed plates

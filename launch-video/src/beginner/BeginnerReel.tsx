@@ -6,9 +6,11 @@ import script from "./script.json";
 import timing from "./timing.json";
 
 // ---- timing: every line of narration is one segment, as long as its recording plus a breath --------------------------
+// Segments are found by the line ids in script.json, so lines can be added or reordered without breaking the picture.
+const S = Object.fromEntries(script.map((line, i) => [line.id, i])) as Record<string, number>;
 const PAD = 6;
 const RUN_STEP = 6; // frames between the notes of the guitar run
-const AFTER: Record<number, number> = { 11: 13 * RUN_STEP + 20, 15: 50 }; // music after the guitar line; a held close
+const AFTER: Record<number, number> = { [S.guitar]: 13 * RUN_STEP + 20, [S.close]: 50 }; // music after the guitar line; a held close
 const lengths = timing.map((t, i) => Math.ceil(t.seconds * FPS) + PAD + (AFTER[i] ?? 0));
 const starts = lengths.reduce<number[]>((all, _, i) => [...all, i ? all[i - 1] + lengths[i - 1] : 0], []);
 export const BEGINNER_FRAMES = starts[starts.length - 1] + lengths[lengths.length - 1];
@@ -32,20 +34,20 @@ function keysAt(seg: number, f: number): Keys {
   const pulse = (start: number) => (f < start ? 0 : interpolate(f - start, [0, 3, 16], [0, 1, 0.22], LINEAR)); // flash, then a light tint
   const k: Keys = { label: Array(8).fill(0), lit: Array(8).fill(0), black: 0, blackLit: Array(5).fill(0), blackLabel: Array(5).fill(null), gaps: [0, 0], arc: 0, counter: null };
   const labelAll = (to = 7) => { for (let i = 0; i < to; i++) k.label[i] = 1; };
-  if (seg === 3) onsetFrames(3).forEach((o, i) => { k.label[i] = f >= o ? 1 : 0; k.lit[i] = pulse(o); });
-  if (seg === 4) { labelAll(); k.label[7] = f >= at(0.72) ? 1 : 0; k.lit[7] = pulse(at(0.72)); k.lit[0] = pulse(at(0.72)) * 0.7; }
-  if (seg >= 5) { labelAll(8); k.black = 1; }
-  if (seg === 5) { k.black = interpolate(f, [at(0.2), at(0.45)], [0, 1], OUT); k.blackLit = k.blackLit.map(() => pulse(at(0.5)) * 0.8); }
-  if (seg === 6) {
+  if (seg === S.abc) onsetFrames(S.abc).forEach((o, i) => { k.label[i] = f >= o ? 1 : 0; k.lit[i] = pulse(o); });
+  if (seg === S.white) { labelAll(); k.label[7] = f >= at(0.72) ? 1 : 0; k.lit[7] = pulse(at(0.72)); k.lit[0] = pulse(at(0.72)) * 0.7; }
+  if (seg >= S.black) { labelAll(8); k.black = 1; }
+  if (seg === S.black) { k.black = interpolate(f, [at(0.2), at(0.45)], [0, 1], OUT); k.blackLit = k.blackLit.map(() => pulse(at(0.5)) * 0.8); }
+  if (seg === S.sharp) {
     // measured from the recording: "C sharp" is said at about 26% of the line, "D flat" at about 56%
     k.blackLit[1] = f >= at(0.26) ? 1 : 0;
     k.lit[2] = f >= at(0.1) && f < at(0.4) ? 0.6 : 0;
     k.lit[3] = f >= at(0.4) && f < at(0.7) ? 0.6 : 0;
     k.blackLabel[1] = f >= at(0.56) ? "C♯ D♭" : f >= at(0.26) ? "C♯" : null;
   }
-  if (seg === 7) k.gaps = [interpolate(f, [at(0.12), at(0.12) + 8], [0, 1], LINEAR), interpolate(f, [at(0.3), at(0.3) + 8], [0, 1], LINEAR)];
-  if (seg === 9) {
-    const onsets = onsetFrames(9);
+  if (seg === S.gaps) k.gaps = [interpolate(f, [at(0.12), at(0.12) + 8], [0, 1], LINEAR), interpolate(f, [at(0.3), at(0.3) + 8], [0, 1], LINEAR)];
+  if (seg === S.count) {
+    const onsets = onsetFrames(S.count);
     onsets.forEach((o, n) => {
       const key = CHROMATIC[n];
       if (key >= 0) k.lit[key] = pulse(o);
@@ -54,7 +56,7 @@ function keysAt(seg: number, f: number): Keys {
     const done = onsets.filter((o) => f >= o).length;
     k.counter = done || null;
   }
-  if (seg === 10) { k.blackLabel = [...SHARP]; k.lit[0] = pulse(0); k.lit[7] = pulse(at(0.42)); k.arc = interpolate(f, [at(0.42), at(0.42) + 16], [0, 1], OUT); } // "It is A again" starts at about 42%
+  if (seg === S.octave) { k.blackLabel = [...SHARP]; k.lit[0] = pulse(0); k.lit[7] = pulse(at(0.42)); k.arc = interpolate(f, [at(0.42), at(0.42) + 16], [0, 1], OUT); } // "It is A again" starts at about 42%
   return k;
 }
 
@@ -100,7 +102,7 @@ const Keyboard = ({ k, enter }: { k: Keys; enter: number }) => (
 const NOTE_NAMES = ["A", "A♯", "B", "C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A"];
 const FRET = 62, NUT = 470, NECK_X = 540;
 const Neck = ({ f }: { f: number }) => {
-  const len = voiceFrames(11);
+  const len = voiceFrames(S.guitar);
   const runStart = len + PAD;
   return (
     <svg width={1080} height={1000} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
@@ -137,17 +139,17 @@ const lift = (f: number, at = 0, distance = 50) => ({ opacity: interpolate(f, [a
 const Rich = ({ text }: { text: string }) => <>{text.split("*").map((part, i) => <span key={i} style={{ color: i % 2 ? C.gold : undefined }}>{part}</span>)}</>;
 
 const HEADLINES: Record<number, ReactNode> = {
-  2: <>Seven <span style={{ color: C.gold }}>letters</span></>,
-  3: <>A <span style={{ color: C.gold }}>to</span> G</>,
-  4: <>The <span style={{ color: C.gold }}>white</span> keys</>,
-  5: <>The <span style={{ color: C.gold }}>black</span> keys</>,
-  6: <>One note, <span style={{ color: C.gold }}>two names</span></>,
-  7: <>No note <span style={{ color: C.gold }}>between</span></>,
-  8: <>Count them <span style={{ color: C.gold }}>all</span></>,
-  9: <>Count them <span style={{ color: C.gold }}>all</span></>,
-  10: <>The <span style={{ color: C.gold }}>octave</span></>,
-  11: <>On <span style={{ color: C.gold }}>guitar</span></>,
-  13: <>That was <span style={{ color: C.gold }}>one lesson</span></>,
+  [S.letters]: <>Seven <span style={{ color: C.gold }}>letters</span></>,
+  [S.abc]: <>A <span style={{ color: C.gold }}>to</span> G</>,
+  [S.white]: <>The <span style={{ color: C.gold }}>white</span> keys</>,
+  [S.black]: <>The <span style={{ color: C.gold }}>black</span> keys</>,
+  [S.sharp]: <>One note, <span style={{ color: C.gold }}>two names</span></>,
+  [S.gaps]: <>No note <span style={{ color: C.gold }}>between</span></>,
+  [S["count-intro"]]: <>Count them <span style={{ color: C.gold }}>all</span></>,
+  [S.count]: <>Count them <span style={{ color: C.gold }}>all</span></>,
+  [S.octave]: <>The <span style={{ color: C.gold }}>octave</span></>,
+  [S.guitar]: <>On <span style={{ color: C.gold }}>guitar</span></>,
+  [S.lesson]: <>That was <span style={{ color: C.gold }}>one lesson</span></>,
 };
 
 const STEP_SHOTS: [string, string, number][] = [["Understand", "b-understand", 0.3], ["Hear", "b-listen", 0.48], ["See", "b-learn", 0.62], ["Practise", "b-practice", 0.84]];
@@ -158,9 +160,9 @@ export const BeginnerReel = () => {
   const seg = Math.max(0, starts.filter((s) => s <= frame).length - 1);
   const f = frame - starts[seg];
   const len = lengths[seg];
-  const keyboardOn = interpolate(frame, [starts[2], starts[2] + 18, starts[11] - 8, starts[11]], [0, 1, 1, 0], LINEAR);
+  const keyboardOn = interpolate(frame, [starts[S.letters], starts[S.letters] + 18, starts[S.guitar] - 8, starts[S.guitar]], [0, 1, 1, 0], LINEAR);
   const k = keysAt(seg, f);
-  const bedQuiet: [number, number] = [starts[9] - 10, starts[12]];
+  const bedQuiet: [number, number] = [starts[S.count] - 10, starts[S.fomo]];
 
   return (
     <AbsoluteFill style={{ backgroundColor: C.bg, fontFamily: sans, color: C.text }}>
@@ -169,16 +171,16 @@ export const BeginnerReel = () => {
       <AbsoluteFill style={{ backgroundColor: "#000", opacity: interpolate(frame, [0, 24], [1, 0], LINEAR) }} />
 
       {/* the hook: twelve notes */}
-      {seg === 0 && (
+      {seg === S.hook && (
         <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", paddingBottom: 300, opacity: fade(f, len, 1) }}>
           <div style={{ fontFamily: serif, fontSize: 620, fontWeight: 600, lineHeight: 1, color: C.gold, textShadow: "0 0 120px rgba(236,178,63,0.45)", scale: `${interpolate(f, [0, 40], [1.35, 1], { ...LINEAR, easing: Easing.out(Easing.cubic) })}` }}>12</div>
           <div style={{ ...lift(f, 18), fontFamily: serif, fontSize: 110, marginTop: -10 }}>notes</div>
         </AbsoluteFill>
       )}
-      {seg === 1 && (
+      {seg === S.twelve && (
         <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", gap: 40, paddingBottom: 300, opacity: fade(f, len) }}>
           {["hundreds", "thousands"].map((word, i) => {
-            const at = i * 0.2 * voiceFrames(1);
+            const at = i * 0.2 * voiceFrames(S.twelve);
             return (
               <div key={word} style={{ ...lift(f, at), position: "relative", fontFamily: serif, fontSize: 130, color: C.muted }}>
                 {word}
@@ -186,7 +188,7 @@ export const BeginnerReel = () => {
               </div>
             );
           })}
-          <div style={{ ...lift(f, 0.42 * voiceFrames(1), 80), fontFamily: serif, fontSize: 300, fontWeight: 600, color: C.gold, lineHeight: 1 }}>12</div>
+          <div style={{ ...lift(f, 0.42 * voiceFrames(S.twelve), 80), fontFamily: serif, fontSize: 300, fontWeight: 600, color: C.gold, lineHeight: 1 }}>12</div>
         </AbsoluteFill>
       )}
 
@@ -196,21 +198,21 @@ export const BeginnerReel = () => {
         <div style={{ position: "absolute", left: 0, right: 0, top: 470, textAlign: "center", fontFamily: serif, fontSize: 190, fontWeight: 600, color: C.gold, lineHeight: 1 }}>{k.counter}</div>
       )}
 
-      {seg === 11 && <div style={{ opacity: fade(f, len) }}><Neck f={f} /></div>}
+      {seg === S.guitar && <div style={{ opacity: fade(f, len) }}><Neck f={f} /></div>}
 
-      {seg === 12 && (
+      {seg === S.fomo && (
         <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", paddingBottom: 260, opacity: fade(f, len) }}>
           <div style={{ ...lift(f, 0), fontSize: 50, color: C.muted, textAlign: "center", width: 860, lineHeight: 1.3 }}>Most self-taught players never learn this.</div>
-          <div style={{ ...lift(f, 0.55 * voiceFrames(12), 70), fontFamily: serif, fontSize: 190, fontWeight: 600, lineHeight: 1.05, textAlign: "center", marginTop: 40 }}>
+          <div style={{ ...lift(f, 0.55 * voiceFrames(S.fomo), 70), fontFamily: serif, fontSize: 190, fontWeight: 600, lineHeight: 1.05, textAlign: "center", marginTop: 40 }}>
             You just <span style={{ color: C.gold, fontStyle: "italic" }}>did.</span>
           </div>
         </AbsoluteFill>
       )}
 
-      {seg === 13 && (
+      {seg === S.lesson && (
         <div style={{ position: "absolute", left: 50, top: 560, display: "flex", gap: 20, opacity: fade(f, len) }}>
           {STEP_SHOTS.map(([name, shot, at], i) => {
-            const on = f >= at * voiceFrames(13);
+            const on = f >= at * voiceFrames(S.lesson);
             return (
               <div key={shot} style={{ ...lift(f, 4 + i * 5, 80), width: 230, textAlign: "center" }}>
                 <div style={{ scale: on ? "1.06" : "1", opacity: on ? 1 : 0.45 }}>
@@ -223,13 +225,13 @@ export const BeginnerReel = () => {
         </div>
       )}
 
-      {seg === 14 && (
+      {seg === S.more && (
         <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", paddingBottom: 300, opacity: fade(f, len) }}>
           <div style={{ fontFamily: serif, fontSize: 330, fontWeight: 600, color: C.gold, lineHeight: 1, fontVariantNumeric: "tabular-nums", textShadow: "0 0 100px rgba(236,178,63,0.35)" }}>
-            {Math.round(interpolate(f, [0, 0.55 * voiceFrames(14)], [0, 250], { ...LINEAR, easing: Easing.out(Easing.cubic) }))}+
+            {Math.round(interpolate(f, [0, 0.55 * voiceFrames(S.more)], [0, 250], { ...LINEAR, easing: Easing.out(Easing.cubic) }))}+
           </div>
           <div style={{ ...lift(f, 10), fontFamily: serif, fontSize: 96 }}>lessons</div>
-          <div style={{ ...lift(f, 0.6 * voiceFrames(14)), display: "flex", gap: 22, marginTop: 50, fontSize: 40, fontWeight: 600 }}>
+          <div style={{ ...lift(f, 0.6 * voiceFrames(S.more)), display: "flex", gap: 22, marginTop: 50, fontSize: 40, fontWeight: 600 }}>
             <span style={{ padding: "14px 32px", borderRadius: 40, border: `3px solid ${C.line}` }}>first note</span>
             <span style={{ color: C.gold, alignSelf: "center" }}>→</span>
             <span style={{ padding: "14px 32px", borderRadius: 40, border: `3px solid ${C.gold}`, color: C.gold }}>jazz</span>
@@ -237,21 +239,21 @@ export const BeginnerReel = () => {
         </AbsoluteFill>
       )}
 
-      {seg === 15 && (
+      {seg === S.close && (
         <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", paddingBottom: 320, opacity: interpolate(f, [0, 10], [0, 1], LINEAR) }}>
           <Mark height={200} at={2} />
           <div style={{ ...lift(f, 22), fontFamily: serif, fontSize: 150, fontWeight: 600, marginTop: 30, letterSpacing: -3 }}>
             Fret<span style={{ color: C.gold }}>key</span>
           </div>
           <div style={{ ...lift(f, 34), fontSize: 56, color: C.muted, marginTop: 8 }}>is almost here.</div>
-          <div style={{ ...lift(f, 0.55 * voiceFrames(15)), marginTop: 56, fontSize: 52, fontWeight: 600, color: C.bg, backgroundColor: C.gold, padding: "20px 56px", borderRadius: 60 }}>Follow @fret.key</div>
-          <div style={{ ...lift(f, 0.75 * voiceFrames(15)), fontSize: 40, color: C.text, marginTop: 26 }}>Be among the first to play.</div>
+          <div style={{ ...lift(f, 0.55 * voiceFrames(S.close)), marginTop: 56, fontSize: 52, fontWeight: 600, color: C.bg, backgroundColor: C.gold, padding: "20px 56px", borderRadius: 60 }}>Follow @fret.key</div>
+          <div style={{ ...lift(f, 0.75 * voiceFrames(S.close)), fontSize: 40, color: C.text, marginTop: 26 }}>Be among the first to play.</div>
         </AbsoluteFill>
       )}
 
       {/* the headline of the moment, at the top */}
       {HEADLINES[seg] && (
-        <div style={{ position: "absolute", left: 60, right: 60, top: 270, textAlign: "center", fontFamily: serif, fontSize: 104, lineHeight: 1.05, opacity: seg === 9 || seg === 3 ? 1 : fade(f, len, 10, 4), translate: `0px ${seg === 9 || seg === 3 ? 0 : interpolate(f, [0, 18], [30, 0], OUT)}px` }}>
+        <div style={{ position: "absolute", left: 60, right: 60, top: 270, textAlign: "center", fontFamily: serif, fontSize: 104, lineHeight: 1.05, opacity: seg === S.count || seg === S.abc ? 1 : fade(f, len, 10, 4), translate: `0px ${seg === S.count || seg === S.abc ? 0 : interpolate(f, [0, 18], [30, 0], OUT)}px` }}>
           {HEADLINES[seg]}
         </div>
       )}
@@ -272,18 +274,18 @@ export const BeginnerReel = () => {
           <Audio src={staticFile(`beginner/vo-${i + 1}.wav`)} volume={0.9} />
         </Sequence>
       ))}
-      {onsetFrames(9).map((o, n) => (
-        <Sequence key={`c${n}`} from={starts[9] + o} durationInFrames={45} layout="none">
+      {onsetFrames(S.count).map((o, n) => (
+        <Sequence key={`c${n}`} from={starts[S.count] + o} durationInFrames={45} layout="none">
           <Audio src={staticFile(`notes/${45 + n}.wav`)} volume={0.42} />
         </Sequence>
       ))}
-      {[0, Math.round(0.42 * voiceFrames(10))].map((o, n) => (
-        <Sequence key={`o${n}`} from={starts[10] + o} durationInFrames={45} layout="none">
+      {[0, Math.round(0.42 * voiceFrames(S.octave))].map((o, n) => (
+        <Sequence key={`o${n}`} from={starts[S.octave] + o} durationInFrames={45} layout="none">
           <Audio src={staticFile(`notes/${n ? 57 : 45}.wav`)} volume={0.5} />
         </Sequence>
       ))}
       {NOTE_NAMES.map((_, n) => (
-        <Sequence key={`g${n}`} from={starts[11] + voiceFrames(11) + PAD + n * RUN_STEP} durationInFrames={40} layout="none">
+        <Sequence key={`g${n}`} from={starts[S.guitar] + voiceFrames(S.guitar) + PAD + n * RUN_STEP} durationInFrames={40} layout="none">
           <Audio src={staticFile(`notes/${45 + n}.wav`)} volume={0.55} />
         </Sequence>
       ))}

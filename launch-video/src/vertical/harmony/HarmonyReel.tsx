@@ -259,3 +259,15 @@ export const HarmonySound = () => (
     <Hit at={tl.start("guitar") + tl.cue("guitar", 1)} midis={[40, 47, 52]} volume={0.45} />
   </>
 );
+
+/** Cover for the neon version. Content stays inside the profile-grid crop. */
+export const HarmonyCover = () => (
+  <AbsoluteFill style={{ backgroundColor: N.bg, color: N.text, fontFamily: sans, alignItems: "center" }}>
+    <Backdrop frame={40} hot={0} />
+    <Layer><Glow d={lissajous(2, 3, 0, 1, 300, 540, 1080)} stroke="url(#cool)" width={6} /></Layer>
+    <div style={{ marginTop: 330, fontSize: 70, fontWeight: 500 }}>This is what</div>
+    <div style={{ lineHeight: 1 }}><Neon size={210}>harmony</Neon></div>
+    <div style={{ fontSize: 70, fontWeight: 500 }}>looks like.</div>
+    <div style={{ position: "absolute", top: 1440, fontSize: 36, fontWeight: 600, letterSpacing: 8, color: N.cyan }}>OCTAVE · FIFTH · TRITONE</div>
+  </AbsoluteFill>
+);

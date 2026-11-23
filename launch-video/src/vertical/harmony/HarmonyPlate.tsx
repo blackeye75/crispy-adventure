@@ -246,3 +246,21 @@ export const HarmonyPlateReel = () => {
     </AbsoluteFill>
   );
 };
+
+/** Cover for the plate version: the opening plate, without the caption. Content stays inside the profile-grid crop. */
+export const HarmonyPlateCover = () => (
+  <AbsoluteFill style={{ backgroundColor: P.paper, color: P.ink, fontFamily: sans }}>
+    <div style={{ ...label, position: "absolute", left: M, top: 300 }}>Fretkey — On harmony</div>
+    <div style={{ ...label, position: "absolute", right: M, top: 300, color: P.ink }}>Fig. 00 – 07</div>
+    <div style={{ position: "absolute", left: M, right: M, top: 342, height: 2, backgroundColor: P.ink }} />
+    <div style={{ position: "absolute", left: M, top: 390, fontSize: 84, fontWeight: 600, letterSpacing: -3 }}>This is what</div>
+    <div style={{ position: "absolute", left: M - 6, top: 470, fontFamily: serif, fontStyle: "italic", fontSize: 250, lineHeight: 1.1, letterSpacing: -7 }}>harmony</div>
+    <div style={{ position: "absolute", left: M, top: 740, fontSize: 84, fontWeight: 600, letterSpacing: -3 }}>looks like.</div>
+    <Svg>
+      <Plot f={60} x={M} y={880} w={1080 - 2 * M} h={560} caption="C4 against G4 · ratio 3:2">
+        <Figure f={60} a={2} b={3} turns={1} delta={0} r={220} cx={540} cy={1170} box={{ x: M, y: 880, w: 1080 - 2 * M, h: 560 }} from={0} frames={50} />
+      </Plot>
+    </Svg>
+    <div style={{ ...label, position: "absolute", left: M, top: 1470 }}>Every interval has a shape</div>
+  </AbsoluteFill>
+);

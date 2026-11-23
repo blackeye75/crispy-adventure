@@ -19,8 +19,8 @@ import { reelFrames } from "./reels/Reel";
 import { BEGINNER_FRAMES, BeginnerReel } from "./beginner/BeginnerReel";
 import { FOUR_CHORDS_FRAMES, FourChordsReel } from "./vertical/four-chords/FourChordsReel";
 import { MAJOR_MINOR_FRAMES, MajorMinorReel } from "./vertical/major-minor/MajorMinorReel";
-import { HARMONY_FRAMES, HarmonyReel } from "./vertical/harmony/HarmonyReel";
-import { HarmonyPlateReel } from "./vertical/harmony/HarmonyPlate";
+import { HARMONY_FRAMES, HarmonyCover, HarmonyReel } from "./vertical/harmony/HarmonyReel";
+import { HarmonyPlateCover, HarmonyPlateReel } from "./vertical/harmony/HarmonyPlate";
 import { EAR_TEST_FRAMES, EarTestReel } from "./vertical/ear-test/EarTestReel";
 import { CoverEarTest, CoverFourChords, CoverMajorMinor, CoverTwelve } from "./vertical/Covers";
 import { FPS } from "./theme";
@@ -50,6 +50,8 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="CoverTwelve" component={CoverTwelve} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     <Composition id="CoverMajorMinor" component={CoverMajorMinor} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     <Composition id="CoverEarTest" component={CoverEarTest} durationInFrames={1} width={1080} height={1920} fps={FPS} />
+    <Composition id="CoverHarmony" component={HarmonyCover} durationInFrames={1} width={1080} height={1920} fps={FPS} />
+    <Composition id="CoverHarmonyPlate" component={HarmonyPlateCover} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     <Composition id="CoverFourChords" component={CoverFourChords} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     {/* Story posters: stills, 1080 × 1920. */}
     <Composition id="PosterUsp" component={PosterUsp} durationInFrames={1} width={1080} height={1920} fps={FPS} />
