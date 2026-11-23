@@ -364,3 +364,28 @@ test("lead Intermediate: release, pre-bend and unison bend are drawn and describ
   await expect(threes.locator("text.fill-muted-foreground.text-xs")).toHaveText(["1", "2", "3", "4"]); // one count per beat of triplets
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
 });
+
+test("a stage lists the lessons it builds on, and a piano part can loop a range of bars", async ({ page }) => {
+  await signUpSubscribed(page);
+  await page.goto("/learn");
+  await expect(page.getByRole("link", { name: /Inversions for smooth changes/ })).toContainText("Builds on 2 earlier lessons");
+  await page.goto("/learn/inversions-for-smooth-changes");
+  const notice = page.getByRole("complementary", { name: "Lessons this one builds on" });
+  await expect(notice).toContainText("2 lessons you have not done yet");
+  await expect(notice.getByRole("link")).toHaveCount(2);
+  await expect(notice.locator('a[href="/learn/smooth-chord-changes"]')).toBeVisible();
+  await next(page).click();
+  await next(page).click();
+  const loop = page.getByRole("group", { name: /Loop a passage/ }).first();
+  await loop.getByRole("button", { name: "Bar 2" }).click();
+  await expect(page.getByRole("button", { name: "Loop bar 2" })).toBeVisible();
+  await loop.getByRole("button", { name: "Bar 3" }).click();
+  await expect(loop.getByRole("button", { name: "Bar 2" })).toHaveAttribute("aria-pressed", "true");
+  await expect(loop.getByRole("button", { name: "Bar 3" })).toHaveAttribute("aria-pressed", "true");
+  await expect(loop.getByRole("button", { name: "Bar 1" })).toHaveAttribute("aria-pressed", "false");
+  await page.getByRole("button", { name: "Loop bars 2–3" }).click();
+  const right = page.getByRole("group", { name: "Right hand" }).first();
+  await expect(right.locator("li[data-active]")).toHaveText(/C E A|C F A/, { timeout: 15_000 }); // bar 2 is Am, bar 3 is F: never bar 1
+  await loop.getByRole("button", { name: "Whole part" }).click();
+  await expect(page.getByRole("button", { name: "Play both hands" }).first()).toBeVisible();
+});
