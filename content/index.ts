@@ -40,6 +40,7 @@ import { minorModes } from "./level-6/minor-modes";
 import { substitution } from "./level-6/substitution";
 import { symmetricScales } from "./level-6/symmetric-scales";
 import { accompanimentBasic } from "./playing/accompaniment-basic";
+import { accompanimentIntermediate } from "./playing/accompaniment-intermediate";
 import { fingerstyleBasic } from "./playing/fingerstyle-basic";
 import { fingerstyleIntermediate } from "./playing/fingerstyle-intermediate";
 import { leadBasic } from "./playing/lead-basic";
@@ -59,6 +60,6 @@ export const content = {
     ...pentatonicAndBlues, ...wholeInstrument, ...seventhChords, ...chordTonesAndMelody, ...rhythm3, ...expression, ...ear4,
     ...modes, ...secondaryDominants, ...borrowedChords, ...voiceLeading, ...extendedChords, ...modulation, ...ear5,
     ...jazzHarmony, ...substitution, ...minorModes, ...symmetricScales, ...improvisation, ...arranging, ...formAndAnalysis, ...furtherTopics,
-    ...strummingBasic, ...strummingIntermediate, ...leadBasic, ...leadIntermediate, ...fingerstyleBasic, ...fingerstyleIntermediate, ...accompanimentBasic, ...melodyBasic, ...soloPianoBasic, ...musicianshipBasic,
+    ...strummingBasic, ...strummingIntermediate, ...leadBasic, ...leadIntermediate, ...fingerstyleBasic, ...fingerstyleIntermediate, ...accompanimentBasic, ...accompanimentIntermediate, ...melodyBasic, ...soloPianoBasic, ...musicianshipBasic,
   ],
 };
