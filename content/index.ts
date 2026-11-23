@@ -49,6 +49,8 @@ import { melodyBasic } from "./playing/melody-basic";
 import { melodyIntermediate } from "./playing/melody-intermediate";
 import { melodyAdvanced } from "./playing/melody-advanced";
 import { musicianshipBasic } from "./playing/musicianship-basic";
+import { musicianshipIntermediate } from "./playing/musicianship-intermediate";
+import { musicianshipAdvanced } from "./playing/musicianship-advanced";
 import { soloPianoBasic } from "./playing/solo-piano-basic";
 import { soloPianoIntermediate } from "./playing/solo-piano-intermediate";
 import { soloPianoAdvanced } from "./playing/solo-piano-advanced";
@@ -65,6 +67,6 @@ export const content = {
     ...pentatonicAndBlues, ...wholeInstrument, ...seventhChords, ...chordTonesAndMelody, ...rhythm3, ...expression, ...ear4,
     ...modes, ...secondaryDominants, ...borrowedChords, ...voiceLeading, ...extendedChords, ...modulation, ...ear5,
     ...jazzHarmony, ...substitution, ...minorModes, ...symmetricScales, ...improvisation, ...arranging, ...formAndAnalysis, ...furtherTopics,
-    ...strummingBasic, ...strummingIntermediate, ...leadBasic, ...leadIntermediate, ...fingerstyleBasic, ...fingerstyleIntermediate, ...accompanimentBasic, ...accompanimentIntermediate, ...accompanimentAdvanced, ...melodyBasic, ...melodyIntermediate, ...melodyAdvanced, ...soloPianoBasic, ...soloPianoIntermediate, ...soloPianoAdvanced, ...musicianshipBasic,
+    ...strummingBasic, ...strummingIntermediate, ...leadBasic, ...leadIntermediate, ...fingerstyleBasic, ...fingerstyleIntermediate, ...accompanimentBasic, ...accompanimentIntermediate, ...accompanimentAdvanced, ...melodyBasic, ...melodyIntermediate, ...melodyAdvanced, ...soloPianoBasic, ...soloPianoIntermediate, ...soloPianoAdvanced, ...musicianshipBasic, ...musicianshipIntermediate, ...musicianshipAdvanced,
   ],
 };

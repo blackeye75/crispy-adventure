@@ -75,6 +75,8 @@ export const modules: Module[] = [
   { slug: "solo-piano-intermediate", trackSlug: "piano-solo", level: 1, title: "Intermediate", order: 151, summary: "Melody over chord tones in one hand, left-hand arpeggios, inner voices, pedalling with the harmony, and a ballad arrangement.", isFree: false },
   { slug: "solo-piano-advanced", trackSlug: "piano-solo", level: 1, title: "Advanced", order: 152, summary: "Three-layer arrangements, reharmonisation, texture across sections, rubato, stride and walking-bass styles, and a complete arrangement.", isFree: false },
   { slug: "musicianship-basic", trackSlug: "musicianship", level: 1, title: "Basic", order: 160, summary: "Reading a chord chart, playing with a click, starting and ending together, and a daily routine.", isFree: false },
+  { slug: "musicianship-intermediate", trackSlug: "musicianship", level: 1, title: "Intermediate", order: 161, summary: "Learning a song from start to finish, chords by ear, dynamics, transposing for a singer, and recording yourself.", isFree: false },
+  { slug: "musicianship-advanced", trackSlug: "musicianship", level: 1, title: "Advanced", order: 162, summary: "Playing with others, arranging guitar and piano together, writing a song, performing, and finding your own style.", isFree: false },
   { slug: "fingerstyle-intermediate", trackSlug: "guitar-fingerstyle", level: 1, title: "Intermediate", order: 121, summary: "Travis picking, melody over a bass, 6/8, classical strokes, walking bass, harmonics and alternate tunings.", isFree: false },
   { slug: "lead-basic", trackSlug: "guitar-lead", level: 1, title: "Basic", order: 110, summary: "Alternate picking, the minor pentatonic box, hammer-ons, slides, bends, and a first blues solo.", isFree: false },
 ];
