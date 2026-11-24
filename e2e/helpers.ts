@@ -4,13 +4,26 @@ import { WEBHOOK_SECRET, PADDLE_WEBHOOK_SECRET } from "../playwright.config";
 
 export const newUser = () => ({ name: "Asha", email: `e2e-${Date.now()}-${Math.random().toString(36).slice(2)}@example.com`, password: "correct-horse-battery" });
 
-/** Create an account through the UI. Ends on the onboarding screen. */
-export async function createAccount(page: Page, user = newUser()) {
-  await page.goto("/sign-up");
+/** The newest email sent to an address, from the fake mail server, and the first link in it. */
+export async function lastEmail(request: APIRequestContext, to: string) {
+  let email: { subject: string; text: string } | undefined;
+  await expect.poll(async () => {
+    const res = await request.get(`http://localhost:4010/outbox?to=${encodeURIComponent(to)}`);
+    email = res.ok() ? await res.json() : undefined;
+    return Boolean(email);
+  }).toBe(true);
+  return { ...email!, link: /https?:\/\/\S+/.exec(email!.text)![0] };
+}
+
+/** Create an account through the UI and confirm its email. Ends on the onboarding screen. */
+export async function createAccount(page: Page, user = newUser(), path = "/sign-up") {
+  await page.goto(path);
   await page.getByLabel("Name").fill(user.name);
   await page.getByLabel("Email").fill(user.email);
   await page.getByLabel("Password").fill(user.password);
   await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page.getByRole("heading", { name: "Check your email" })).toBeVisible();
+  await page.goto((await lastEmail(page.request, user.email)).link);
   await expect(page.getByRole("heading", { name: "Set up your path" })).toBeVisible();
   return user;
 }

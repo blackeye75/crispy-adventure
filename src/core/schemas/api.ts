@@ -44,3 +44,8 @@ export type PlacementAnswers = z.infer<typeof placementAnswersSchema>;
 /** POST /billing/subscribe */
 // provider: "razorpay" for India (INR, UPI Autopay), "paddle" for everyone else (USD, merchant of record).
 export const subscribeSchema = z.object({ plan: z.enum(["monthly", "yearly"]), provider: z.enum(["razorpay", "paddle"]).default("razorpay") });
+
+/** A mobile number in international (E.164) form, as sign-in by code needs it: "+919876543210". */
+export const isPhoneNumber = (value: string) => /^\+[1-9]\d{7,14}$/.test(value);
+/** Typed numbers often have spaces, dashes or brackets: keep the leading + and the digits. */
+export const normalisePhoneNumber = (value: string) => value.trim().replace(/(?!^\+)[^\d]/g, "");

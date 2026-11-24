@@ -210,6 +210,8 @@ Tick tasks as they complete. Each phase ends in something you can use.
 
 ### Phase 3 — Accounts and progress (about 1 week)
 - [x] Better Auth: email and Google sign-in
+- [x] Email verification (required once email is set up) and password reset by email, through Resend
+- [x] Sign in with a mobile number and an SMS code, through Twilio Verify
 - [x] Onboarding and placement quiz
 - [x] Progress saving, streaks, daily goal
 - [x] Spaced-repetition engine in `src/core/review` and the Review screen

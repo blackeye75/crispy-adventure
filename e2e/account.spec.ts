@@ -1,5 +1,5 @@
 import { expect, test } from "./test";
-import { createAccount, newUser, signUp } from "./helpers";
+import { createAccount, lastEmail, newUser, signUp } from "./helpers";
 
 test("signed-out visitors are sent to sign in and come back where they were going", async ({ page }) => {
   await page.goto("/review");
@@ -72,13 +72,97 @@ test("progress is saved to the account: resume mid-lesson, sign out, sign back i
 });
 
 test("the post-sign-in destination cannot point at another site", async ({ page }) => {
+  await createAccount(page, newUser(), "/sign-up?next=//evil.example/steal");
+  await expect(page).toHaveURL(/localhost:3000\/onboarding/);
+});
+
+test("a new email account must be confirmed before it can sign in", async ({ page }) => {
   const user = newUser();
-  await page.goto("/sign-up?next=//evil.example/steal");
+  await page.goto("/sign-up");
   await page.getByLabel("Name").fill(user.name);
   await page.getByLabel("Email").fill(user.email);
   await page.getByLabel("Password").fill(user.password);
   await page.getByRole("button", { name: "Create account" }).click();
-  await expect(page).toHaveURL(/localhost:3000\/onboarding/);
+  await expect(page.getByRole("heading", { name: "Check your email" })).toBeVisible();
+  const first = await lastEmail(page.request, user.email);
+  expect(first.subject).toBe("Confirm your email for Fretkey");
+
+  // signing in before confirming gives no session, just a fresh link
+  await page.goto("/sign-in");
+  await page.getByLabel("Email").fill(user.email);
+  await page.getByLabel("Password").fill(user.password);
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.getByRole("heading", { name: "Check your email" })).toBeVisible();
+  await page.goto("/dashboard");
+  await expect(page).toHaveURL(/\/sign-in/);
+
+  await page.goto((await lastEmail(page.request, user.email)).link);
+  await expect(page.getByRole("heading", { name: "Set up your path" })).toBeVisible();
+});
+
+test("forgot password: an emailed link sets a new password, and the old one stops working", async ({ page }) => {
+  const user = await signUp(page);
+  await page.getByRole("button", { name: "Sign out" }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await page.goto("/sign-in");
+  await expect(page.getByRole("link", { name: "Forgot password?" })).toHaveAttribute("href", "/forgot-password");
+  await page.goto("/forgot-password");
+  await page.getByLabel("Email").fill(user.email);
+  await page.getByRole("button", { name: "Send reset link" }).click();
+  await expect(page.getByRole("status")).toContainText("If that address has a Fretkey account");
+  const reset = await lastEmail(page.request, user.email);
+  expect(reset.subject).toBe("Reset your Fretkey password");
+
+  await page.goto(reset.link);
+  await expect(page.getByRole("heading", { name: "Choose a new password" })).toBeVisible();
+  await page.getByLabel("New password").fill("a-brand-new-password");
+  await page.getByLabel("Type it again").fill("a-brand-new-password");
+  await page.getByRole("button", { name: "Save new password" }).click();
+  await expect(page.getByRole("heading", { name: "Password changed" })).toBeVisible();
+
+  await page.goto(reset.link); // a link works once
+  await expect(page.getByRole("heading", { name: "This link has expired" })).toBeVisible();
+
+  await page.goto("/sign-in");
+  await page.getByLabel("Email").fill(user.email);
+  await page.getByLabel("Password").fill(user.password);
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.getByRole("alert").filter({ hasText: /invalid/i })).toBeVisible();
+  await page.getByLabel("Password").fill("a-brand-new-password");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.getByRole("link", { name: "Start the first lesson" })).toBeVisible();
+});
+
+const openMobile = async (page: import("@playwright/test").Page) => {
+  await page.goto("/sign-in");
+  await expect(async () => { // the first click can land before the page is interactive
+    await page.getByRole("button", { name: "Mobile number" }).click();
+    await expect(page.getByRole("textbox", { name: /^Mobile number/ })).toBeVisible({ timeout: 1000 });
+  }).toPass();
+};
+
+test("mobile number: a code by SMS creates the account, and a wrong code does not", async ({ page }) => {
+  const number = `+9198${String(Date.now()).slice(-8)}`;
+  await openMobile(page);
+  await page.getByLabel("Mobile number").fill("98765 43210");
+  await page.getByRole("button", { name: "Send code" }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "country code" })).toBeVisible();
+
+  await page.getByLabel("Mobile number").fill(`${number.slice(0, 3)} ${number.slice(3)}`);
+  await page.getByRole("button", { name: "Send code" }).click();
+  await expect(page.getByText(`We sent a code to ${number}`)).toBeVisible();
+  await page.getByLabel("Code", { exact: true }).fill("000000");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "not right" })).toBeVisible();
+  await page.goto("/dashboard");
+  await expect(page).toHaveURL(/\/sign-in/);
+
+  await openMobile(page);
+  await page.getByLabel("Mobile number").fill(number);
+  await page.getByRole("button", { name: "Send code" }).click();
+  await page.getByLabel("Code", { exact: true }).fill("123456");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.getByRole("heading", { name: "Set up your path" })).toBeVisible();
 });
 
 test("settings: preferences reach the lessons, the theme sticks, progress fills in", async ({ page }) => {

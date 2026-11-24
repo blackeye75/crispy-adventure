@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { AuthForm } from "@/features/account/AuthForm";
-import { googleEnabled } from "@/server/auth/auth";
+import { emailEnabled, googleEnabled, smsEnabled } from "@/server/auth/auth";
 import { getViewer, safeNext } from "@/server/auth/session";
 
 export const metadata: Metadata = { title: "Sign in · Fretkey" };
@@ -12,7 +12,7 @@ type Query = PageProps<"/sign-in">["searchParams"];
 async function Form({ searchParams }: { searchParams: Query }) {
   const next = safeNext((await searchParams).next);
   if (await getViewer()) redirect(next);
-  return <AuthForm mode="sign-in" next={next} google={googleEnabled()} />;
+  return <AuthForm mode="sign-in" next={next} google={googleEnabled()} email={emailEnabled()} phone={smsEnabled()} />;
 }
 
 export default function Page({ searchParams }: { searchParams: Query }) {

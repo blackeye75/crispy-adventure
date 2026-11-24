@@ -8,7 +8,7 @@ export default function PrivacyPage() {
   return (
     <Policy title="Privacy policy" updated="24 November 2026" sections={[
       ["What we collect", `
-- **Account:** your name, email address and a scrambled (hashed) form of your password. If you sign in with Google, we receive your name, email address and profile picture from Google instead of a password.
+- **Account:** your name, email address and a scrambled (hashed) form of your password, or your mobile number if you sign in with a code by SMS. If you sign in with Google, we receive your name, email address and profile picture from Google instead of a password.
 - **Learning:** your instrument, level and daily goal, your time zone, the lessons you have started and finished, your drill results, your review schedule, and how many minutes you practise each day.
 - **Subscription:** which plan you are on, its status and renewal date, and the identifiers Razorpay or Paddle gives us for your subscription.
 - **Technical:** a sign-in cookie that keeps you logged in, and for each session your IP address and browser type.`],
@@ -27,6 +27,8 @@ We do not sell your data, and we do not show advertising.`],
 - **MongoDB Atlas** stores the database, in its Mumbai region.
 - **Vercel** hosts the website.
 - **Google**, only if you choose to sign in with Google.
+- **Resend** sends account emails: confirming your address and resetting your password.
+- **Twilio** sends sign-in codes by SMS, only if you choose to sign in with your mobile number.
 - **Sentry** receives error reports, which can include the page you were on and your browser type.
 - **Plausible** counts page views without cookies and without identifying you.`],
       ["Cookies", `

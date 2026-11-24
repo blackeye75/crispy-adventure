@@ -31,6 +31,13 @@ export default defineConfig({
         RAZORPAY_WEBHOOK_SECRET: WEBHOOK_SECRET,
         RAZORPAY_PLAN_MONTHLY: "plan_e2e_monthly",
         RAZORPAY_PLAN_YEARLY: "plan_e2e_yearly",
+        RESEND_API_URL: "http://localhost:4010", // emails land in the fake server's outbox
+        RESEND_API_KEY: "re_e2e",
+        EMAIL_FROM: "Fretkey <hello@example.com>",
+        TWILIO_VERIFY_URL: "http://localhost:4010",
+        TWILIO_ACCOUNT_SID: "AC_e2e",
+        TWILIO_AUTH_TOKEN: "e2e-token",
+        TWILIO_VERIFY_SERVICE_SID: "VA_e2e",
         PADDLE_ENV: "sandbox",
         PADDLE_API_URL: "http://localhost:4010", // never the real Paddle
         PADDLE_API_KEY: "pdl_e2e_key",
