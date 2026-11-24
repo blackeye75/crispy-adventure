@@ -1,7 +1,7 @@
 import { expect, test } from "./test";
 import { MongoClient } from "mongodb";
 import { MONGODB_URI } from "../playwright.config";
-import { nowSecs, signUp, webhook } from "./helpers";
+import { nowSecs, paddleWebhook, signUp, webhook } from "./helpers";
 
 const DAY = 86_400;
 
@@ -26,6 +26,7 @@ test("subscribe, unlock by webhook only, then cancel", async ({ page, request })
   expect((await page.request.post("/api/v1/billing/cancel")).status()).toBe(409);
 
   await page.getByRole("link", { name: "See plans" }).click();
+  await page.getByRole("button", { name: "India · ₹" }).click(); // outside India (no country header here) Paddle is the default
   await expect(page.getByLabel("Monthly plan")).toContainText("₹50");
   await expect(page.getByLabel("Yearly plan")).toContainText("₹500");
 
@@ -83,7 +84,40 @@ test("subscribe, unlock by webhook only, then cancel", async ({ page, request })
 
 test("plans are public; the webhook endpoint rejects junk", async ({ request }) => {
   const plans = await (await request.get("/api/v1/billing/plans")).json();
-  expect(plans.data).toEqual([{ plan: "monthly", amount: 5000, currency: "INR" }, { plan: "yearly", amount: 50000, currency: "INR" }]);
+  expect(plans.data).toEqual([
+    { provider: "razorpay", plan: "monthly", amount: 5000, currency: "INR" }, { provider: "razorpay", plan: "yearly", amount: 50000, currency: "INR" },
+    { provider: "paddle", plan: "monthly", amount: 900, currency: "USD" }, { provider: "paddle", plan: "yearly", amount: 9000, currency: "USD" },
+  ]);
   expect((await request.post("/api/v1/billing/webhook", { data: "not json" })).status()).toBe(400);
+  expect((await request.post("/api/v1/billing/paddle-webhook", { data: "{}", headers: { "paddle-signature": "ts=1;h1=forged" } })).status()).toBe(400);
   expect((await request.post("/api/v1/billing/subscribe", { data: { plan: "monthly" } })).status()).toBe(401);
+});
+
+test("outside India: dollar prices, Paddle checkout, unlocked only by Paddle's signed webhook", async ({ page, request }) => {
+  await signUp(page);
+  await page.goto("/subscribe?next=/learn/e2e-paid-lesson");
+  await expect(page.getByRole("button", { name: "Outside India · $" })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByLabel("Monthly plan")).toContainText("$9");
+  await expect(page.getByLabel("Yearly plan")).toContainText("$90");
+  await expect(page.getByText("Payment is handled by Paddle")).toBeVisible();
+
+  // Paddle.js, replaced by a stub that records how checkout was opened
+  await page.route("https://cdn.paddle.com/paddle/v2/paddle.js", (route) =>
+    route.fulfill({ contentType: "text/javascript", body: "window.Paddle = { Initialized: false, Environment: { set(e) { window.__env = e; } }, Initialize(o) { this.Initialized = true; window.__init = o; }, Update(o) { window.__init = o; }, Checkout: { open(o) { window.__open = o; } } };" }));
+  const created = page.waitForResponse((r) => r.url().endsWith("/api/v1/billing/subscribe"));
+  await page.getByRole("button", { name: "Subscribe monthly" }).click();
+  const { customData } = (await (await created).json()).data;
+  await expect.poll(() => page.evaluate(() => (window as unknown as { __open?: unknown }).__open)).toBeTruthy();
+  const opened = await page.evaluate(() => { const w = window as unknown as { __env: string; __init: { token: string }; __open: { items: { priceId: string }[]; customData: { userId: string } } }; return [w.__env, w.__init.token, w.__open.items[0].priceId, w.__open.customData.userId]; });
+  expect(opened).toEqual(["sandbox", "test_e2e_client_token", "pri_e2e_monthly", customData.userId]);
+
+  // Paddle saying checkout completed unlocks nothing
+  await page.evaluate(() => (window as unknown as { __init: { eventCallback: (e: { name: string }) => void } }).__init.eventCallback({ name: "checkout.completed" }));
+  await expect(page.getByRole("heading", { name: "Confirming your payment…" })).toBeVisible();
+  expect((await page.request.get("/api/v1/lessons/e2e-paid-lesson")).status()).toBe(403);
+
+  // Paddle's signed webhook does, and the waiting page moves on by itself
+  const subscriptionId = `sub_e2e_${Date.now()}`;
+  expect((await (await paddleWebhook(request, { subscriptionId, status: "active", userId: customData.userId })).json()).data.result).toBe("applied");
+  await expect(page.getByRole("heading", { name: "A paid lesson" })).toBeVisible({ timeout: 15_000 });
 });

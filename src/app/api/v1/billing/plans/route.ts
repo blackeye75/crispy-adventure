@@ -1,4 +1,4 @@
 import { open } from "@/server/api";
-import { getPlans } from "@/server/services/razorpay";
+import { getAllPlans } from "@/server/services/billing";
 
-export const GET = open(() => getPlans());
+export const GET = open(() => getAllPlans());

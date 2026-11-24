@@ -55,7 +55,8 @@ export function cancelAtCycleEnd(subscriptionId: string): Promise<ProviderSubscr
   return call(`/subscriptions/${encodeURIComponent(subscriptionId)}/cancel`, { cancel_at_cycle_end: 1 });
 }
 
-export type PlanPrice = { plan: PlanId; amount: number; currency: string }; // amount in the currency's smallest unit (paise)
+export type Provider = "razorpay" | "paddle";
+export type PlanPrice = { provider: Provider; plan: PlanId; amount: number; currency: string }; // amount in the currency's smallest unit (paise, cents)
 
 let priceCache: { at: number; prices: PlanPrice[] } | undefined;
 
@@ -65,7 +66,7 @@ export async function getPlans(now = Date.now()): Promise<PlanPrice[]> {
   const prices = await Promise.all(
     PLAN_IDS.filter((plan) => process.env[PLANS[plan].env]).map(async (plan) => {
       const { item } = await call<{ item: { amount: number; currency: string } }>(`/plans/${process.env[PLANS[plan].env]}`);
-      return { plan, amount: item.amount, currency: item.currency };
+      return { provider: "razorpay" as const, plan, amount: item.amount, currency: item.currency };
     }),
   );
   priceCache = { at: now, prices };

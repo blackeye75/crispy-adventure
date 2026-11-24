@@ -2,6 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 export const MONGODB_URI = process.env.MONGODB_E2E_URI ?? "mongodb://127.0.0.1:27017/fretkey_e2e";
 export const WEBHOOK_SECRET = "e2e-webhook-secret";
+export const PADDLE_WEBHOOK_SECRET = "e2e-paddle-webhook-secret";
 
 export default defineConfig({
   testDir: "e2e",
@@ -30,6 +31,13 @@ export default defineConfig({
         RAZORPAY_WEBHOOK_SECRET: WEBHOOK_SECRET,
         RAZORPAY_PLAN_MONTHLY: "plan_e2e_monthly",
         RAZORPAY_PLAN_YEARLY: "plan_e2e_yearly",
+        PADDLE_ENV: "sandbox",
+        PADDLE_API_URL: "http://localhost:4010", // never the real Paddle
+        PADDLE_API_KEY: "pdl_e2e_key",
+        PADDLE_CLIENT_TOKEN: "test_e2e_client_token",
+        PADDLE_WEBHOOK_SECRET,
+        PADDLE_PRICE_MONTHLY: "pri_e2e_monthly",
+        PADDLE_PRICE_YEARLY: "pri_e2e_yearly",
       },
     },
   ],

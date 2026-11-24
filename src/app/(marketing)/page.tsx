@@ -6,7 +6,7 @@ import { LandingDemo } from "@/features/marketing/LandingDemo";
 import { LEVEL_NAMES } from "@/features/lesson-player/PathView";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/site";
-import { getPlans } from "@/server/services/razorpay";
+import { getAllPlans } from "@/server/services/billing";
 
 const STEPS = [
   ["Understand", "A short, plain explanation. One idea at a time."],
@@ -19,14 +19,21 @@ const section = "mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-16";
 
 async function Prices() {
   await connection(); // live prices: fetched per request, not frozen into the build
-  const plans = await getPlans().catch(() => []);
-  return plans.map((p) => (
-    <div key={p.plan} className="flex flex-col gap-2 rounded-2xl border bg-card p-6">
-      <h3 className="font-sans text-lg font-medium tracking-normal">{p.plan === "monthly" ? "Monthly" : "Yearly"}</h3>
-      <p><span className="text-4xl font-semibold">{formatPrice(p.amount, p.currency)}</span> <span className="text-muted-foreground">per {p.plan === "monthly" ? "month" : "year"}</span></p>
-      <p className="text-muted-foreground">Every level, plus daily review. Cancel any time.</p>
-    </div>
-  ));
+  const plans = await getAllPlans();
+  // One card per plan: the international price first, the Indian price under it.
+  return (["monthly", "yearly"] as const).flatMap((plan) => {
+    const [main, india] = [plans.find((p) => p.plan === plan && p.provider === "paddle"), plans.find((p) => p.plan === plan && p.provider === "razorpay")];
+    const first = main ?? india;
+    if (!first) return [];
+    return (
+      <div key={plan} className="flex flex-col gap-2 rounded-2xl border bg-card p-6">
+        <h3 className="font-sans text-lg font-medium tracking-normal">{plan === "monthly" ? "Monthly" : "Yearly"}</h3>
+        <p><span className="text-4xl font-semibold">{formatPrice(first.amount, first.currency)}</span> <span className="text-muted-foreground">per {plan === "monthly" ? "month" : "year"}</span></p>
+        {main && india && <p className="text-sm text-muted-foreground">In India: {formatPrice(india.amount, india.currency)} with UPI Autopay</p>}
+        <p className="text-muted-foreground">Every level, plus daily review. Cancel any time.</p>
+      </div>
+    );
+  });
 }
 
 export default function Home() {

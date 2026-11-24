@@ -218,7 +218,9 @@ Tick tasks as they complete. Each phase ends in something you can use.
 - [x] Razorpay plans (monthly, yearly), checkout, webhook with signature check
 - [x] Server-side entitlement checks on lessons and review
 - [x] Paywall screen, billing settings, cancel flow
+- [x] Paddle (merchant of record, USD) for learners outside India: checkout, signed webhook, cancel, region switch on the paywall
 - [ ] Test the full cycle in Razorpay test mode: subscribe, renew, fail, cancel
+- [ ] Test the same cycle in the Paddle sandbox
 
 ### Phase 5 — Polish and launch (about 1–2 weeks)
 - [x] Landing page with playable demo, pricing, SEO basics

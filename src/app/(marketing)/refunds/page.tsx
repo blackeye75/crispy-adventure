@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "Cancellation and refunds · Fretkey"
 
 export default function RefundsPage() {
   return (
-    <Policy title="Cancellation and refunds" updated="12 November 2026" sections={[
+    <Policy title="Cancellation and refunds" updated="24 November 2026" sections={[
       ["Cancelling", `
 Cancel at any time in Settings. Your subscription stops renewing, you keep access until the end of the period you have already paid for, and you are not charged again.`],
       ["Refunds", `
@@ -13,7 +13,7 @@ Cancel at any time in Settings. Your subscription stops renewing, you keep acces
 - **Renewals:** renewal payments are not refunded, in whole or in part. Cancel before the renewal date to avoid the next charge.
 - **Charged by mistake:** if you were charged twice or after cancelling, write to us and we will refund the extra charge.`],
       ["How refunds are paid", `
-Refunds go back to the original payment method through Razorpay. They usually arrive within 5 to 7 working days, depending on your bank.`],
+Refunds go back to the original payment method: through Razorpay for payments made in India, and through Paddle for payments made anywhere else. They usually arrive within 5 to 7 working days, depending on your bank.`],
     ]} />
   );
 }

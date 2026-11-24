@@ -6,14 +6,14 @@ export const metadata: Metadata = { title: "Privacy policy · Fretkey" };
 // Keep this in step with what the code actually stores: see src/server/db/models.ts.
 export default function PrivacyPage() {
   return (
-    <Policy title="Privacy policy" updated="12 November 2026" sections={[
+    <Policy title="Privacy policy" updated="24 November 2026" sections={[
       ["What we collect", `
 - **Account:** your name, email address and a scrambled (hashed) form of your password. If you sign in with Google, we receive your name, email address and profile picture from Google instead of a password.
 - **Learning:** your instrument, level and daily goal, your time zone, the lessons you have started and finished, your drill results, your review schedule, and how many minutes you practise each day.
-- **Subscription:** which plan you are on, its status and renewal date, and the identifiers Razorpay gives us for your subscription.
+- **Subscription:** which plan you are on, its status and renewal date, and the identifiers Razorpay or Paddle gives us for your subscription.
 - **Technical:** a sign-in cookie that keeps you logged in, and for each session your IP address and browser type.`],
       ["What we never hold", `
-Payments are handled by Razorpay. Your card number, UPI ID and bank details go straight to Razorpay; Fretkey never sees or stores them.`],
+Payments in India are handled by Razorpay, and payments from everywhere else by Paddle. Your card number, UPI ID, PayPal and bank details go straight to them; Fretkey never sees or stores them.`],
       ["How we use it", `
 - To run your account and save your progress.
 - To choose what you review and when.
@@ -22,7 +22,8 @@ Payments are handled by Razorpay. Your card number, UPI ID and bank details go s
 
 We do not sell your data, and we do not show advertising.`],
       ["Who else is involved", `
-- **Razorpay** processes payments.
+- **Razorpay** processes payments in India.
+- **Paddle** sells subscriptions outside India as our reseller (merchant of record) and processes those payments. It receives your email address, country and payment details, under its own privacy policy.
 - **MongoDB Atlas** stores the database, in its Mumbai region.
 - **Vercel** hosts the website.
 - **Google**, only if you choose to sign in with Google.

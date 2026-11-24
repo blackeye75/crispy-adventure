@@ -1,6 +1,6 @@
 import { createHmac } from "node:crypto";
 import { expect, type APIRequestContext, type Page } from "@playwright/test";
-import { WEBHOOK_SECRET } from "../playwright.config";
+import { WEBHOOK_SECRET, PADDLE_WEBHOOK_SECRET } from "../playwright.config";
 
 export const newUser = () => ({ name: "Asha", email: `e2e-${Date.now()}-${Math.random().toString(36).slice(2)}@example.com`, password: "correct-horse-battery" });
 
@@ -42,6 +42,24 @@ export async function webhook(request: APIRequestContext, subscriptionId: string
       "x-razorpay-signature": opts.signature ?? createHmac("sha256", WEBHOOK_SECRET).update(body).digest("hex"),
       "x-razorpay-event-id": opts.eventId ?? `evt_${Math.random().toString(36).slice(2)}`,
     },
+  });
+}
+
+/** Deliver a webhook the way Paddle does: raw JSON body, "Paddle-Signature: ts=…;h1=…" over ts:body. */
+export async function paddleWebhook(request: APIRequestContext, event: { subscriptionId: string; status: string; userId: string; eventId?: string }) {
+  const body = JSON.stringify({
+    event_id: event.eventId ?? `evt_${Math.random().toString(36).slice(2)}`,
+    event_type: "subscription.activated",
+    occurred_at: new Date().toISOString(),
+    data: {
+      id: event.subscriptionId, status: event.status, customer_id: "ctm_e2e", custom_data: { userId: event.userId }, items: [{ price: { id: "pri_e2e_monthly" } }],
+      current_billing_period: { starts_at: new Date().toISOString(), ends_at: new Date(Date.now() + 30 * 86_400_000).toISOString() },
+    },
+  });
+  const ts = nowSecs();
+  return request.post("/api/v1/billing/paddle-webhook", {
+    data: body,
+    headers: { "content-type": "application/json", "paddle-signature": `ts=${ts};h1=${createHmac("sha256", PADDLE_WEBHOOK_SECRET).update(`${ts}:${body}`).digest("hex")}` },
   });
 }
 

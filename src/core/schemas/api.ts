@@ -42,4 +42,5 @@ export const placementAnswersSchema = z.object({
 export type PlacementAnswers = z.infer<typeof placementAnswersSchema>;
 
 /** POST /billing/subscribe */
-export const subscribeSchema = z.object({ plan: z.enum(["monthly", "yearly"]) });
+// provider: "razorpay" for India (INR, UPI Autopay), "paddle" for everyone else (USD, merchant of record).
+export const subscribeSchema = z.object({ plan: z.enum(["monthly", "yearly"]), provider: z.enum(["razorpay", "paddle"]).default("razorpay") });

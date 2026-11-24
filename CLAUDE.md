@@ -26,7 +26,7 @@ Web first (responsive + installable PWA). Android and iOS apps come later and wi
 - **API: Next.js Route Handlers only**, under `src/app/api/v1/`. No Express, no separate server, no tRPC.
 - **MongoDB Atlas + Mongoose.** One cached connection helper in `src/server/db/connect.ts`.
 - **Auth: Better Auth** with `@better-auth/mongo-adapter` (email + Google). Chosen because it also has an Expo plugin for the later mobile apps.
-- **Payments: Razorpay Subscriptions** (UPI Autopay + cards). Webhooks are the source of truth for subscription state.
+- **Payments: Razorpay Subscriptions** in India (UPI Autopay + cards), **Paddle** (merchant of record, USD) everywhere else. Webhooks are the source of truth for subscription state.
 - **Validation: Zod** on every API input and on all lesson content.
 - **UI: Tailwind CSS + shadcn/ui + Motion** for animation. Icons: lucide-react.
 - **Client data: TanStack Query.** Server Components for read-only pages.
@@ -81,7 +81,7 @@ src/
 3. **One response shape:** `{ data }` on success, `{ error: { code, message } }` on failure, with correct HTTP status.
 4. **Mobile-ready API:** every feature the web UI uses must be reachable through `/api/v1`. Do not hide core logic in Server Actions.
 5. **Entitlements are enforced on the server.** Paid lesson content is never sent to a non-subscriber; hiding it in the UI is not enough.
-6. **Subscription state changes only from verified Razorpay webhooks** (verify the signature, make handlers idempotent). Never trust the client's "payment succeeded".
+6. **Subscription state changes only from verified Razorpay or Paddle webhooks** (verify the signature, make handlers idempotent). Never trust the client's "payment succeeded".
 7. **Theory is instrument-agnostic; instruments are views.** A lesson defines notes/intervals/chords once. `Fretboard` and `Keyboard` render the same data. Never hard-code guitar-only logic into lesson content unless the block is explicitly instrument-specific (e.g. CAGED).
 8. **Content lives in `content/` as typed files**, validated by Zod in `npm run seed`. Do not hand-edit lesson documents in the database.
 9. **Audio starts only after a user gesture.** Lazy-load Tone.js and samples; never block first paint on audio.

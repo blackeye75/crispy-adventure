@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { Paywall } from "@/features/billing/billing";
 import { requireLearner, safeNext } from "@/server/auth/session";
-import { getPlans } from "@/server/services/razorpay";
+import { getAllPlans } from "@/server/services/billing";
 
 export const metadata: Metadata = { title: "Subscribe · Fretkey" };
 
@@ -13,7 +14,9 @@ async function Plans({ searchParams }: { searchParams: Query }) {
   const next = safeNext((await searchParams).next);
   const { viewer } = await requireLearner(`/subscribe?next=${encodeURIComponent(next)}`);
   if (viewer.subscriber) redirect(next);
-  return <Paywall plans={await getPlans().catch(() => [])} next={next} />;
+  // Vercel sets the visitor's country; India pays through Razorpay, everyone else through Paddle. The learner can switch.
+  const region = (await headers()).get("x-vercel-ip-country") === "IN" ? "razorpay" : "paddle";
+  return <Paywall plans={await getAllPlans()} next={next} region={region} />;
 }
 
 export default function SubscribePage({ searchParams }: { searchParams: Query }) {

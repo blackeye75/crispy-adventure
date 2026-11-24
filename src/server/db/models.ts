@@ -88,7 +88,7 @@ export const PracticeSessionModel = appModel("PracticeSession", "practiceSession
 export type SubscriptionStatus = "none" | "trialing" | "active" | "past_due" | "cancelled" | "expired";
 export type Subscription = {
   userId: string;
-  provider: "razorpay";
+  provider: "razorpay" | "paddle"; // Razorpay in India; Paddle, the merchant of record, everywhere else
   providerSubscriptionId: string;
   providerCustomerId?: string;
   plan: "monthly" | "yearly";
@@ -99,7 +99,7 @@ export type Subscription = {
 };
 const subscriptionSchema = new Schema<Subscription>({
   userId: { type: String, required: true, unique: true },
-  provider: { type: String, enum: ["razorpay"], default: "razorpay" },
+  provider: { type: String, enum: ["razorpay", "paddle"], default: "razorpay" },
   providerSubscriptionId: { type: String, required: true, index: true },
   providerCustomerId: String,
   plan: { type: String, enum: ["monthly", "yearly"], required: true },

@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "Terms of use · Fretkey" };
 
 export default function TermsPage() {
   return (
-    <Policy title="Terms of use" updated="12 November 2026" sections={[
+    <Policy title="Terms of use" updated="24 November 2026" sections={[
       ["The service", `
 Fretkey teaches music theory through interactive lessons for guitar and piano. Level 1 and the practice room are free. The other levels and daily review need a paid subscription.`],
       ["Your account", `
@@ -16,7 +16,8 @@ Fretkey teaches music theory through interactive lessons for guitar and piano. L
 - A subscription renews automatically, monthly or yearly, until you cancel.
 - The price is shown before you pay. If a price changes, we will tell you before your next renewal.
 - You can cancel at any time in Settings. You keep access until the end of the period you have paid for, and you are not charged again.
-- Refunds are covered by the refund policy.`],
+- Refunds are covered by the refund policy.
+- **Outside India**, our order process is conducted by our online reseller Paddle.com. Paddle.com is the merchant of record for those orders: it sells you the subscription, charges any sales tax or VAT, and handles billing questions and refunds for them. In India, Fretkey sells directly and payments are processed by Razorpay.`],
       ["Fair use", `
 - Do not copy, scrape or republish the lessons.
 - Do not try to break, overload or get around the service or its paywall.
