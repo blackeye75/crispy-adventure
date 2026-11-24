@@ -165,10 +165,10 @@ export const BigText = ({ f, len, children, small }: { f: number; len: number; c
   </AbsoluteFill>
 );
 
-export const Lessons = ({ f, len, voice, note }: { f: number; len: number; voice: number; note: ReactNode }) => (
+export const Lessons = ({ f, len, voice, note, to = 250 }: { f: number; len: number; voice: number; note: ReactNode; to?: number }) => (
   <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", paddingBottom: 300, opacity: fade(f, len) }}>
     <div style={{ fontFamily: serif, fontSize: 330, fontWeight: 600, color: C.gold, lineHeight: 1, fontVariantNumeric: "tabular-nums", textShadow: "0 0 100px rgba(236,178,63,0.35)" }}>
-      {Math.round(interpolate(f, [0, 0.55 * voice], [0, 250], { ...LINEAR, easing: Easing.out(Easing.cubic) }))}+
+      {Math.round(interpolate(f, [0, 0.55 * voice], [0, to], { ...LINEAR, easing: Easing.out(Easing.cubic) }))}+
     </div>
     <div style={{ ...lift(f, 10), fontFamily: serif, fontSize: 96 }}>lessons</div>
     <div style={{ ...lift(f, 0.5 * voice), fontFamily: sans, fontSize: 44, color: C.muted, marginTop: 30 }}>{note}</div>

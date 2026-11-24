@@ -31,3 +31,6 @@ Covers for the vertical lesson reels. Content stays inside the 3:4 profile-grid 
 - `reel-7-cover-ear-test.png`: Challenge, "Ear test"
 - `reel-8-cover-harmony.png`: "This is what harmony looks like", neon
 - `reel-8b-cover-harmony-plates.png`: the same reel as printed plates
+- `reel-9-cover-home-chord.png`: Easy, "Why the last chord feels like home"
+- `reel-10-cover-bittersweet.png`: Easy, "The bittersweet chord"
+- `reel-11-cover-power-chord.png`: Guitar, "Why rock sounds heavy"

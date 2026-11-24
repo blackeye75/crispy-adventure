@@ -1,0 +1,15 @@
+[
+  { "id": "hook", "say": ["Why does rock sound so heavy?", "Because guitarists delete one note."], "show": "Why does rock sound so heavy? *Guitarists delete one note.*" },
+  { "id": "major", "say": ["Here is E major."], "show": "Here is *E major*." },
+  { "id": "notes", "items": ["E.", "G sharp.", "B."], "beat": 0.7, "show": "E · G♯ · B" },
+  { "id": "third", "say": ["The middle note is the third.", "It decides happy or sad."], "show": "The middle note, the *third*, decides happy or sad." },
+  { "id": "swap", "say": ["G sharp.", "Happy.", "G.", "Sad."], "show": "G♯: *major*. G: *minor*." },
+  { "id": "delete", "say": ["Now delete the third.", "Only E and B are left.", "Root and fifth."], "show": "Delete it: only *E and B*. Root and fifth." },
+  { "id": "neither", "say": ["Neither happy, nor sad.", "Just strong."], "show": "Neither happy nor sad. *Just strong.*" },
+  { "id": "distortion", "say": ["Here is the trick.", "With distortion, a third turns harsh and muddy.", "A fifth stays clean and powerful."], "show": "With distortion, a third turns *muddy*. A fifth stays *clean*." },
+  { "id": "guitar", "say": ["On guitar, it is two fingers.", "The root on the low string.", "The fifth, two frets up, on the next string."], "show": "On guitar: root on the low string, *fifth two frets up* on the next." },
+  { "id": "move", "say": ["And the shape moves anywhere.", "E five.", "G five.", "A five."], "show": "One shape, anywhere: E5 · G5 · *A5*" },
+  { "id": "fomo", "say": ["That is why one shape can play a thousand rock riffs."], "show": "That's why one shape plays *a thousand rock riffs*." },
+  { "id": "lesson", "say": ["That was one Fret key lesson.", "There are more than three hundred, each about five minutes."], "show": "One *Fretkey* lesson. More than 300, each about five minutes." },
+  { "id": "close", "say": ["Fret key is almost here.", "Follow at fret dot key,", "and be among the first to play."], "show": "Fretkey is almost here. Follow *@fret.key* and be among the first to play." }
+]

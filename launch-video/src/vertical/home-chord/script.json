@@ -1,0 +1,15 @@
+[
+  { "id": "hook", "say": ["Why does the last chord of a song feel like coming home?", "Two notes.", "That is the whole secret."], "show": "Why does the last chord feel like *home*? Two notes." },
+  { "id": "tension", "say": ["Listen to this chord.", "G seven."], "show": "Listen: *G7*." },
+  { "id": "wait", "say": ["It sounds unfinished.", "Like a question, waiting for an answer."], "show": "It sounds *unfinished*, like a question." },
+  { "id": "home", "say": ["Now, C.", "Home."], "show": "Now C: *home*." },
+  { "id": "look", "say": ["Look inside G seven.", "It has a B.", "And an F."], "show": "Inside G7: a *B* and an *F*." },
+  { "id": "magnets", "say": ["B is just one key below C.", "F is just one key above E."], "show": "B is one key below *C*. F is one key above *E*." },
+  { "id": "pull", "say": ["So B rises to C.", "And F falls to E.", "Each one moves by the smallest step there is."], "show": "B rises to C. F falls to E. *The smallest steps there are.*" },
+  { "id": "again", "say": ["Hear it again.", "Question.", "Answer."], "show": "Hear it again. Question… *answer*." },
+  { "id": "tritone", "say": ["B and F make the only tritone in the key.", "The most restless interval there is.", "Resolving it feels like letting out a breath."], "show": "B and F make the key's only *tritone*. Resolving it feels like release." },
+  { "id": "guitar", "say": ["On guitar, play G seven.", "Then C."], "show": "On guitar: *G7*, then *C*." },
+  { "id": "fomo", "say": ["Now you will hear this pull at the end of almost every song."], "show": "Now you'll hear this pull at the end of *almost every song*." },
+  { "id": "lesson", "say": ["That was one Fret key lesson.", "There are more than three hundred, each about five minutes."], "show": "One *Fretkey* lesson. More than 300, each about five minutes." },
+  { "id": "close", "say": ["Fret key is almost here.", "Follow at fret dot key,", "and be among the first to play."], "show": "Fretkey is almost here. Follow *@fret.key* and be among the first to play." }
+]

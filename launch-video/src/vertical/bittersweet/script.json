@@ -1,0 +1,14 @@
+[
+  { "id": "hook", "say": ["Some songs sound happy and sad at the same time.", "Bittersweet.", "And it all comes from one borrowed note."], "show": "Happy and sad at once? It comes from *one borrowed note*." },
+  { "id": "happy", "say": ["Here is a happy progression in C major.", "C.", "F.", "C."], "show": "A happy progression in C major: *C, F, C*." },
+  { "id": "notes", "items": ["F.", "A.", "And C."], "beat": 0.7, "show": "F major: F · A · C" },
+  { "id": "lower", "say": ["Now lower the A by one key.", "A becomes A flat."], "show": "Lower one note: *A becomes A♭*." },
+  { "id": "minor", "say": ["That is F minor.", "It does not belong to C major.", "It is borrowed, from C minor."], "show": "That's *F minor*, borrowed from C minor." },
+  { "id": "listen", "say": ["Listen.", "C.", "F.", "F minor.", "C."], "show": "Listen: C · F · *F minor* · C" },
+  { "id": "feel", "say": ["F major sounds open.", "F minor sounds like a sigh.", "Right before home, it makes the ending ache."], "show": "F major sounds open. F minor sounds like a *sigh*." },
+  { "id": "why", "say": ["Why?", "A flat leans down to G,", "one key, straight into the C chord."], "show": "*A♭ falls to G*, one key down into the C chord." },
+  { "id": "guitar", "say": ["On guitar, play F.", "Now move one finger.", "F minor."], "show": "On guitar: F, then move *one finger*: F minor." },
+  { "id": "fomo", "say": ["Once you know it, you will hear this chord in ballads everywhere."], "show": "Now you'll hear this chord in *ballads everywhere*." },
+  { "id": "lesson", "say": ["That was one Fret key lesson.", "There are more than three hundred, each about five minutes."], "show": "One *Fretkey* lesson. More than 300, each about five minutes." },
+  { "id": "close", "say": ["Fret key is almost here.", "Follow at fret dot key,", "and be among the first to play."], "show": "Fretkey is almost here. Follow *@fret.key* and be among the first to play." }
+]

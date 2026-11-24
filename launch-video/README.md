@@ -56,6 +56,9 @@ npx remotion render ReelMajorMinor out/fretkey-reel-5-major-minor-vertical.mp4 -
 npx remotion render ReelEarTest out/fretkey-reel-7-ear-test-vertical.mp4 --codec=h264 --crf=18   # challenge: three ear-test rounds
 npx remotion render ReelHarmony out/fretkey-reel-8-harmony-vertical.mp4 --codec=h264 --crf=18   # neon look: intervals drawn as Lissajous figures (slow: about 10 min)
 npx remotion render ReelHarmonyPlate out/fretkey-reel-8b-harmony-plates-vertical.mp4 --codec=h264 --crf=18   # same reel as printed plates: paper, ink, one vermilion accent
+npx remotion render ReelHomeChord out/fretkey-reel-9-home-chord-vertical.mp4 --codec=h264 --crf=18     # why the last chord feels like home
+npx remotion render ReelBittersweet out/fretkey-reel-10-bittersweet-vertical.mp4 --codec=h264 --crf=18 # the bittersweet chord (minor iv)
+npx remotion render ReelPowerChord out/fretkey-reel-11-power-chord-vertical.mp4 --codec=h264 --crf=18  # why rock sounds heavy
 npx remotion render ReelFourChords out/fretkey-reel-6-four-chords-vertical.mp4 --codec=h264 --crf=18   # moderate
 ```
 

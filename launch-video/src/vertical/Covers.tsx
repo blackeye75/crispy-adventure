@@ -75,3 +75,30 @@ export const CoverEarTest = () => (
     </div>
   </Cover>
 );
+
+/** Reel 9: why the last chord feels like home. */
+export const CoverHomeChord = () => (
+  <Cover tag="Easy lesson" line={<>Why the last chord of a song feels like {gold("home.")}</>}>
+    <div style={{ ...big, top: 30, fontSize: 250 }}><span style={{ color: C.muted }}>G7</span> <span style={{ fontSize: 150, color: C.muted }}>→</span> <span style={{ color: C.gold, textShadow: "0 0 120px rgba(236,178,63,0.45)" }}>C</span></div>
+    <div style={{ ...big, top: 300, fontSize: 100 }}>= {gold("two notes")}</div>
+    <SmallPiano from={53} to={72} lit={{ 59: 0.9, 65: 0.9, 60: 0.3, 64: 0.3 }} labels={{ 59: "B", 60: "C", 64: "E", 65: "F" }} marks={{ 60: "↑", 64: "↓" }} />
+  </Cover>
+);
+
+/** Reel 10: the bittersweet chord. */
+export const CoverBittersweet = () => (
+  <Cover tag="Easy lesson" line={<>One borrowed note makes a song {gold("ache.")}</>}>
+    <div style={{ ...big, top: 40, fontSize: 170 }}><span style={{ color: C.muted }}>Bitter</span><span style={{ color: C.gold }}>sweet</span></div>
+    <div style={{ ...big, top: 270, fontSize: 110 }}>= {gold("one note")}</div>
+    <SmallPiano from={53} to={72} lit={{ 53: 0.8, 56: 1, 57: 0.25, 60: 0.8 }} labels={{ 53: "F", 56: "A♭", 57: "A", 60: "C" }} />
+  </Cover>
+);
+
+/** Reel 11: why rock sounds heavy. */
+export const CoverPowerChord = () => (
+  <Cover tag="Guitar lesson" line={<>Why rock sounds so {gold("heavy.")}</>}>
+    <div style={{ ...big, top: 0, fontSize: 360, color: C.gold, textShadow: "0 0 120px rgba(236,178,63,0.45)" }}>−1</div>
+    <div style={{ ...big, top: 330, fontSize: 96 }}>note</div>
+    <SmallPiano from={52} to={64} lit={{ 52: 0.9, 59: 0.9, 64: 0.9 }} labels={{ 52: "E", 56: "✕", 59: "B", 64: "E" }} />
+  </Cover>
+);

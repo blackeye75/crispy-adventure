@@ -21,8 +21,11 @@ import { FOUR_CHORDS_FRAMES, FourChordsReel } from "./vertical/four-chords/FourC
 import { MAJOR_MINOR_FRAMES, MajorMinorReel } from "./vertical/major-minor/MajorMinorReel";
 import { HARMONY_FRAMES, HarmonyCover, HarmonyReel } from "./vertical/harmony/HarmonyReel";
 import { HarmonyPlateCover, HarmonyPlateReel } from "./vertical/harmony/HarmonyPlate";
+import { HOME_CHORD_FRAMES, HomeChordReel } from "./vertical/home-chord/HomeChordReel";
+import { BITTERSWEET_FRAMES, BittersweetReel } from "./vertical/bittersweet/BittersweetReel";
+import { POWER_CHORD_FRAMES, PowerChordReel } from "./vertical/power-chord/PowerChordReel";
 import { EAR_TEST_FRAMES, EarTestReel } from "./vertical/ear-test/EarTestReel";
-import { CoverEarTest, CoverFourChords, CoverMajorMinor, CoverTwelve } from "./vertical/Covers";
+import { CoverBittersweet, CoverEarTest, CoverFourChords, CoverHomeChord, CoverMajorMinor, CoverPowerChord, CoverTwelve } from "./vertical/Covers";
 import { FPS } from "./theme";
 
 const size = { width: 1920, height: 1080, fps: FPS };
@@ -43,6 +46,9 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="ReelBeginner" component={BeginnerReel} durationInFrames={BEGINNER_FRAMES} width={1080} height={1920} fps={FPS} />
     <Composition id="ReelHarmony" component={HarmonyReel} durationInFrames={HARMONY_FRAMES} width={1080} height={1920} fps={FPS} />
     <Composition id="ReelHarmonyPlate" component={HarmonyPlateReel} durationInFrames={HARMONY_FRAMES} width={1080} height={1920} fps={FPS} />
+    <Composition id="ReelHomeChord" component={HomeChordReel} durationInFrames={HOME_CHORD_FRAMES} width={1080} height={1920} fps={FPS} />
+    <Composition id="ReelBittersweet" component={BittersweetReel} durationInFrames={BITTERSWEET_FRAMES} width={1080} height={1920} fps={FPS} />
+    <Composition id="ReelPowerChord" component={PowerChordReel} durationInFrames={POWER_CHORD_FRAMES} width={1080} height={1920} fps={FPS} />
     <Composition id="ReelEarTest" component={EarTestReel} durationInFrames={EAR_TEST_FRAMES} width={1080} height={1920} fps={FPS} />
     <Composition id="ReelMajorMinor" component={MajorMinorReel} durationInFrames={MAJOR_MINOR_FRAMES} width={1080} height={1920} fps={FPS} />
     <Composition id="ReelFourChords" component={FourChordsReel} durationInFrames={FOUR_CHORDS_FRAMES} width={1080} height={1920} fps={FPS} />
@@ -52,6 +58,9 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="CoverEarTest" component={CoverEarTest} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     <Composition id="CoverHarmony" component={HarmonyCover} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     <Composition id="CoverHarmonyPlate" component={HarmonyPlateCover} durationInFrames={1} width={1080} height={1920} fps={FPS} />
+    <Composition id="CoverHomeChord" component={CoverHomeChord} durationInFrames={1} width={1080} height={1920} fps={FPS} />
+    <Composition id="CoverBittersweet" component={CoverBittersweet} durationInFrames={1} width={1080} height={1920} fps={FPS} />
+    <Composition id="CoverPowerChord" component={CoverPowerChord} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     <Composition id="CoverFourChords" component={CoverFourChords} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     {/* Story posters: stills, 1080 × 1920. */}
     <Composition id="PosterUsp" component={PosterUsp} durationInFrames={1} width={1080} height={1920} fps={FPS} />
