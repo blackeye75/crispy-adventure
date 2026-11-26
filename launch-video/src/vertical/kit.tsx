@@ -133,22 +133,28 @@ export const Piano = ({ from, to, lit = {}, labels = {}, badges = {}, marks = {}
 };
 
 // ---- a guitar chord box -----------------------------------------------------------------------------------------------------
-/** A chord box: six strings, four frets. `frets` runs from string 6 to string 1, "x" for not played. `fading` is a fret that is lifting off. */
-export const ChordBox = ({ frets, name, x, y, fading }: { frets: string; name: string; x: number; y: number; fading?: { string: number; amount: number } }) => {
+/**
+ * A chord box: six strings, four frets. `frets` runs from string 6 to string 1, "x" for not played, and uses
+ * "-" between values above fret 9 ("7-9-9-8-7-7"). `fading` is a fret that is lifting off. `base` is the fret the box
+ * starts at, labelled beside it (no nut is drawn above fret 1).
+ */
+export const ChordBox = ({ frets, name, x, y, fading, base = 1 }: { frets: string; name: string; x: number; y: number; fading?: { string: number; amount: number }; base?: number }) => {
   const S = 100, F = 120;
+  const values = frets.includes("-") ? frets.split("-") : [...frets];
   return (
     <svg width={S * 5 + 120} height={F * 4 + 200} style={{ position: "absolute", left: x, top: y, overflow: "visible" }}>
       <text x={S * 2.5} y={4} textAnchor="middle" fontFamily={serif} fontSize={72} fontWeight={600} fill={C.text}>{name}</text>
-      <rect x={0} y={90} width={S * 5} height={12} fill={C.text} />
+      <rect x={0} y={90} width={S * 5} height={base > 1 ? 4 : 12} fill={C.text} />
+      {base > 1 && <text x={-56} y={90 + F * 0.5 + 14} textAnchor="end" fontFamily={sans} fontSize={40} fontWeight={600} fill={C.muted}>{base}fr</text>}
       {Array.from({ length: 6 }, (_, s) => <rect key={`s${s}`} x={s * S - 2} y={90} width={4} height={F * 4} fill="#a99f8d" />)}
       {Array.from({ length: 4 }, (_, f) => <rect key={`f${f}`} x={0} y={90 + (f + 1) * F - 2} width={S * 5} height={4} fill="#6b6455" />)}
-      {[...frets].map((fret, s) => {
+      {values.map((fret, s) => {
         if (fret === "x") return <text key={s} x={s * S} y={70} textAnchor="middle" fontFamily={sans} fontSize={40} fill={C.muted}>×</text>;
         if (fret === "0") return <circle key={s} cx={s * S} cy={58} r={16} fill="none" stroke={C.text} strokeWidth={4} />;
         const gone = fading?.string === s ? fading.amount : 0;
         return (
           <g key={s}>
-            <circle cx={s * S} cy={90 + (+fret - 0.5) * F} r={36} fill={C.gold} opacity={1 - gone} style={{ translate: `0px ${-gone * 40}px` }} />
+            <circle cx={s * S} cy={90 + (+fret - base + 0.5) * F} r={36} fill={C.gold} opacity={1 - gone} style={{ translate: `0px ${-gone * 40}px` }} />
             {gone > 0 && <circle cx={s * S} cy={58} r={16} fill="none" stroke={C.gold} strokeWidth={4} opacity={gone} />}
           </g>
         );

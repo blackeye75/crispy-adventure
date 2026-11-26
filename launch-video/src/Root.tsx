@@ -24,8 +24,13 @@ import { HarmonyPlateCover, HarmonyPlateReel } from "./vertical/harmony/HarmonyP
 import { HOME_CHORD_FRAMES, HomeChordReel } from "./vertical/home-chord/HomeChordReel";
 import { BITTERSWEET_FRAMES, BittersweetReel } from "./vertical/bittersweet/BittersweetReel";
 import { POWER_CHORD_FRAMES, PowerChordReel } from "./vertical/power-chord/PowerChordReel";
+import { BARRE_FRAMES, BarreReel } from "./vertical/barre/BarreReel";
+import { PENTATONIC_FRAMES, PentatonicReel } from "./vertical/pentatonic/PentatonicReel";
+import { SUS_FRAMES, SusReel } from "./vertical/sus/SusReel";
+import { CHORD_QUIZ_FRAMES, ChordQuizReel } from "./vertical/chord-quiz/ChordQuizReel";
+import { FRETS_FRAMES, FretsCover, FretsReel } from "./vertical/frets/FretsReel";
 import { EAR_TEST_FRAMES, EarTestReel } from "./vertical/ear-test/EarTestReel";
-import { CoverBittersweet, CoverEarTest, CoverFourChords, CoverHomeChord, CoverMajorMinor, CoverPowerChord, CoverTwelve } from "./vertical/Covers";
+import { CoverBarre, CoverBittersweet, CoverChordQuiz, CoverEarTest, CoverPentatonic, CoverSus, CoverFourChords, CoverHomeChord, CoverMajorMinor, CoverPowerChord, CoverTwelve } from "./vertical/Covers";
 import { FPS } from "./theme";
 
 const size = { width: 1920, height: 1080, fps: FPS };
@@ -49,6 +54,11 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="ReelHomeChord" component={HomeChordReel} durationInFrames={HOME_CHORD_FRAMES} width={1080} height={1920} fps={FPS} />
     <Composition id="ReelBittersweet" component={BittersweetReel} durationInFrames={BITTERSWEET_FRAMES} width={1080} height={1920} fps={FPS} />
     <Composition id="ReelPowerChord" component={PowerChordReel} durationInFrames={POWER_CHORD_FRAMES} width={1080} height={1920} fps={FPS} />
+    <Composition id="ReelBarre" component={BarreReel} durationInFrames={BARRE_FRAMES} width={1080} height={1920} fps={FPS} />
+    <Composition id="ReelPentatonic" component={PentatonicReel} durationInFrames={PENTATONIC_FRAMES} width={1080} height={1920} fps={FPS} />
+    <Composition id="ReelSus" component={SusReel} durationInFrames={SUS_FRAMES} width={1080} height={1920} fps={FPS} />
+    <Composition id="ReelChordQuiz" component={ChordQuizReel} durationInFrames={CHORD_QUIZ_FRAMES} width={1080} height={1920} fps={FPS} />
+    <Composition id="ReelFrets" component={FretsReel} durationInFrames={FRETS_FRAMES} width={1080} height={1920} fps={FPS} />
     <Composition id="ReelEarTest" component={EarTestReel} durationInFrames={EAR_TEST_FRAMES} width={1080} height={1920} fps={FPS} />
     <Composition id="ReelMajorMinor" component={MajorMinorReel} durationInFrames={MAJOR_MINOR_FRAMES} width={1080} height={1920} fps={FPS} />
     <Composition id="ReelFourChords" component={FourChordsReel} durationInFrames={FOUR_CHORDS_FRAMES} width={1080} height={1920} fps={FPS} />
@@ -61,6 +71,11 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="CoverHomeChord" component={CoverHomeChord} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     <Composition id="CoverBittersweet" component={CoverBittersweet} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     <Composition id="CoverPowerChord" component={CoverPowerChord} durationInFrames={1} width={1080} height={1920} fps={FPS} />
+    <Composition id="CoverBarre" component={CoverBarre} durationInFrames={1} width={1080} height={1920} fps={FPS} />
+    <Composition id="CoverPentatonic" component={CoverPentatonic} durationInFrames={1} width={1080} height={1920} fps={FPS} />
+    <Composition id="CoverSus" component={CoverSus} durationInFrames={1} width={1080} height={1920} fps={FPS} />
+    <Composition id="CoverChordQuiz" component={CoverChordQuiz} durationInFrames={1} width={1080} height={1920} fps={FPS} />
+    <Composition id="CoverFrets" component={FretsCover} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     <Composition id="CoverFourChords" component={CoverFourChords} durationInFrames={1} width={1080} height={1920} fps={FPS} />
     {/* Story posters: stills, 1080 × 1920. */}
     <Composition id="PosterUsp" component={PosterUsp} durationInFrames={1} width={1080} height={1920} fps={FPS} />

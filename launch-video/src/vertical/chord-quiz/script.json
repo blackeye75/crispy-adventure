@@ -1,0 +1,9 @@
+[
+  { "id": "hook", "say": ["Three chords.", "Happy, or sad?", "Comment your three answers before the end."], "show": "Three chords. Happy or sad? *Comment before the end.*" },
+  { "id": "r1", "say": ["Chord one."], "show": "Chord 1: happy or sad?" },
+  { "id": "r2", "say": ["Chord two."], "show": "Chord 2: happy or sad?" },
+  { "id": "r3", "say": ["Chord three."], "show": "Chord 3: happy or sad?" },
+  { "id": "comment", "say": ["Comment now.", "H for happy, S for sad.", "Answers in three,", "two,", "one."], "show": "Comment now: *H* for happy, *S* for sad." },
+  { "id": "reveal", "say": ["Happy:", "C major.", "Sad:", "E minor.", "Happy:", "D major."], "show": "*H* C major · *S* E minor · *H* D major" },
+  { "id": "close", "say": ["Major sounds bright. Minor sounds darker.", "Learn to hear it every time.", "Follow at fret dot key."], "show": "Major sounds bright, minor darker. Follow *@fret.key* to hear it every time." }
+]

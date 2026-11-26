@@ -1,0 +1,9 @@
+[
+  { "id": "hook", "say": ["Hear that?", "Tension, then release.", "One finger does it."], "show": "Tension, then release. *One finger* does it." },
+  { "id": "d", "say": ["This is D major."], "show": "This is *D major*." },
+  { "id": "sus4", "say": ["Put your little finger on the top string, third fret.", "D sus four."], "show": "Little finger, top string, third fret: *Dsus4*." },
+  { "id": "why", "say": ["The third, F sharp, is replaced by G, the fourth.", "With no third, the chord is neither major nor minor.", "So it wants to fall back."], "show": "The 3rd (F♯) becomes the 4th (G). No third: *neither major nor minor*." },
+  { "id": "release", "say": ["Lift the finger.", "Home."], "show": "Lift the finger. *Home.*" },
+  { "id": "sus2", "say": ["Take the top-string finger off completely,", "and you get sus two.", "Open, and floating."], "show": "Take that finger off: *Dsus2*. Open, and floating." },
+  { "id": "close", "say": ["Save this for your next song.", "Follow at fret dot key."], "show": "Save this for your next song. Follow *@fret.key*." }
+]

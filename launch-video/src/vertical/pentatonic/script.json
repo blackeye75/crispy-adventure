@@ -1,0 +1,8 @@
+[
+  { "id": "hook", "say": ["This one box is behind countless rock and blues solos."], "show": "This one box is behind *countless rock and blues solos*." },
+  { "id": "box", "say": ["It is the minor pentatonic scale.", "In A,", "at the fifth fret."], "show": "The *minor pentatonic* scale, in A, at the fifth fret." },
+  { "id": "notes", "items": ["A.", "C.", "D.", "E.", "G."], "beat": 0.6, "show": "A · C · D · E · G" },
+  { "id": "why", "say": ["Five notes, with no half steps between them.", "Over a blues in A, every one sounds at home."], "show": "No half steps, so nothing clashes. Over a blues in A, *every note sounds at home*." },
+  { "id": "lick", "say": ["Try this.", "Bend the D on the G string up to E."], "show": "Try it: bend the *D* on the G string up to *E*." },
+  { "id": "close", "say": ["Save this, and play it tonight.", "Follow at fret dot key."], "show": "Save this, and play it tonight. Follow *@fret.key*." }
+]

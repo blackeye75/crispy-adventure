@@ -1,0 +1,9 @@
+[
+  { "id": "hook", "say": ["Learn one shape.", "Get twelve chords."], "show": "Learn one shape. Get *twelve chords*." },
+  { "id": "shape", "say": ["This is E major.", "Slide it up one fret,", "and lay your first finger across all six strings."], "show": "E major. Slide it up one fret, first finger *across all six strings*." },
+  { "id": "f", "say": ["That is F major.", "The same shape."], "show": "That's *F major*. The same shape." },
+  { "id": "move", "say": ["Fret three:", "G.", "Fret five:", "A.", "Fret seven:", "B."], "show": "Fret 3: *G*. Fret 5: *A*. Fret 7: *B*." },
+  { "id": "why", "say": ["The shape keeps the same distances between the notes.", "Only the root moves.", "So the note on the low string names the chord."], "show": "Same distances, new root. *The low string names the chord.*" },
+  { "id": "minor", "say": ["Lift one finger,", "and every one of them turns minor."], "show": "Lift one finger: every one *turns minor*." },
+  { "id": "close", "say": ["Save this for your next practice.", "Follow at fret dot key."], "show": "Save this for your next practice. Follow *@fret.key*." }
+]

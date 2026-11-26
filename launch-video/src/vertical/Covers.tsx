@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { AbsoluteFill } from "remotion";
 import { C, Mark, sans, serif } from "../theme";
-import { gold, Piano } from "./kit";
+import { ChordBox, gold, Piano } from "./kit";
+import { ScaleBox } from "./pentatonic/PentatonicReel";
 
 /** The frame all three lesson-reel covers share. Content sits between y 300 and 1600, inside the profile-grid crop. */
 const Cover = ({ tag, children, line }: { tag: string; children: ReactNode; line: ReactNode }) => (
@@ -100,5 +101,55 @@ export const CoverPowerChord = () => (
     <div style={{ ...big, top: 0, fontSize: 360, color: C.gold, textShadow: "0 0 120px rgba(236,178,63,0.45)" }}>−1</div>
     <div style={{ ...big, top: 330, fontSize: 96 }}>note</div>
     <SmallPiano from={52} to={64} lit={{ 52: 0.9, 59: 0.9, 64: 0.9 }} labels={{ 52: "E", 56: "✕", 59: "B", 64: "E" }} />
+  </Cover>
+);
+
+/** A chord box shrunk into the cover. */
+const SmallBox = (props: Parameters<typeof ChordBox>[0]) => (
+  <div style={{ position: "absolute", left: 0, top: 0, width: 1080, height: 860, scale: "0.7", transformOrigin: "50% 100%" }}>
+    <ChordBox {...props} />
+  </div>
+);
+
+/** Reel 12: one shape, twelve chords. */
+export const CoverBarre = () => (
+  <Cover tag="Guitar lesson" line={<>Learn one shape. Get {gold("twelve chords.")}</>}>
+    <div style={{ ...big, top: 20, fontSize: 210 }}><span style={{ color: C.gold }}>1</span> shape</div>
+    <div style={{ ...big, top: 250, fontSize: 120 }}>= {gold("12 chords")}</div>
+    <SmallBox frets="355433" name="" base={3} x={290} y={150} />
+  </Cover>
+);
+
+/** Reel 13: the minor pentatonic box. */
+export const CoverPentatonic = () => (
+  <Cover tag="Guitar lesson" line={<>The five notes behind {gold("countless solos.")}</>}>
+    <div style={{ ...big, top: 10, fontSize: 170 }}><span style={{ color: C.gold }}>1 box</span>,</div>
+    <div style={{ ...big, top: 190, fontSize: 96 }}>countless solos</div>
+    <div style={{ position: "absolute", left: 0, top: 0, width: 1080, height: 860, scale: "0.62", transformOrigin: "50% 100%" }}>
+      <div style={{ position: "absolute", left: 0, top: -430 }}><ScaleBox glow={{}} show={12} /></div>
+    </div>
+  </Cover>
+);
+
+/** Reel 14: sus chords. */
+export const CoverSus = () => (
+  <Cover tag="Guitar lesson" line={<>Why sus chords sound {gold("unfinished.")}</>}>
+    <div style={{ ...big, top: 30, fontSize: 170 }}><span style={{ color: C.muted }}>Dsus4</span> <span style={{ fontSize: 110, color: C.muted }}>→</span> <span style={{ color: C.gold }}>D</span></div>
+    <div style={{ ...big, top: 240, fontSize: 110 }}>= {gold("one finger")}</div>
+    <SmallBox frets="xx0233" name="" x={290} y={150} />
+  </Cover>
+);
+
+/** Reel 15: the happy-or-sad comment quiz. */
+export const CoverChordQuiz = () => (
+  <Cover tag="Ear quiz · comment" line={<>3 chords. {gold("Answers at the end.")}</>}>
+    <div style={{ ...big, top: 20, fontSize: 200 }}><span style={{ color: C.gold }}>Happy</span></div>
+    <div style={{ ...big, top: 230, fontSize: 200, color: C.muted }}>or sad?</div>
+    <div style={{ position: "absolute", left: 0, right: 0, top: 520, height: 140, display: "flex", alignItems: "center", justifyContent: "center", gap: 18 }}>
+      {[40, 80, 120, 70, 140, 100, 140, 70, 120, 80, 40].map((h, k) => <div key={k} style={{ width: 32, height: h, borderRadius: 16, backgroundColor: C.gold }} />)}
+    </div>
+    <div style={{ position: "absolute", left: 0, right: 0, top: 720, display: "flex", justifyContent: "center" }}>
+      <div style={{ backgroundColor: C.text, color: C.bg, borderRadius: 40, padding: "22px 50px", fontSize: 56, fontWeight: 700 }}>Comment H or S</div>
+    </div>
   </Cover>
 );

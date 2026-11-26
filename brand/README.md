@@ -34,3 +34,8 @@ Covers for the vertical lesson reels. Content stays inside the 3:4 profile-grid 
 - `reel-9-cover-home-chord.png`: Easy, "Why the last chord feels like home"
 - `reel-10-cover-bittersweet.png`: Easy, "The bittersweet chord"
 - `reel-11-cover-power-chord.png`: Guitar, "Why rock sounds heavy"
+- `reel-12-cover-barre.png`: Guitar, "One shape, twelve chords"
+- `reel-13-cover-pentatonic.png`: Guitar, "The minor pentatonic box"
+- `reel-14-cover-sus.png`: Guitar, "Why sus chords sound unfinished"
+- `reel-15-cover-chord-quiz.png`: Comment quiz, "Happy or sad?"
+- `reel-16-cover-frets.png`: Night-palette plates, "Why frets get closer together"

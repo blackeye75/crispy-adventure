@@ -59,6 +59,12 @@ npx remotion render ReelHarmonyPlate out/fretkey-reel-8b-harmony-plates-vertical
 npx remotion render ReelHomeChord out/fretkey-reel-9-home-chord-vertical.mp4 --codec=h264 --crf=18     # why the last chord feels like home
 npx remotion render ReelBittersweet out/fretkey-reel-10-bittersweet-vertical.mp4 --codec=h264 --crf=18 # the bittersweet chord (minor iv)
 npx remotion render ReelPowerChord out/fretkey-reel-11-power-chord-vertical.mp4 --codec=h264 --crf=18  # why rock sounds heavy
+# Short reels (30–40 s), rendered with high-bitrate audio:
+npx remotion render ReelBarre out/fretkey-reel-12-barre-vertical.mp4 --codec=h264 --crf=16 --audio-bitrate=320k            # one shape, twelve chords
+npx remotion render ReelPentatonic out/fretkey-reel-13-pentatonic-vertical.mp4 --codec=h264 --crf=16 --audio-bitrate=320k  # the minor pentatonic box
+npx remotion render ReelSus out/fretkey-reel-14-sus-vertical.mp4 --codec=h264 --crf=16 --audio-bitrate=320k                # sus chords
+npx remotion render ReelChordQuiz out/fretkey-reel-15-chord-quiz-vertical.mp4 --codec=h264 --crf=16 --audio-bitrate=320k   # comment quiz: happy or sad
+npx remotion render ReelFrets out/fretkey-reel-16-frets-vertical.mp4 --codec=h264 --crf=16 --audio-bitrate=320k            # night-palette plates: fret spacing
 npx remotion render ReelFourChords out/fretkey-reel-6-four-chords-vertical.mp4 --codec=h264 --crf=18   # moderate
 ```
 

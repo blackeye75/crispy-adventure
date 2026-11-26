@@ -1,0 +1,8 @@
+[
+  { "id": "hook", "say": ["Why do frets get closer together as you go up the neck?"], "show": "Why do frets get *closer together* up the neck?" },
+  { "id": "octave", "say": ["Press the twelfth fret,", "and the string is exactly half as long.", "Twice the frequency. One octave up."], "show": "Fret 12 halves the string: *twice the frequency, one octave up*." },
+  { "id": "twelve", "say": ["That octave is split into twelve equal steps.", "Each fret shortens the string by the same fraction:", "about five point six percent."], "show": "Twelve equal steps: each fret takes *5.6%* off the string." },
+  { "id": "closer", "say": ["Five point six percent of a long string is a big gap.", "Of a short string, a small one.", "So the frets crowd together as you climb."], "show": "5.6% of a long string is a big gap; of a short one, small. *So frets crowd together.*" },
+  { "id": "rule", "say": ["Guitar makers call it the rule of eighteen.", "Each fret sits about one eighteenth of the remaining string past the last."], "show": "Luthiers' *rule of 18*: each fret, about 1/18 of the remaining string." },
+  { "id": "close", "say": ["Music is maths you can feel.", "Follow at fret dot key."], "show": "Music is maths you can feel. Follow *@fret.key*." }
+]
