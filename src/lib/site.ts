@@ -10,3 +10,14 @@ export const SITE = {
 /** "₹50" from 5000 paise. */
 export const formatPrice = (amount: number, currency: string) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency, maximumFractionDigits: amount % 100 ? 2 : 0 }).format(amount / 100);
+
+export const INSTAGRAM_URL = "https://www.instagram.com/fret.key/";
+
+/**
+ * Landing-only mode, for hosting the landing page before the full product goes live (no database, no sign-in).
+ * Set NEXT_PUBLIC_LANDING_ONLY=1 on the host; remove it to launch the app. Read at build time.
+ */
+export const LANDING_ONLY = process.env.NEXT_PUBLIC_LANDING_ONLY === "1";
+
+/** The pages that work without a database: the landing page and the policies. Everything else waits for launch. */
+export const landingOnlyAllows = (pathname: string) => ["/", "/privacy", "/terms", "/refunds"].includes(pathname.replace(/\/$/, "") || "/");

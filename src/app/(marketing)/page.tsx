@@ -7,7 +7,7 @@ import { HeroVideo } from "@/features/marketing/HeroVideo";
 import { LandingDemo } from "@/features/marketing/LandingDemo";
 import { LEVEL_NAMES } from "@/features/lesson-player/PathView";
 import { Button } from "@/components/ui/button";
-import { formatPrice } from "@/lib/site";
+import { formatPrice, INSTAGRAM_URL, LANDING_ONLY } from "@/lib/site";
 import { getAllPlans } from "@/server/services/billing";
 
 const STEPS = [
@@ -64,8 +64,17 @@ export default function Home() {
             You know the shapes and the songs. Fretkey shows you why they work: every idea heard, seen on the fretboard or keyboard, and played.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Button size="lg" asChild><Link href="/sign-up">Start free</Link></Button>
-            <Button size="lg" variant="ghost" asChild><Link href="/practice">Open the practice room</Link></Button>
+            {LANDING_ONLY ? (
+              <>
+                <Button size="lg" asChild><a href={INSTAGRAM_URL}>Follow @fret.key for launch day</a></Button>
+                <Button size="lg" variant="ghost" asChild><a href="#inside">See what is inside</a></Button>
+              </>
+            ) : (
+              <>
+                <Button size="lg" asChild><Link href="/sign-up">Start free</Link></Button>
+                <Button size="lg" variant="ghost" asChild><Link href="/practice">Open the practice room</Link></Button>
+              </>
+            )}
           </div>
         </div>
         <HeroVideo />
@@ -102,9 +111,9 @@ export default function Home() {
         <ul className="grid gap-3 sm:grid-cols-2">
           {FROM_THE_REELS.map(([topic, slug]) => (
             <li key={slug}>
-              <Link href={`/learn/${slug}`} className="flex min-h-16 flex-col justify-center rounded-xl border bg-card px-5 py-4 outline-none transition-colors duration-150 hover:border-primary/60 focus-visible:ring-[3px] focus-visible:ring-ring/50">
+              <Link href={LANDING_ONLY ? INSTAGRAM_URL : `/learn/${slug}`} className="flex min-h-16 flex-col justify-center rounded-xl border bg-card px-5 py-4 outline-none transition-colors duration-150 hover:border-primary/60 focus-visible:ring-[3px] focus-visible:ring-ring/50">
                 <span className="font-medium">{topic}</span>
-                <span className="text-sm text-muted-foreground">Lesson: {lessonTitle(slug)} →</span>
+                <span className="text-sm text-muted-foreground">{LANDING_ONLY ? "Lesson at launch" : "Lesson"}: {lessonTitle(slug)} →</span>
               </Link>
             </li>
           ))}
@@ -150,9 +159,11 @@ export default function Home() {
             <p className="text-4xl font-semibold">Level 1</p>
             <p className="text-muted-foreground">Every Foundations lesson as it is released, and the practice room. No card needed.</p>
           </div>
-          <Suspense><Prices /></Suspense>
+          {!LANDING_ONLY && <Suspense><Prices /></Suspense>}
         </div>
-        <div><Button size="lg" asChild><Link href="/sign-up">Create your free account</Link></Button></div>
+        {LANDING_ONLY
+          ? <div className="flex flex-col gap-3"><p className="text-muted-foreground">Fretkey opens soon. Follow along for launch day and new lessons every week.</p><div><Button size="lg" asChild><a href={INSTAGRAM_URL}>Follow @fret.key</a></Button></div></div>
+          : <div><Button size="lg" asChild><Link href="/sign-up">Create your free account</Link></Button></div>}
       </section>
     </main>
   );
