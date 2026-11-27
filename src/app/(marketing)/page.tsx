@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { modules } from "../../../content/modules";
+import { content } from "../../../content";
+import { modules, tracks } from "../../../content/modules";
+import { HeroVideo } from "@/features/marketing/HeroVideo";
 import { LandingDemo } from "@/features/marketing/LandingDemo";
 import { LEVEL_NAMES } from "@/features/lesson-player/PathView";
 import { Button } from "@/components/ui/button";
@@ -16,6 +18,21 @@ const STEPS = [
 ];
 
 const section = "mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-16";
+
+// The reels on Instagram, each with the full lesson behind it. Signed-out visitors are sent to sign in first.
+const FROM_THE_REELS: [topic: string, lesson: string][] = [
+  ["Why one note turns happy into sad", "major-and-minor-triads"],
+  ["Why thousands of songs share four chords", "four-chord-songs"],
+  ["Why the last chord feels like home", "the-tritone-in-the-dominant-seventh"],
+  ["The bittersweet borrowed chord", "modal-interchange"],
+  ["Why rock sounds heavy, and why sus chords hang", "sus-and-power-chords"],
+  ["One shape, twelve chords", "barre-chords"],
+  ["The box behind countless solos", "the-minor-pentatonic-scale"],
+  ["Why the 12th fret starts again", "the-twelfth-fret"],
+];
+const lessonTitle = (slug: string) => content.lessons.find((l) => l.slug === slug)!.title;
+const playing = tracks.filter((t) => t.slug !== "theory");
+const stagesOf = (track: string) => modules.filter((m) => m.trackSlug === track).sort((a, b) => a.order - b.order).map((m) => m.title).join(" · ");
 
 async function Prices() {
   await connection(); // live prices: fetched per request, not frozen into the build
@@ -51,6 +68,51 @@ export default function Home() {
             <Button size="lg" variant="ghost" asChild><Link href="/practice">Open the practice room</Link></Button>
           </div>
         </div>
+        <HeroVideo />
+      </section>
+
+      <section className={section} aria-labelledby="inside">
+        <div className="flex flex-col gap-2">
+          <h2 id="inside" className="text-3xl">What is inside</h2>
+          <p className="text-muted-foreground">One idea per lesson, 5 to 8 minutes each, on guitar or piano.</p>
+        </div>
+        <dl className="grid grid-cols-3 gap-4">
+          {[[content.lessons.length, "lessons"], [LEVEL_NAMES.length, "levels of theory"], [playing.length, "playing tracks"]].map(([n, what]) => (
+            <div key={String(what)} className="flex flex-col gap-1 rounded-2xl border bg-card p-5">
+              <dt className="order-2 text-sm text-muted-foreground">{what}</dt>
+              <dd className="order-1 font-display text-4xl text-primary tabular-nums sm:text-5xl">{n}</dd>
+            </div>
+          ))}
+        </dl>
+        <ul className="grid gap-x-10 gap-y-5 sm:grid-cols-2">
+          {playing.map((t) => (
+            <li key={t.slug} className="flex flex-col gap-1">
+              <h3 className="font-sans text-lg font-medium tracking-normal">{t.title}</h3>
+              <p className="text-muted-foreground">{t.description} <span className="text-foreground/70">{stagesOf(t.slug)}.</span></p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className={section} aria-labelledby="reels">
+        <div className="flex flex-col gap-2">
+          <h2 id="reels" className="text-3xl">Saw a reel? Here is the full lesson.</h2>
+          <p className="text-muted-foreground">Every reel on <a href="https://www.instagram.com/fret.key/" className="text-foreground underline underline-offset-4">@fret.key</a> is one idea from the path. Each lesson goes further: you hear it, see it on your instrument, and play it.</p>
+        </div>
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {FROM_THE_REELS.map(([topic, slug]) => (
+            <li key={slug}>
+              <Link href={`/learn/${slug}`} className="flex min-h-16 flex-col justify-center rounded-xl border bg-card px-5 py-4 outline-none transition-colors duration-150 hover:border-primary/60 focus-visible:ring-[3px] focus-visible:ring-ring/50">
+                <span className="font-medium">{topic}</span>
+                <span className="text-sm text-muted-foreground">Lesson: {lessonTitle(slug)} →</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className={section} aria-labelledby="try">
+        <h2 id="try" className="text-3xl">Try it right here</h2>
         <LandingDemo />
       </section>
 
